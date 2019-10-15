@@ -3,14 +3,18 @@ import {
   getUserInfo
 } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
+import Cookies from 'js-cookie'
+import config from '@/config'
 
 export default {
   state: {
     userName: '',
     userId: '',
     avatarImgPath: '',
+    organizationId: Cookies.get('organizationId'),
     token: getToken(),
-    access: ['admin'], // 可访问页面的权限数组
+    roleIds: [],
+    access: ['super_admin', 'admin'], // 可访问页面的权限数组
     hasGetInfo: false // 是否获取了用户数据
   },
   mutations: {
@@ -26,9 +30,16 @@ export default {
     setAccess (state, access) { // 设置权限
       state.access = access
     },
-    setToken (state, token) { // 设置token
+    setToken (state, token) {
       state.token = token
       setToken(token)
+    },
+    setOrganizationId (state, organizationId) {
+      Cookies.set('organizationId', organizationId, { expires: config.cookieExpires || 1 })
+      state.organizationId = organizationId
+    },
+    setRoleIds (state, roleIds) {
+      state.roleIds = roleIds
     },
     setHasGetInfo (state, status) { // 设置是否获取了用户信息
       state.hasGetInfo = status
@@ -37,17 +48,22 @@ export default {
   getters: {},
   actions: {
     // 登录
-    handleLogin ({ commit }, { userName, password }) {
-      userName = userName.trim()
+    handleLogin ({ commit }, { username, password }) {
+      username = username.trim()
       return new Promise((resolve, reject) => {
         login({
-          userName,
+          username,
           password
         }).then(res => {
-          const data = res.data
-          // 设置token
-          commit('setToken', data.token)
-          resolve()
+          if (res.data && res.data.code === 0) {
+            const data = res.data.data
+            console.log(data)
+            commit('setToken', data.jwt)
+            commit('setOrganizationId', data.organizationId)
+            commit('setRoleIds', data.roleIds)
+            commit('setHasGetInfo', true)
+          }
+          resolve(res)
         }).catch(err => {
           reject(err)
         })
@@ -58,6 +74,7 @@ export default {
       return new Promise((resolve, reject) => {
         // logout(state.token).then(() => {
         commit('setToken', '')
+        Cookies.remove('organizationId')
         commit('setAccess', [])
         resolve()
         // }).catch(err => {
@@ -73,7 +90,7 @@ export default {
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
-          getUserInfo(state.token).then(res => {
+          getUserInfo().then(res => {
             const data = res.data
             commit('setAvatar', data.avatar)
             commit('setUserName', data.name)

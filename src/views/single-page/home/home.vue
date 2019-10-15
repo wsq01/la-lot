@@ -1,12 +1,327 @@
 <template>
-  <div>xxxx</div>
+  <div>
+    <Row>
+      <i-col>
+        <Card>
+          <p slot="title">库区所在城市：</p>
+          <!-- <Tag @click="handleClickCity" checkable name="city" fade color="blue">{{item.name}}</Tag> -->
+          <div class="center">
+            <RadioGroup v-model="selectedCity" type="button" @on-change="handleCityChange">
+              <Radio v-for="(item, index) in cityList" :key="index" :label="item.id">{{item.name}}</Radio>
+            </RadioGroup>
+          </div>
+        </Card>
+      </i-col>
+    </Row>
+    <Row>
+      <i-col>
+        <baidu-map class="bm-view" ak="XP1alssWsEscC3NfYAhj6YfqKvgQgUXF" :center="initMap.center" :zoom="initMap.zoom" :scroll-wheel-zoom="initMap.isScrollWheelZoom">
+          <bm-copyright
+            anchor="BMAP_ANCHOR_TOP_RIGHT"
+            :copyright="[{id: 1, content: initMap.copyrightContent}]">
+          </bm-copyright>
+           <bm-marker v-for="(item, index) in points" :key="index" :position="item" @click="item.show=true" @mouseover="item.show=!item.show" @mouseleave="item.show=!item.show" animation="BMAP_ANIMATION_DROP">
+             <bm-info-window :show="item.show">
+               <p>{{item.name}}区域</p>
+               设备总数：<span class="mark">{{item.nums}}</span>
+               </bm-info-window>
+               <!-- <bm-label  /> -->
+          </bm-marker>
+          <Drawer scrollable title="库区" width="11" class="center" placement="left" :closable="false" v-model="isShowDrawerLeft" :inner="true" :transfer="false" @on-visible-change="handleLeftDrawerClose">
+            <Dropdown @on-click="handleClickleftDrawerMenu" v-for="(item, index) in leftDrawerList" :key="index" placement="right-start" :transfer="true" transfer-class-name="show-menu">
+              <a href="javascript:;" @click="handleClickleftDrawerMenu('areaId/' + item.id + '/' + item.name)">
+                <Button type="text" long>{{item.name}}<Icon type="ios-arrow-forward"></Icon></Button>
+                <Divider size="small"/>
+              </a>
+              <DropdownMenu slot="list">
+                <DropdownItem :name="'sceneId/' + sItem.areaId + '/' + sItem.name" v-for="(sItem, sIndex) in item.sceneList" :key="sIndex">{{sItem.name}}</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </Drawer>
+          <Drawer width="60" :closable="false" placement="right" :mask="false" v-model="isShowDrawerRight" :inner="true" :transfer="false">
+            <Row>
+              <i-col span="14">
+                <Card :padding="0">
+                  <p slot="title">{{chartTitle}}</p>
+                  <chart-bar :option="chartBarOption" style="height: 200px"></chart-bar>
+                </Card>
+              </i-col>
+              <i-col span="10">
+                <Card :padding="0">
+                  <p slot="title">资产丢失</p>
+                  <div slot="extra"> <a href="javascript:;" @click.prevent="toMissed"> 查看详情<Icon type="ios-arrow-forward" /></a></div>
+                  <chart-pie :option="chartPieOption" style="width: 100%;height: 200px"></chart-pie>
+                </Card>
+              </i-col>
+            </Row>
+            <Row>
+              <i-col span="24">
+                <Card :padding="0">
+                  <p slot="title">设备详情</p>
+                  <chart-pie :option="secondChartPieOption" style="width: 100%;height: 250px"></chart-pie>
+                </Card>
+              </i-col>
+            </Row>
+          </Drawer>
+        </baidu-map>
+      </i-col>
+    </Row>
+  </div>
 </template>
 
 <script>
+import BaiduMap from 'vue-baidu-map/components/map/Map'
+import BmCopyright from 'vue-baidu-map/components/controls/Copyright'
+// import BmLabel from 'vue-baidu-map/components/overlays/Label'
+import BmMarker from 'vue-baidu-map/components/overlays/Marker'
+import BmInfoWindow from 'vue-baidu-map/components/overlays/InfoWindow'
+import ChartBar from '@/components/charts/bar'
+import ChartPie from '@/components/charts/pie'
+
+import { getCityListByOid, getCityInfo, getDeviceNumber } from '@/api/data'
+import { mapActions } from 'vuex'
 export default {
-  name: 'home'
+  name: 'home',
+  data () {
+    return {
+      initMap: {
+        center: '北京', // 经纬度
+        zoom: 5, // 缩放等级
+        isScrollWheelZoom: true,
+        copyrightContent: '中集制冷'
+      },
+      cityList: [],
+      points: [],
+      selectedCity: '', // 选中的城市
+      isShowDrawerLeft: false, // 是否显示左抽屉
+      isShowDrawerRight: false, // 是否显示右抽屉
+      leftDrawerList: [],
+      chartBarOption: {},
+      chartPieOption: {},
+      secondChartPieOption: {},
+      chartTitle: ''
+    }
+  },
+  components: {
+    BaiduMap,
+    BmCopyright,
+    // BmLabel,
+    BmMarker,
+    BmInfoWindow,
+    ChartBar,
+    ChartPie
+  },
+  methods: {
+    ...mapActions(['getCityList']),
+    handleCityChange (e) {
+      getCityInfo(e).then(res => {
+        console.log(res)
+        if (res.data.code === 0) {
+          this.leftDrawerList = res.data && res.data.data.list
+        }
+      })
+      this.isShowDrawerLeft = true
+    },
+    handleClickleftDrawerMenu (e) {
+      console.log(e)
+      getDeviceNumber({ organizationId: this.$store.state.user.organizationId, key: e.split('/')[0], value: e.split('/')[1] }).then(res => {
+        if (res.data.code === 0) {
+          let lists = res.data.data.list
+          this.chartTitle = e.split('/')[2]
+          this.chartBarOption = this.traverseDeviceList(lists)
+          this.chartPieOption = this.changeList(lists)
+          this.secondChartPieOption = this.statisticList(lists)
+        }
+      })
+      this.isShowDrawerRight = true
+    },
+    handleLeftDrawerClose (e) {
+      this.isShowDrawerRight = false
+    },
+    toMissed () {
+      this.$router.push({
+        name: 'missed'
+      })
+    },
+    traverseDeviceList (lists) {
+      if (lists.length === 0) return {}
+      var xAxis = []
+      var yAxis = []
+      var grid = []
+      var series = []
+      lists.forEach((item, index) => {
+        xAxis.push({ gridIndex: index })
+        yAxis.push({
+          gridIndex: index,
+          type: 'category',
+          data: [],
+          name: item.name,
+          nameLocation: 'center',
+          nameRotate: 360,
+          nameTextStyle: { fontSize: 14 }
+        })
+        grid.push({ height: ((100 / item.sub.length) + '%'), top: ((100 / item.sub.length * index) + '%'), containLabel: true })
+        series.push({
+          type: 'bar',
+          seriesLayoutBy: 'column',
+          xAxisIndex: index,
+          yAxisIndex: index,
+          data: [],
+          label: {
+            normal: {
+              show: true,
+              position: 'inside'
+            }
+          }
+        })
+        item.sub.forEach((sItem, sIndex) => {
+          yAxis[index].data.push(sItem.name)
+          series[index].data.push(sItem.number)
+        })
+      })
+      return {
+        tooltip: {},
+        xAxis,
+        yAxis,
+        grid,
+        series
+      }
+    },
+    statisticList (lists) {
+      if (lists.length === 0) return {}
+      var tooltip = {
+        trigger: 'item'
+      }
+      var series = []
+      lists.forEach((item, index) => {
+        var obj = {
+          name: item.name,
+          type: 'pie',
+          radius: ['30%', (70 / lists.length) + '%'],
+          center: [(100 / (lists.length * 2) * (2 * index + 1) + '%'),
+            '50%'
+          ],
+          label: {
+            normal: {
+              formatter: '{a}\n {b}:{c}',
+              show: true,
+              textStyle: {
+                fontSize: 14
+              }
+            },
+            emphasis: {
+              show: true,
+              textStyle: {
+                fontSize: '30',
+                fontWeight: 'bold'
+              }
+            }
+          },
+          data: []
+        }
+        item.sub.forEach((sItem, sIndex) => {
+          const sObj = {
+            value: sItem.number,
+            name: sItem.name
+          }
+          obj.data.push(sObj)
+        })
+        series.push(obj)
+      })
+      return {
+        tooltip,
+        // legend,
+        series
+      }
+    },
+    changeList (lists) {
+      if (lists.length === 0) return {}
+      var tooltip = {
+        trigger: 'item',
+        formatter: '{a} <br/>{b} : {c}'
+      }
+      var legend = {
+        bottom: 10,
+        textStyle: {
+          fontSize: 18
+        }
+      }
+      var series = []
+      lists.forEach((item, index) => {
+        const obj = {
+          name: item.name,
+          type: 'pie',
+          radius: '50%',
+          label: {
+            show: true,
+            position: 'center',
+            fontSize: 40,
+            color: '#fff',
+            formatter: '{c}',
+            emphasis: {
+              show: true,
+              textStyle: {
+                fontSize: '30',
+                fontWeight: 'bold'
+              }
+            }
+          },
+          center: [(100 / (lists.length * 2) * (2 * index + 1) + '%'),
+            '40%'
+          ],
+          data: [
+            { value: item.missed, name: item.name }
+          ]
+        }
+        series.push(obj)
+      })
+      return {
+        tooltip,
+        legend,
+        series
+      }
+    },
+    traverseCityList (lists) { // 数据转换
+      return lists.reduce((a, v) => {
+        const nums = (v.areaList && v.areaList.reduce((a, v) => a + v.number, 0)) || 0
+        return a.concat({ lng: v.longitude, lat: v.latitude, show: false, name: v.name, nums, id: v.id })
+      }, [])
+    },
+    addPoints () { // 地图添加点
+      getCityListByOid(this.$store.state.user.organizationId).then(res => {
+        if (res.data && res.data.code === 0) {
+          const lists = res.data.data.list
+          this.points = this.traverseCityList(lists)
+          this.cityList = this.points
+        }
+      })
+    }
+  },
+  mounted () {
+    this.addPoints()
+    this.getCityList().then(res => {
+      if (res.data && res.data.code === 0) {
+        const lists = res.data.data.list
+        this.points = this.traverseCityList(lists)
+        this.cityList = this.points
+      }
+    })
+  }
 }
 </script>
 
 <style lang="less" scoped>
+.bm-view {
+  width: 100%;
+  height: 600px;
+}
+.mark {
+  color: red;
+}
+.center {
+  text-align: center;
+}
+.show-menu {
+  z-index: 10;
+}
 </style>

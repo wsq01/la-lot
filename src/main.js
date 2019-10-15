@@ -9,7 +9,6 @@ import config from '@/config'
 
 import './index.less'
 import '@/assets/icons/iconfont.css'
-import 'iview/dist/styles/iview.css'
 
 Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value)

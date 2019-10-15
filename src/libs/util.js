@@ -10,13 +10,12 @@ export const setToken = (token) => {
   Cookies.set(TOKEN_KEY, token, { expires: cookieExpires || 1 })
 }
 
-// 获取token
 export const getToken = () => {
   const token = Cookies.get(TOKEN_KEY)
   if (token) return token
   else return false
 }
-
+// 判断是否有子菜单
 export const hasChild = (item) => {
   return item.children && item.children.length !== 0
 }
@@ -29,7 +28,6 @@ const showThisMenuEle = (item, access) => {
 }
 /**
  * @param {Array} list 通过路由列表得到菜单列表
- * @param {Array} access 可访问该页面的权限数组，当前路由设置的权限会影响子路由
  * @returns {Array}
  */
 export const getMenuByRouter = (list, access) => {
@@ -50,7 +48,25 @@ export const getMenuByRouter = (list, access) => {
   })
   return res
 }
-
+export const getUserControlMenuByRouter = (list) => {
+  let res = []
+  forEach(list, item => {
+    if (item.meta.userControl) {
+      console.log(item)
+      let obj = {
+        icon: (item.meta && item.meta.icon) || '',
+        name: item.name,
+        meta: item.meta
+      }
+      if ((hasChild(item) || (item.meta && item.meta.showAlways))) {
+        obj.children = getUserControlMenuByRouter(item.children)
+      }
+      if (item.meta && item.meta.href) obj.href = item.meta.href
+      res.push(obj)
+    }
+  })
+  return res
+}
 /**
  * @param {Array} routeMetched 当前路由metched
  * @returns {Array}

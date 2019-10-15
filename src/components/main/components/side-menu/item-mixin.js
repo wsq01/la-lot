@@ -15,7 +15,7 @@ export default {
       return this.parentItem.children
     },
     textColor () {
-      return this.thieme === 'dark' ? '#fff' : '#495060'
+      return this.thieme === 'dark' ? '#fff' : '#fff'
     }
   }
 }

@@ -1,32 +1,68 @@
 <template>
   <div class="login">
-    <div class="login-con">
-      <Card icon="log-in" title="欢迎登录" :bordered="false">
-        <div class="form-con">
-          <login-form @on-success-valid="handleSubmit"></login-form>
-        </div>
-      </Card>
-    </div>
+    <Layout style="background:transparent">
+      <Header class="login-header">
+        <Row type="flex" align="middle" justify="space-between">
+          <i-col :span="4" style="line-height: 1">
+            <img src="../../assets/images/logo.png" alt="">
+          </i-col>
+          <i-col :span="3">
+            <div class='headerWrap'>
+              <a href="home.html">返回首页</a>
+            </div>
+          </i-col>
+        </Row>
+      </Header>
+      <Content class="login-content">
+        <Card icon="log-in" :bordered="false" style="background: transparent">
+          <Row>
+            <i-col :md="12" :xs="0" :xxl="{span: 9, offset: 3}">
+              <div>
+                <img src="../../assets/images/login_left.png" style="height: 510px;width: 100%" alt="">
+              </div>
+            </i-col>
+            <i-col :span="12" :xs="24" :md="12" :xxl="{span: 9}">
+                <div class="form-con">
+                  <login-form @on-success-valid="handleSubmit" :loading="loading"></login-form>
+                </div>
+            </i-col>
+          </Row>
+        </Card>
+      </Content>
+    </Layout>
   </div>
 </template>
 
 <script>
 import LoginForm from '@/components/login-form/login-form'
+
 import { mapActions } from 'vuex'
 export default {
+  data () {
+    return {
+      loading: false
+    }
+  },
   components: {
     LoginForm
   },
   methods: {
-    ...mapActions(['handleLogin', 'getUserInfo']),
-    handleSubmit ({ userName, password }) {
-      // this.handleLogin({ userName, password }).then(res => {
-      //   this.getUserInfo().then(res => {
+    ...mapActions(['handleLogin']),
+    handleSubmit ({ username, password }) {
+      this.loading = true
+      this.handleLogin({ username, password }).then(res => {
+        this.loading = false
+        if (res.data && res.data.code === 0) {
           this.$router.push({
             name: this.$config.homeName
           })
-      //   })
-      // })
+        } else {
+          this.$Message.error({
+            content: (res.data && res.data.message) || '登录失败',
+            duration: 2
+          })
+        }
+      })
     }
   }
 }
@@ -36,25 +72,37 @@ export default {
 .login {
   width: 100%;
   height: 100%;
-  background-image: url("../../assets/images/login-bg.jpg");
+  background-image: url("../../assets/images/login.png");
   background-size: cover;
   background-position: center;
   position: relative;
-  &-con {
+  &-header {
+    padding: 0;
+    text-align: center;
+  }
+  &-content {
+    width: 74%;
     position: absolute;
-    right: 160px;
-    top: 50%;
-    transform: translateY(-60%);
-    width: 300px;
-    &-header {
-      font-size: 16px;
-      font-weight: 300;
-      text-align: center;
-      padding: 30px 0;
-    }
-    .form-con {
-      padding: 10px 0 0;
-    }
+    top: 25%;
+    left: 13%;
+    border-radius: 10px;
+    height: 60%;
+  }
+  .form-con {
+    background: rgba(6,88,255,0.7);
+    height: 510px;
+    padding: 80px;
+  }
+  .headerWrap a{
+    height: 100%;
+    display: block;
+    background: #0658FF;
+    text-align: center;
+    color: #fff;
+    cursor: pointer;
+  }
+  .ivu-layout-header {
+    background: rgba(0, 0, 0, 0.7)
   }
 }
 </style>

@@ -1,9 +1,11 @@
 <template>
   <div class="user-avatar-dropdown">
     <Dropdown @on-click="handleClick">
-      <Avatar :src="userAvatar"/>
+      <span>{{userName}}</span>
+      <Avatar :src="userAvatar" style="background-color: #155efb" icon="ios-person" />
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
+        <DropdownItem name="control">用户中心</DropdownItem>
         <DropdownItem name="logout">退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
@@ -11,13 +13,18 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions,mapMutations } from 'vuex'
 export default {
   name: 'User',
   props: {
     userAvatar: {
       type: String,
       default: ''
+    }
+  },
+  computed: {
+    userName () {
+      return this.$store.state.user.userName
     }
   },
   methods: {
@@ -31,9 +38,14 @@ export default {
         })
       })
     },
+    control () {
+      this.$emit('on-control')
+    },
     handleClick (name) {
       switch (name) {
         case 'logout': this.logout()
+          break
+        case 'control': this.control()
           break
       }
     }

@@ -9,8 +9,11 @@ import {
   routeEqual,
   getRouteTitleHandled,
   localSave,
-  localRead
+  localRead,
+  getUserControlMenuByRouter
 } from '@/libs/util'
+import { getCityListByOid, getAreaList, getSceneList } from '@/api/data'
+import { getOrganizationList, getMenus, getRole } from '@/api/user'
 import router from '@/router'
 import routers from '@/router/router'
 import config from '@/config'
@@ -29,11 +32,21 @@ export default {
     breadCrumbList: [], // 面包屑导航列表
     tagNavList: [],
     homeRoute: {},
-    local: localRead('local')
+    local: localRead('local'), // 语言
+    cityList: [],
+    areaList: [],
+    sceneList: [],
+    organizationList: [],
+    menuList: [],
+    roleList: [],
+    menuTheme: localRead('menuTheme') || 'dark',
+    topTheme: localRead('topTheme') || 'light'
   },
   getters: {
-    // 从路由获取sidermenu列表
-    menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access)
+    // 从路由获取菜单列表
+    // rootState 根节点状态
+    menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),
+    userMenuList: (state, getter, rootState) => getUserControlMenuByRouter(routers)
   },
   mutations: {
     setBreadCrumb (state, route) { // 设置面包屑导航
@@ -56,6 +69,24 @@ export default {
       state.tagNavList = tagList
       setTagNavListInLocalstorage([...tagList])
     },
+    setCityList (state, list) { // 设置城市列表
+      state.cityList = list
+    },
+    setAreaList (state, list) { // 设置区域列表
+      state.areaList = list
+    },
+    setOrganizationList (state, list) { // 设置区域列表
+      state.organizationList = list
+    },
+    setSceneList (state, list) { // 设置场景列表
+      state.sceneList = list
+    },
+    setRoleList (state, list) { // 设置场景列表
+      state.roleList = list
+    },
+    setMenuList (state, list) { // 设置场景列表
+      state.menuList = list
+    },
     closeTag (state, route) { // 关闭标签导航页
       let tag = state.tagNavList.filter(item => routeEqual(item, route))
       route = tag[0] ? tag[0] : null
@@ -74,10 +105,111 @@ export default {
       }
     },
     setLocal (state, lang) { // 设置语言
-      localSave('local', lang)
+      localSave('local', lang) // 存localStoarage
       state.local = lang
+    },
+    setMenuTheme (state, lang) { // 设置语言
+      localSave('menuTheme', lang) // 存localStoarage
+      state.menuTheme = lang
+    },
+    setTopTheme (state, lang) { // 设置语言
+      localSave('topTheme', lang) // 存localStoarage
+      state.topTheme = lang
     }
   },
   actions: {
+    setMenuList ({ state, commit, rootState }) {
+      getters.menuList = getuserControlMenuByRouter(routers)
+    },
+    getCityList ({ state, commit }) {
+      return new Promise((resolve, reject) => {
+        try {
+          getCityListByOid().then(res => {
+            const data = res.data.data.list
+            commit('setCityList', data)
+            resolve(data)
+          }).catch(error => {
+            reject(error)
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
+    getAreaList ({ state, commit }) {
+      return new Promise((resolve, reject) => {
+        try {
+          getAreaList().then(res => {
+            const data = res.data.data.list
+            commit('setAreaList', data)
+            resolve(data)
+          }).catch(error => {
+            reject(error)
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
+    getSceneList ({ state, commit }) {
+      return new Promise((resolve, reject) => {
+        try {
+          getSceneList().then(res => {
+            const data = res.data.data.list
+            commit('setSceneList', data)
+            resolve(data)
+          }).catch(error => {
+            reject(error)
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
+    getOrganizationList ({ state, commit }) {
+      return new Promise((resolve, reject) => {
+        try {
+          getOrganizationList().then(res => {
+            const data = res.data.data.list
+            commit('setOrganizationList', data)
+            resolve(data)
+          }).catch(error => {
+            reject(error)
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
+    getRoleList ({ state, commit }) {
+      return new Promise((resolve, reject) => {
+        try {
+          getRole().then(res => {
+            const data = res.data.data.list
+            commit('setRoleList', data)
+            resolve(data)
+          }).catch(error => {
+            reject(error)
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
+    getMenuList ({ state, commit }) {
+      return new Promise((resolve, reject) => {
+        try {
+          getMenus().then(res => {
+            const data = res.data.data.list
+            commit('setMenuList', data)
+            resolve(data)
+          }).catch(error => {
+            reject(error)
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    }
   }
 }

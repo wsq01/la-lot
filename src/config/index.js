@@ -2,7 +2,7 @@ export default {
   /**
    * @description 配置显示在浏览器标签的title
    */
-  title: 'iView-admin',
+  title: 'LA-IOT',
   /**
    * @description token在Cookie中存储的天数，默认1天
    */
@@ -17,14 +17,23 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: 'https://www.easy-mock.com/mock/5add9213ce4d0e69998a6f51/iview-admin/',
-    pro: 'https://produce.com'
+    dev: {
+      first: '//39.105.79.197:8001',
+      second: '//39.105.79.197:8002',
+      three: '//1.119.6.206:8003'
+    },
+    pro: {
+      first: '//39.105.79.197:8001',
+      second: '//39.105.79.197:8002',
+      three: '//1.119.6.206:8003'
+    }
   },
   httpUrl: {
     first: '//39.105.79.197:8001',
     second: '//39.105.79.197:8002',
-    three: '//39.105.79.197:8003'
+    three: '//1.119.6.206:8003'
   },
+  version: '1.1.0',
   /**
    * @description 默认打开的首页的路由name值，默认为home
    */

@@ -1,0 +1,385 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>智冷云</title>
+
+
+  <!-- <link rel="shortcut icon" id="favicon" href="favicon.png"> -->
+  <!-- <link rel="canonical" href="http://www.thepetedesign.com/demos/onepage_scroll_demo.html" /> -->
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Pacifico:400' rel='stylesheet' type='text/css'>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script type="text/javascript" src="./assets/js/jquery.onepage-scroll.js"></script>
+  <link href='./assets/style/onepage-scroll.css' rel='stylesheet' type='text/css'>
+  <meta name="viewport"
+    content="initial-scale=1, width=device-width, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="./assets/style/style.css">
+
+  <script>
+    $(document).ready(function () {
+      $(".main").onepage_scroll({
+        sectionContainer: "section", // 指定单页面的每个页面外部容器
+        easing: "ease", // 页面切换的缓动效果，可设置成 "ease", "linear", "ease-in","ease-out", "ease-in-out"
+        animationTime: 500, // 每个页面切换的时长
+        pagination: false, // 是否显示右边的导航圆形按钮
+        updateURL: true, // 切换页面的时候是否需要更新页面URL.
+        beforeMove: function (index) {
+          if (index == 1) {
+            $('header').css('background', 'rgba(0,0,0,0)');
+          }else{
+            $('header').css('background', 'rgba(0,0,0,0.8)');
+          }
+        }, // 页面切换之前的回调，index表示页面的索引
+        afterMove: function (index) {}, // 页面切换之后的回调，index表示页面的索引
+        loop: false, // 当前页面为最后一个的时候，继续向下切换是否回到第一个页面
+        keyboard: true, // 是否可以使用方向键来操纵页面切换
+        responsiveFallback: false, // 是否当浏览器宽度为某一个指定值的时候，去除该插件效果，如果想实现这种效果，那么可以指定一个宽度值
+        direction: "vertical" // 页面切换方向，可选值为 "vertical"水平 和"horizontal"垂直. 默认 "vertical" 
+      });
+
+
+
+      $(".product").click(function () {
+        $('header').css('background', 'rgba(0,0,0,0)');
+        $(".main").moveTo(2);  // 产品介绍
+      })
+      $(".product1").click(function () {
+        $('header').css('background', 'rgba(0,0,0,0.8)');
+        $(".main").moveTo(3); // 产品能力
+      })
+      $(".product2").click(function () {
+        $('header').css('background', 'rgba(0,0,0,0.8)');
+        $(".main").moveTo(4); // 产品优势
+      })
+      $(".product3").click(function () {
+        $('header').css('background', 'rgba(0,0,0,0.8)');
+        $(".main").moveTo(5); // 适用场景
+      })
+    });
+  </script>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="main">
+
+      <section class="page1" id="1">
+        <div>
+          <div style="margin:auto;margin-top: 12%;">
+            <div class='divText'>
+              <span>定</span>
+              <span>制</span>
+              <span>化</span>
+              <span>冷</span>
+              <span>链</span>
+              <span>综</span>
+              <span>合</span>
+              <span>服</span>
+              <span>务</span>
+            </div>
+            <div class='divText1'>
+              <span>C</span>
+              <span>U</span>
+              <span>S</span>
+              <span>T</span>
+              <span>O</span>
+              <span>M</span>
+              <span>I</span>
+              <span>Z</span>
+              <span>E</span>
+            </div>
+          </div>
+          <div class='marquee'>
+            <ul id="ls" class="clearfix" style="position: relative;width:100%;display: flex;">
+              <li class="text scrollDiv">
+                <span>C</span>
+                <span>U</span>
+                <span>S</span>
+                <span>T</span>
+                <span>O</span>
+                <span>M</span>
+                <span>I</span>
+                <span>Z</span>
+                <span>E</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="page2" id="2">
+        <div class="page2_big">
+          <div class="page2_content">
+            <div class="page2_li">
+              <span class="button">产品介绍</span>
+            </div>
+            <ul>
+              <li>中集制冷依托强大的研发团队和不断研发投入，</li>
+              <li>进行软硬产品的自主研发，并拥有自主知识产权，</li>
+              <li>资助研发的温度监控云信息平台，是大数据及物联网时代下的，能够解决行业痛点，</li>
+              <li>满足行业最新需求的一体化服务平台。</li>
+              <li>在服务客户上，我们秉承工匠精神。</li>
+              <li>用心为每个客户营造细致专业的用户体验。</li>
+            </ul>
+          </div>
+          <div class="page2_foot">
+            <p>领先冷链一体化解决方案</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="page3" id="3">
+        <div class="page2_big">
+          <div class="page2_li">
+            <span class="button">产品能力</span>
+          </div>
+          <div class='page3_content'>
+            <div>
+              <img src="./images/page3_first.png" alt="暂无">
+              <p>设备接入</p>
+              <p class='page3_p'>支持海量设备接入，提供基础通信</p>
+              <p class='page3_p'>套件，降低设备接入门槛，提升接入效率</p>
+            </div>
+            <div>
+              <img src="./images/page3_two.png" alt="暂无">
+              <p>安全传输</p>
+              <p class='page3_p'>提供设备端DTLS</p>
+              <p class='page3_p'>和应用端HTTPS的数据的加密传输</p>
+            </div>
+            <div>
+              <img src="./images/page3_three.png" alt="暂无">
+              <p>商业分析</p>
+              <p class='page3_p'>提供对设备按照OMAIPSO规范</p>
+              <p class='page3_p'>进行资源属性得订阅、存储和转发</p>
+            </div>
+            <div>
+              <img src="./images/page3_four.png" alt="暂无">
+              <p>丰富API</p>
+              <p class='page3_p'>提供丰富API接口</p>
+              <p class='page3_p'>满足各类用户得使用场所</p>
+            </div>
+            <div>
+              <img src="./images/page3_five.png" alt="暂无">
+              <p>海量数据</p>
+              <p class='page3_p'>提供NB-LOT场景下设备在</p>
+              <p class='page3_p'>PSM等状态下进行命令得缓存和下发</p>
+            </div>
+            <div>
+              <img src="./images/page3_six.png" alt="暂无">
+              <p>态势屏</p>
+              <p class='page3_p'>支持设备数据在满足一定</p>
+              <p class='page3_p'>规则条件时通过邮件或者推送方式及时上报</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="page4" id="4">
+        <div class='page2_big'>
+          <div class="page2_li">
+            <span class="button1">产品优势</span>
+          </div>
+          <div style='height:50%;background: rgba(0,0,0,0.5);'>
+            <div class='page4_list'>
+              <div>
+                <span></span>
+                <span></span>
+                <div><img src="./images/page4_first.png" alt=""></div>
+                <span class='line'></span>
+                <span style="font-size: 24px;">云原生</span>
+                <div class='page4_list_child'>
+                  <span>DevOps</span>
+                  <span>持续交付（Continuous Delivery）</span>
+                  <span>微服务（MicroServices）</span>
+                </div>
+                <span></span>
+
+              </div>
+              <div>
+                <span></span>
+                <span></span>
+                <div><img src="./images/page4_two.png" alt=""></div>
+                <span class='line'></span>
+                <span style="font-size: 24px;">微服务</span>
+                <div class='page4_list_child'>
+                  <span>服务注册/发现</span>
+                  <span>服务治理</span>
+                  <span>服务鉴权</span>
+                  <span>动态配置管理</span>
+                  <span>服务拓扑</span>
+                </div>
+                <span></span>
+              </div>
+              <div>
+                <span></span>
+                <span></span>
+                <div><img src="./images/page4_three.png" alt=""></div>
+                <span class='line'></span>
+                <span style="font-size: 24px;">实时计算</span>
+                <div class='page4_list_child'>
+                  <span>实时ETL</span>
+                  <span>实时报表</span>
+                  <span>监控预警</span>
+                  <span>在线系统</span>
+                </div>
+                <span></span>
+              </div>
+              <div>
+                <span></span>
+                <span></span>
+                <div><img src="./images/page4_four.png" alt=""></div>
+                <span class='line'></span>
+                <span style="font-size: 24px;">多端支持</span>
+                <div class='page4_list_child'>
+                  <span>物联网设备</span>
+                  <span>桌面系统</span>
+                  <span>移动端</span>
+                  <span>Ethernet、WIFI、4G</span>
+                </div>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="page5" id="5">
+        <div class='page2_big'>
+          <div class="page2_li" style='padding: 3% 0;'>
+            <span class="button">适用场景</span>
+          </div>
+          <div style='display: flex;' class='page5_con'>
+            <div>
+              <img src="./images/page5_first.png" alt="">
+              <div class="page5_flex">
+                <div>
+                  <span>scene</span>
+                  <span>01</span>
+                </div>
+                <div>冷链运输</div>
+              </div>
+            </div>
+            <div>
+              <img src="./images/page5_two.png" alt="">
+              <div class="page5_flex">
+                <div>
+                  <span>scene</span>
+                  <span>02</span>
+                </div>
+                <div>仓储监控</div>
+              </div>
+            </div>
+            <div>
+              <img src="./images/page5_three.png" alt="">
+              <div class="page5_flex">
+                <div>
+                  <span>scene</span>
+                  <span>03</span>
+                </div>
+                <div>集装箱</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="page6" id="6">
+        <div class='page2_big'>
+          <div class="page2_li" style='padding: 3.5% 0;'>
+            <span class="page6_button">携手共赢，共建云端生态</span>
+          </div>
+          <div class="page6_list">
+            <img src="./images/page6_first.png" alt="">
+            <img src="./images/page6_two.png" alt="">
+            <img src="./images/page6_three.png" alt="">
+            <img src="./images/page6_four.png" alt="">
+            <img src="./images/page6_five.png" alt="">
+            <img src="./images/page6_six.png" alt="">
+            <img src="./images/page6_seven.png" alt="">
+            <img src="./images/page6_eight.png" alt="">
+          </div>
+          <div class="page6_foot">
+            <div class="page6_phone">
+              <span>010-83613710</span>
+            </div>
+            <div class="page6_end">
+              <div class='page6_end_one'>
+                <div>
+                  <img src="./images/page6_email.png" alt="">
+                  <span>zhileng@cccc58.com</span>
+                </div>
+                <div>
+                  <img src="./images/page6_address.png" alt="">
+                  <span>北京市丰台区汉威国际一区西塔623、624室</span>
+                </div>
+                <div>
+                  <img src="./images/page6_chat.png" alt="">
+                  <span>微信公众号</span>
+                </div>
+              </div>
+              <div class='page6_end_two'>
+                <span>产品介绍</span>
+                <span>产品能力</span>
+                <span>产品优势</span>
+                <span>适用场景</span>
+              </div>
+              <div class="page6_end_three">Copyright2016-2017 北京中集智冷科技有限公司 版权所有 京ICP备16051215号</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <header>
+      <div style="width:12%;">
+        <img src="./images/logo.png" alt="">
+      </div>
+
+      <div class='headerWrap' >
+        <a href="javascript:void(0)" class='product'>
+          <span class="top"></span>
+          <span class="bottom"></span>
+          产品介绍
+        </a>
+        <a href="javascript:void(0)" class='product1'>
+          <span class="top"></span>
+          <span class="bottom"></span>
+          产品能力
+        </a>
+        <a href="javascript:void(0)" class='product2'>
+          <span class="top"></span>
+          <span class="bottom"></span>
+          产品优势
+        </a>
+        <a href="javascript:void(0)" class="product3">
+          <span class="top"></span>
+          <span class="bottom"></span>
+          适用场景
+        </a>
+        <a href="index.html">登录</a>
+      </div>
+    </header>
+  </div>
+</body>
+<script>
+  $(function () {
+    var li = document.getElementsByClassName('text'); //获取需要滚动的li
+    var time = 15; //滚动速度
+    var w = 0;
+    var l = 0;
+    for (var i = 0; i < li.length; i++) {
+      w += li[i].offsetWidth;
+    }
+
+    $('#ls').css('width', 2 * w)
+    $('#ls').append($('#ls li').clone());
+
+    setInterval(function () {
+      if (l < -w) {
+        l = 0;
+      } else {
+        $('#ls').css('left', l -= 1);
+      }
+    }, time);
+  })
+</script>
+
+</html>

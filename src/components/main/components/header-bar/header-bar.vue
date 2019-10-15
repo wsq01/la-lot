@@ -1,7 +1,17 @@
 <template>
   <div class="header-bar">
     <sider-trigger :collapsed="collapsed" icon="md-menu" @on-change="handleCollapsedChange"></sider-trigger>
-    <custom-bread-crumb show-icon style="margin-left: 30px" :list="breadCrumbList"></custom-bread-crumb>
+    <Menu class="top-menu" mode="horizontal" :active-name="activeName" @on-select="handleSelect" :theme="theme">
+        <MenuItem name="1">
+            <Icon type="ios-paper" />
+            LA-IOT
+        </MenuItem>
+        <MenuItem name="2">
+            <Icon type="ios-people" />
+            用户中心
+        </MenuItem>
+    </Menu>
+    <!-- <custom-bread-crumb show-icon style="margin-left: 30px;display: none" :list="breadCrumbList"></custom-bread-crumb> -->
     <div class="custom-content-con">
       <slot></slot>
     </div>
@@ -18,7 +28,9 @@ export default {
     return {}
   },
   props: {
-    collapsed: Boolean
+    collapsed: Boolean,
+    activeName: String,
+    theme: String
   },
   components: {
     SiderTrigger,
@@ -30,6 +42,9 @@ export default {
     }
   },
   methods: {
+    handleSelect (name) { // 选择菜单（MenuItem）时触发
+      this.$emit('on-select-top', name)
+    },
     handleCollapsedChange (state) {
       this.$emit('on-coll-change', state)
     }
@@ -45,11 +60,16 @@ export default {
   .custom-content-con{
     float: right;
     height: auto;
-    padding-right: 20px;
+    // padding-right: 20px;
     line-height: 64px;
     & > *{
       float: right;
     }
   }
+}
+.top-menu {
+  display: inline-block;
+  vertical-align: top;
+  height: 100%;
 }
 </style>

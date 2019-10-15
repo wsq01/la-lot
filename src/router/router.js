@@ -31,7 +31,6 @@ export default [
     redirect: '/home',
     component: Main,
     meta: {
-      hideInMenu: true,
       notCache: true
     },
     children: [
@@ -39,46 +38,384 @@ export default [
         path: '/home',
         name: 'home',
         meta: {
-          hideInMenu: true,
-          title: '首页',
+          title: '资产管理大屏',
+          // hideInMenu: true,
+          // hideInBread: true,
           notCache: true,
-          icon: 'md-home'
+          icon: 'ios-desktop'
         },
         component: () => import('@/views/single-page/home/home.vue')
       }
     ]
   },
   {
-    path: '',
-    name: 'doc',
+    path: '/user',
+    name: 'user',
+    component: Main,
     meta: {
-      title: '文档',
-      href: 'https://lison16.github.io/iview-admin-doc/#/',
-      icon: 'ios-book'
-    }
+      userControl: true,
+      hideInBread: true,
+      hideInMenu: true,
+    },
+    children: [
+      {
+        path: 'user',
+        name: 'user',
+        meta: {
+          userControl: true,
+          icon: 'md-globe',
+          title: '用户管理'
+        },
+        component: () => import('@/views/user-page/user.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-user',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          notCache: true,
+          title: '编辑用户'
+        },
+        component: () => import('@/views/user-page/edit-user.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-user',
+        meta: {
+          icon: 'md-globe',
+          notCache: true,
+          hideInMenu: true,
+          title: '添加用户'
+        },
+        component: () => import('@/views/user-page/edit-user.vue')
+      }
+    ]
   },
   {
-    path: '/join',
-    name: 'join',
+    path: '/menus',
+    name: 'menus',
+    component: Main,
+    meta: {
+      userControl: true,
+      hideInBread: true,
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'menus',
+        name: 'menus',
+        meta: {
+          userControl: true,
+          icon: 'md-globe',
+          title: '菜单管理'
+        },
+        component: () => import('@/views/user-page/menus.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-menus',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '编辑菜单'
+        },
+        component: () => import('@/views/user-page/edit-menus.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-menus',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '添加菜单'
+        },
+        component: () => import('@/views/user-page/edit-menus.vue')
+      }
+    ]
+  },
+  {
+    path: '/organization',
+    name: 'organization',
+    component: Main,
+    meta: {
+      userControl: true,
+      hideInBread: true,
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'organization',
+        name: 'organization',
+        meta: {
+          userControl: true,
+          icon: 'md-globe',
+          title: '机构管理'
+        },
+        component: () => import('@/views/user-page/organization.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-organization',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '编辑机构'
+        },
+        component: () => import('@/views/user-page/edit-organization.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-organization',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '添加机构'
+        },
+        component: () => import('@/views/user-page/edit-organization.vue')
+      }
+    ]
+  },
+  {
+    path: '/role',
+    name: 'role',
+    component: Main,
+    meta: {
+      userControl: true,
+      hideInBread: true,
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'role',
+        name: 'role',
+        meta: {
+          userControl: true,
+          icon: 'md-globe',
+          title: '角色管理'
+        },
+        component: () => import('@/views/user-page/role.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-role',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '编辑角色'
+        },
+        component: () => import('@/views/user-page/edit-role.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-role',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '添加角色'
+        },
+        component: () => import('@/views/user-page/edit-role.vue')
+      }
+    ]
+  },
+  {
+    path: '/area',
+    name: 'area',
     component: Main,
     meta: {
       hideInBread: true
     },
     children: [
       {
-        path: 'join_page',
-        name: 'join_page',
+        path: 'area',
+        name: 'area',
         meta: {
-          icon: '_qq',
-          title: 'QQ群'
-        }
-        // component: () => import('@/view/join-page.vue')
+          icon: 'md-globe',
+          title: '区域管理'
+        },
+        component: () => import('@/views/single-page/area/area.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-area',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '编辑区域'
+        },
+        component: () => import('@/views/single-page/area/edit-area.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-area',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '新增区域'
+        },
+        component: () => import('@/views/single-page/area/edit-area.vue')
       }
     ]
   },
   {
-    path: '/message',
-    name: 'message',
+    path: '/scene',
+    name: 'scene',
+    component: Main,
+    meta: {
+      hideInBread: true
+    },
+    children: [
+      {
+        path: 'scene',
+        name: 'scene',
+        meta: {
+          icon: 'md-pin',
+          title: '场景管理'
+        },
+        component: () => import('@/views/single-page/scene/scene.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-scene',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '编辑场景'
+        },
+        component: () => import('@/views/single-page/scene/edit-scene.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-scene',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '新增场景'
+        },
+        component: () => import('@/views/single-page/scene/edit-scene.vue')
+      }
+    ]
+  },
+  {
+    path: '/deviceManager',
+    name: 'deviceManager',
+    component: Main,
+    meta: {
+      title: '设备管理',
+      icon: 'md-keypad'
+    },
+    children: [
+      {
+        path: 'receiver',
+        name: 'receiver',
+        meta: {
+          icon: 'md-menu',
+          title: '接收器'
+        },
+        component: () => import('@/views/single-page/receiver/receiver.vue')
+      },
+      {
+        path: 'device',
+        name: 'device',
+        meta: {
+          icon: 'md-menu',
+          title: '流动资产'
+        },
+        component: () => import('@/views/single-page/device/device.vue')
+      },
+      {
+        path: 'devicetype',
+        name: 'devicetype',
+        meta: {
+          icon: 'md-menu',
+          title: '资产编码'
+        },
+        component: () => import('@/views/single-page/device-type/device-type.vue')
+      },
+      {
+        path: 'editType',
+        name: 'edit-type',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '编辑接收器'
+        },
+        component: () => import('@/views/single-page/device-type/edit-type.vue')
+      },
+      {
+        path: 'addType',
+        name: 'add-type',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '新增接收器'
+        },
+        component: () => import('@/views/single-page/device-type/edit-type.vue')
+      },
+      {
+        path: 'editReceiver',
+        name: 'edit-receiver',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '编辑接收器'
+        },
+        component: () => import('@/views/single-page/receiver/edit-receiver.vue')
+      },
+      {
+        path: 'addReceiver',
+        name: 'add-receiver',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '新增接收器'
+        },
+        component: () => import('@/views/single-page/receiver/edit-receiver.vue')
+      },
+      {
+        path: 'editDevice',
+        name: 'edit-device',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '编辑接收器'
+        },
+        component: () => import('@/views/single-page/device/edit-device.vue')
+      },
+      {
+        path: 'addDevice',
+        name: 'add-device',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '新增接收器'
+        },
+        component: () => import('@/views/single-page/device/edit-device.vue')
+      }
+    ]
+  },
+  {
+    path: '/allot',
+    name: '_allot',
+    component: Main,
+    meta: {
+      hideInBread: true
+    },
+    children: [
+      {
+        path: 'allot',
+        name: 'allot',
+        meta: {
+          icon: '_qq',
+          title: '流动资产调拨'
+        },
+        component: () => import('@/views/single-page/allot/allot.vue')
+      }
+    ]
+  },
+  {
+    path: '/missed',
+    name: '_missed',
     component: Main,
     meta: {
       hideInBread: true,
@@ -86,13 +423,51 @@ export default [
     },
     children: [
       {
-        path: 'message_page',
-        name: 'message_page',
+        path: 'missed',
+        name: 'missed',
         meta: {
-          icon: 'md-notifications',
-          title: '消息中心'
-        }
-        // component: () => import('@/view/single-page/message/index.vue')
+          icon: '',
+          title: '资产丢失'
+        },
+        component: () => import('@/views/single-page/missed/missed.vue')
+      }
+    ]
+  },
+  {
+    path: '/check',
+    name: 'check',
+    component: Main,
+    meta: {
+      hideInBread: true
+    },
+    children: [
+      {
+        path: 'check',
+        name: 'check',
+        meta: {
+          icon: 'md-calculator',
+          title: '盘点'
+        },
+        component: () => import('@/views/single-page/check/check.vue')
+      }
+    ]
+  },
+  {
+    path: '/devicedata',
+    name: 'devicedata',
+    component: Main,
+    meta: {
+      hideInBread: true
+    },
+    children: [
+      {
+        path: '/devicedata',
+        name: 'devicedata',
+        meta: {
+          icon: 'md-analytics',
+          title: '资产数据'
+        },
+        component: () => import('@/views/single-page/devicedata/devicedata.vue')
       }
     ]
   },

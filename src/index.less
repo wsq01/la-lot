@@ -1,0 +1,23 @@
+@import '~iview/src/styles/index.less';
+
+.ivu-table td.no-padding>.ivu-table-cell {
+  padding-left: 0;
+  padding-right: 0;
+}
+.no_border .ivu-table-wrapper{
+  border:none;
+}
+.no_border .ivu-table.ivu-table-default::after,.no_border .ivu-table.ivu-table-default::before{
+  display:none !important;
+}
+.no_border .ivu-table-column-center{
+  border-right: none;
+}
+.no_border .ivu-table-row:last-child .ivu-table-column-center{
+  border-bottom: none;
+}
+
+@menu-dark-title: #001529;
+@menu-dark-subsidiary-color: #fff;
+@menu-dark-active-bg: #000c17;
+@layout-sider-background: #001529;

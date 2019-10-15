@@ -11,7 +11,7 @@ import routes from './router.js'
 Vue.use(Router)
 
 const router = new Router({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })
@@ -27,10 +27,9 @@ router.beforeEach((to, from, next) => {
   const token = getToken()
   if (!token && to.name !== LOGIN_PAGE_NAME) {
     // 未登录且要跳转的页面不是登录页
-    next()
-    // next({
-    //   name: LOGIN_PAGE_NAME
-    // })
+    next({
+      name: LOGIN_PAGE_NAME
+    })
   } else if (!token && to.name === LOGIN_PAGE_NAME) {
     // 未登陆且要跳转的页面是登录页
     next()
@@ -40,19 +39,19 @@ router.beforeEach((to, from, next) => {
       name: homeName
     })
   } else {
-    console.log(store)
-    if (store.state.user.hasGetInfo) {
-      turnTo(to, store.state.user.access, next)
-    } else {
-      store.dispatch('getUserInfo').then(user => {
-        turnTo(to, user.access, next)
-      }).catch(() => {
-        setToken('')
-        next({
-          name: LOGIN_PAGE_NAME
-        })
-      })
-    }
+    turnTo(to, store.state.user.access, next)
+    // if (store.state.user.hasGetInfo) {
+    //   turnTo(to, store.state.user.access, next)
+    // } else {
+    //   store.dispatch('getUserInfo').then(user => {
+    //     turnTo(to, user.access, next)
+    //   }).catch(() => {
+    //     setToken('')
+    //     next({
+    //       name: LOGIN_PAGE_NAME
+    //     })
+    //   })
+    // }
   }
 })
 

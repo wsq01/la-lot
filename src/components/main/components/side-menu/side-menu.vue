@@ -3,12 +3,9 @@
     <slot></slot>
     <Menu ref="menu" v-show="!collapsed" :active-name="activeName" :open-names="openedNames" :accordion="accordion" :theme="theme" width="auto" @on-select="handleSelect">
       <template v-for="item in menuList">
-        <!-- 只有一个子菜单 -->
         <template v-if="item.children && item.children.length === 1">
-          <!-- showChildren 在mixin中-->
           <side-menu-item v-if="showChildren(item)" :key="`menu-${item.name}`" :parent-item="item"></side-menu-item>
           <MenuItem v-else :name="getNameOrHref(item, true)" :key="`menu-${item.children[0].name}`">
-            <!-- 图标 -->
             <common-icon :type="item.children[0].icon || ''"></common-icon>
             <span>{{ showTitle(item.children[0]) }}</span>
           </MenuItem>
@@ -22,12 +19,9 @@
         </template>
       </template>
     </Menu>
-    <!-- 折叠后的菜单 -->
     <div class="menu-collapsed" v-show="collapsed" :list="menuList">
       <template v-for="item in menuList">
-        <!-- 如果有子菜单显示子菜单 -->
-        <collapsed-menu v-if="item.children && item.children.length > 1" @on-click="handleSelect" hide-title :root-icon-size="rootIconSize" :icon-size="iconSize" :theme="theme" :parent-item="item" :key="`drop-menu-${item.name}`"></collapsed-menu>
-        <!-- 否则显示文字提示 -->
+        <collapsed-menu  v-if="item.children && item.children.length > 1" @on-click="handleSelect" hide-title :root-icon-size="rootIconSize" :icon-size="iconSize" :theme="theme" :parent-item="item" :key="`drop-menu-${item.name}`"></collapsed-menu>
         <Tooltip transfer v-else :content="showTitle(item.children && item.children[0] ? item.children[0] : item)" placement="right" :key="`drop-menu-${item.name}`">
           <a @click="handleSelect(getNameOrHref(item, true))" class="drop-menu-a" :style="{textAlign: 'center'}"><common-icon :size="rootIconSize" :color="textColor" :type="item.icon || (item.children && item.children[0].icon)"/></a>
         </Tooltip>
@@ -119,7 +113,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .side-menu-wrapper{
   user-select: none;
   .menu-collapsed{
