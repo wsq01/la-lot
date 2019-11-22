@@ -2,23 +2,23 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import iView from 'iview'
 
-import { setToken, getToken, canTurnTo, setTitle } from '@/libs/util'
+import { setToken, getToken, canTurnTo, setTitle, initDynamicRouter } from '@/libs/util'
 import config from '@/config'
 import store from '@/store'
-
-import routes from './router.js'
+import Cookies from 'js-cookie'
+import { defaultRoutes, dynamicRoutes } from './router.js'
 
 Vue.use(Router)
 
 const router = new Router({
   mode: 'hash',
   base: process.env.BASE_URL,
-  routes
+  routes: defaultRoutes
 })
 const LOGIN_PAGE_NAME = 'login'
 const { homeName } = config
 const turnTo = (to, access, next) => {
-  if (canTurnTo(to.name, access, routes)) next() // 有权限，可访问
+  if (canTurnTo(to.name, access, defaultRoutes)) next() // 有权限，可访问
   else next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
 }
 
@@ -39,19 +39,28 @@ router.beforeEach((to, from, next) => {
       name: homeName
     })
   } else {
-    turnTo(to, store.state.user.access, next)
-    // if (store.state.user.hasGetInfo) {
-    //   turnTo(to, store.state.user.access, next)
-    // } else {
-    //   store.dispatch('getUserInfo').then(user => {
-    //     turnTo(to, user.access, next)
-    //   }).catch(() => {
-    //     setToken('')
-    //     next({
-    //       name: LOGIN_PAGE_NAME
-    //     })
-    //   })
-    // }
+    // turnTo(to, store.state.user.access, next)
+    if (store.state.user.hasGetInfo) {
+      turnTo(to, store.state.user.access, next)
+    } else {
+      store.dispatch('getMenus').then(res => {
+        if (res[0]) {
+          if (res[0].data && res[0].data.code === 1200) {
+            alert(res[0].data.message)
+          }
+          const dynamicRouters = initDynamicRouter(res[0].data.data.list, dynamicRoutes)
+          dynamicRouters.forEach(item => router.options.routes.push(item))
+          router.addRoutes(dynamicRouters)
+        }
+        turnTo(to, store.state.user.access, next)
+      }).catch((res) => {
+        setToken('')
+        Cookies.remove('organizationId')
+        next({
+          name: LOGIN_PAGE_NAME
+        })
+      })
+    }
   }
 })
 

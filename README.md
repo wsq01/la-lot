@@ -1,4 +1,4 @@
-# vue-admin
+# LA-IOT
 
 ## Project setup
 ```

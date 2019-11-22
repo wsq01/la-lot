@@ -17,20 +17,6 @@ const deleteItem = (url, id) => {
     method: 'delete'
   })
 }
-// const deleteList = (url, params) => {
-//   const data = {
-//     uid: UID,
-//     version: config.version,
-//     data: {
-//       list: params
-//     }
-//   }
-//   return axios.request({
-//     url,
-//     method: 'delete',
-//     data
-//   })
-// }
 const addItem = (url, params) => {
   const data = {
     uid: UID,
@@ -86,3 +72,35 @@ export const deleteMenus = (id) => deleteItem('/api/user/menu', id)
 export const addMenus = (params) => addItem('/api/user/menu', params)
 
 export const editMenus = (params) => editItem('/api/user/menu', params)
+
+export const getRelmenu = (params) => getItems('/api/user/roleRelMenu', params)
+
+export const addRelmenu = (params) => addItem('/api/user/roleRelMenu', params)
+
+export const editRelmenu = (params) => editItem('/api/user/roleRelMenu', params)
+
+export const deleteRelmenu = (id) => deleteItem('/api/user/roleRelMenu', id)
+
+export const getReluser = (params) => getItems('/api/user/userRelRole', params)
+
+export const addReluser = (params) => addItem('/api/user/userRelRole', params)
+
+export const editReluser = (params) => editItem('/api/user/userRelRole', params)
+
+export const deleteReluser = (id) => deleteItem('/api/user/userRelRole', id)
+
+export const getRelresource = (params) => getItems('/api/user/roleRelResource', params)
+
+export const addRelresource = (params) => addItem('/api/user/roleRelResource', params)
+
+export const editRelresource = (params) => editItem('/api/user/roleRelResource', params)
+
+export const deleteRelresource = (id) => deleteItem('/api/user/roleRelResource', id)
+
+export const getBtn = (params) => getItems('/api/user/button', params)
+
+export const addBtn = (params) => addItem('/api/user/button', params)
+
+export const editBtn = (params) => editItem('/api/user/button', params)
+
+export const deleteBtn = (id) => deleteItem('/api/user/button', id)

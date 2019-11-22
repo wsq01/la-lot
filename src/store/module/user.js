@@ -1,6 +1,6 @@
 import {
   login,
-  getUserInfo
+  getMenus
 } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
 import Cookies from 'js-cookie'
@@ -14,6 +14,8 @@ export default {
     organizationId: Cookies.get('organizationId'),
     token: getToken(),
     roleIds: [],
+    btnList: [],
+    userMenu: [],
     access: ['super_admin', 'admin'], // 可访问页面的权限数组
     hasGetInfo: false // 是否获取了用户数据
   },
@@ -23,6 +25,9 @@ export default {
     },
     setUserId (state, id) { // 设置ID
       state.userId = id
+    },
+    setBtnList (state, btnList) { // 设置ID
+      state.btnList = btnList
     },
     setUserName (state, name) { // 设置用户名
       state.userName = name
@@ -43,6 +48,9 @@ export default {
     },
     setHasGetInfo (state, status) { // 设置是否获取了用户信息
       state.hasGetInfo = status
+    },
+    setUserMenu (state, list) { // 设置场景列表
+      state.userMenu = list
     }
   },
   getters: {},
@@ -61,7 +69,8 @@ export default {
             commit('setToken', data.jwt)
             commit('setOrganizationId', data.organizationId)
             commit('setRoleIds', data.roleIds)
-            commit('setHasGetInfo', true)
+            // commit('setHasGetInfo', true)
+            Cookies.set('roleIds', data.roleIds)
           }
           resolve(res)
         }).catch(err => {
@@ -87,24 +96,47 @@ export default {
       })
     },
     // 获取用户相关信息
-    getUserInfo ({ state, commit }) {
+    getMenus ({ state, commit }) {
+      const roleIds = JSON.parse(Cookies.get('roleIds') || '[]')
       return new Promise((resolve, reject) => {
         try {
-          getUserInfo().then(res => {
-            const data = res.data
-            commit('setAvatar', data.avatar)
-            commit('setUserName', data.name)
-            commit('setUserId', data.user_id)
-            commit('setAccess', data.access)
+          const promises = roleIds.map(id => {
+            return getMenus({ roleId: id })
+          })
+          // getMenus(roleId).then(res => {
+          //   const data = res.data
+          //   // commit('setAvatar', data.avatar)
+          //   // commit('setUserName', data.name)
+          //   // commit('setUserId', data.user_id)
+          //   // commit('setAccess', data.access)
+          //   // commit('setHasGetInfo', true)
+          //   resolve(data)
+          // }).catch(err => {
+          //   reject(err)
+          // }),
+          Promise.all(promises).then(res => {
             commit('setHasGetInfo', true)
-            resolve(data)
-          }).catch(err => {
-            reject(err)
+            commit('setUserMenu', res[0].data.data.list)
+            resolve(res)
           })
         } catch (error) {
           reject(error)
         }
       })
+    },
+    getBtns ({ state, commit }) {
+      // const roleIds = JSON.parse(Cookies.get('roleIds') || '[]')
+      // return new Promise((resolve, reject) => {
+      //   try {
+      //     getBtnList(roleIds).then(res => {
+      //       console.log(res)
+      //       // commit('setBtnList', res.data.)
+      //       resolve(res)
+      //     })
+      //   } catch (error) {
+      //     reject(error)
+      //   }
+      // })
     }
   }
 }

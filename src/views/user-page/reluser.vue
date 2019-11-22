@@ -6,7 +6,7 @@
           <FormItem>
             <Select v-model="searchForm.key" class="search-item">
               <template v-for="item in columns">
-                <Option v-if="item.key && (item.key === 'userId' || item.key === 'roleId' || item.key === 'organizationId')" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
+                <Option v-if="item.key" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
               </template>
             </Select>
           </FormItem>
@@ -39,70 +39,30 @@
 </template>
 
 <script>
-import { getUser, deleteUser } from '@/api/user'
+import { getReluser, deleteReluser } from '@/api/user'
 import minxin from '@/assets/js/mixin'
 
 export default {
-  name: 'UserManager',
+  name: 'Role',
   mixins: [ minxin ],
   data () {
     return {
       columns: [
         {
-          title: '用户ID',
-          key: 'userId'
-        },
-        {
-          title: '用户名',
-          key: 'userName'
-        },
-        {
-          title: '英文名',
-          key: 'userNameEn'
-        },
-        {
           title: '角色ID',
-          key: 'roleId'
+          key: 'id'
         },
         {
-          title: '角色名',
-          key: 'roleName'
+          title: '角色名称',
+          key: 'name'
         },
         {
-          title: '角色备注',
-          key: 'roleRemark'
+          title: '机构ID',
+          key: 'organizationId'
         },
         {
-          title: '用户机构ID',
-          key: 'userOrganizationId'
-        },
-        {
-          title: '用户机构名',
-          key: 'organizationName'
-        },
-        {
-          title: '手机号',
-          key: 'mobile'
-        },
-        {
-          title: '邮箱',
-          key: 'mail'
-        },
-        {
-          title: '登录时间',
-          key: 'loginTime'
-        },
-        {
-          title: '创建时间',
-          key: 'createTime'
-        },
-        {
-          title: '短信报警',
-          key: 'messagePush'
-        },
-        {
-          title: '微信报警',
-          key: 'wechatPush'
+          title: '备注',
+          key: 'remark'
         },
         {
           title: '操作',
@@ -110,13 +70,14 @@ export default {
           width: 130,
           align: 'center'
         }
-      ]
+      ],
+      roleList: []
     }
   },
   methods: {
     // 获取列表
     getItems (params) {
-      getUser(params).then(res => {
+      getReluser(params).then(res => {
         this.loading = false
         if (res.data.code === 0) {
           this.tableData = res.data.data.list
@@ -126,7 +87,7 @@ export default {
     },
     // 删除
     deleteItem (row, index) {
-      deleteUser(row.userId).then(res => {
+      deleteReluser(row.id).then(res => {
         if (res.data.code === 0) {
           this.tableData.splice(index, 1)
         }
@@ -134,12 +95,12 @@ export default {
     },
     addItem () {
       this.$router.push({
-        name: 'add-user'
+        name: 'add-reluser'
       })
     },
     editItem (row, index) {
       this.$router.push({
-        name: 'edit-user',
+        name: 'edit-reluser',
         params: row
       })
     }

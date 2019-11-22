@@ -31,10 +31,8 @@
       </Header>
       <Drawer v-model="isShowMore">
         <Divider orientation="center">更多设置</Divider>
-        <!-- 菜单颜色:  
-        <ColorPicker v-model="color1" /> -->
         <div>
-          侧边栏主题: 
+          <div>侧边栏主题:</div>
           <RadioGroup v-model="menuTheme" @on-change="handleChangeMenuTheme">
             <Radio label="light"></Radio>
             <Radio label="dark"></Radio>
@@ -74,11 +72,10 @@ import User from './components/user/user'
 import ABackTop from './components/a-back-top/a-back-top'
 import Fullscreen from './components/fullscreen/fullscreen'
 import Language from './components/language/language'
-import routers from '@/router/router'
+import { defaultRoutes } from '@/router/router'
 
 import { getNewTagList, routeEqual } from '@/libs/util'
 import { mapMutations, mapActions } from 'vuex'
-import { localSave } from '@/libs/util'
 
 export default {
   name: 'Main',
@@ -115,7 +112,13 @@ export default {
     },
     topTheme: {
       get () {
-        this.$store.state.app.topTheme === 'light' ? this.topBgColor = '#fff' : this.$store.state.app.topTheme === 'dark' ? this.topBgColor = '#001529' : this.topBgColor = 'linear-gradient(90deg,#1d42ab,#2173dc,#1e93ff)'
+        if (this.$store.state.app.topTheme === 'light') {
+          this.topBgColor = '#fff'
+        } else if (this.$store.state.app.topTheme === 'dark') {
+          this.topBgColor = '#001529'
+        } else {
+          this.topBgColor = 'linear-gradient(90deg,#1d42ab,#2173dc,#1e93ff)'
+        }
         return this.$store.state.app.topTheme
       },
       set (newVal) {}
@@ -152,16 +155,16 @@ export default {
       'handleLogin'
     ]),
     handleSelectTopMenu (name) {
-      if(name === '1') {
+      if (name === '1') {
         this.isMenu = true
         this.$router.push({
-        name: 'home'
-      })
+          name: 'home'
+        })
       } else {
         this.isMenu = false
         this.$router.push({
-        name: 'user'
-      })
+          name: 'user'
+        })
       }
     },
     handleClickControl () {
@@ -236,7 +239,8 @@ export default {
      * @description 初始化设置面包屑导航和标签导航
      */
     this.setTagNavList()
-    this.setHomeRoute(routers)
+
+    this.setHomeRoute(defaultRoutes)
     const { name, params, query, meta } = this.$route
     this.addTag({
       route: { name, params, query, meta }

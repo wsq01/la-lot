@@ -15,10 +15,9 @@ import {
 import { getCityListByOid, getAreaList, getSceneList } from '@/api/data'
 import { getOrganizationList, getMenus, getRole } from '@/api/user'
 import router from '@/router'
-import routers from '@/router/router'
+import { defaultRoutes } from '@/router/router'
 import config from '@/config'
 const { homeName } = config
-
 const closePage = (state, route) => {
   const nextRoute = getNextRoute(state.tagNavList, route)
   state.tagNavList = state.tagNavList.filter(item => {
@@ -37,7 +36,7 @@ export default {
     areaList: [],
     sceneList: [],
     organizationList: [],
-    menuList: [],
+    menuList: [], // 全部menu
     roleList: [],
     menuTheme: localRead('menuTheme') || 'dark',
     topTheme: localRead('topTheme') || 'light'
@@ -45,15 +44,15 @@ export default {
   getters: {
     // 从路由获取菜单列表
     // rootState 根节点状态
-    menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),
-    userMenuList: (state, getter, rootState) => getUserControlMenuByRouter(routers)
+    menuList: (state, getters, rootState) => getMenuByRouter(defaultRoutes, rootState.user.access),
+    userMenuList: (state, getter, rootState) => getUserControlMenuByRouter(defaultRoutes)
   },
   mutations: {
     setBreadCrumb (state, route) { // 设置面包屑导航
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
     },
-    setHomeRoute (state, routes) { // 设置首页路由
-      state.homeRoute = getHomeRoute(routes, homeName)
+    setHomeRoute (state, defaultRoutes) { // 设置首页路由
+      state.homeRoute = getHomeRoute(defaultRoutes, homeName)
     },
     setTagNavList (state, list) { // 设置标签导航列表
       let tagList = []
@@ -118,9 +117,6 @@ export default {
     }
   },
   actions: {
-    setMenuList ({ state, commit, rootState }) {
-      getters.menuList = getuserControlMenuByRouter(routers)
-    },
     getCityList ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
@@ -200,6 +196,7 @@ export default {
       return new Promise((resolve, reject) => {
         try {
           getMenus().then(res => {
+            console.log('xxx:' + res)
             const data = res.data.data.list
             commit('setMenuList', data)
             resolve(data)

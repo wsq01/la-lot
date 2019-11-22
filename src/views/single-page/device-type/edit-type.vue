@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapMutations, mapActions } from 'vuex'
+import { mapMutations } from 'vuex'
 import { addDeviceType, editDeviceType } from '@/api/data'
 export default {
   name: 'EditDevice',
@@ -72,6 +72,7 @@ export default {
             this.formItem.organizationId = this.$store.state.user.organizationId
             addDeviceType(this.formItem).then(res => {
               if (res.data.code === 0) {
+                this.$Message.success('添加成功！')
                 this.cancel()
               } else {
                 this.$Message.error(res.data.message)
@@ -80,6 +81,7 @@ export default {
           } else {
             editDeviceType(this.formItem).then(res => {
               if (res.data.code === 0) {
+                this.$Message.success('修改成功！')
                 this.cancel()
               } else {
                 this.$Message.error(res.data.message)

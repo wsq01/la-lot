@@ -1,4 +1,5 @@
 @import '~iview/src/styles/index.less';
+@import './assets/styles/common/common.less';
 
 .ivu-table td.no-padding>.ivu-table-cell {
   padding-left: 0;
@@ -15,6 +16,14 @@
 }
 .no_border .ivu-table-row:last-child .ivu-table-column-center{
   border-bottom: none;
+}
+.vertical-center-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .ivu-modal {
+    top: 0;
+  }
 }
 
 @menu-dark-title: #001529;

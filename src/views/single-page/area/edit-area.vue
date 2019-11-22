@@ -79,6 +79,7 @@ export default {
             this.formItem.organizationId = this.$store.state.user.organizationId
             addArea(this.formItem).then(res => {
               if (res.data.code === 0) {
+                this.$Message.success('添加成功！')
                 this.cancel()
               } else {
                 this.$Message.error(res.data.message)
@@ -87,7 +88,10 @@ export default {
           } else {
             editArea(this.formItem).then(res => {
               if (res.data.code === 0) {
+                this.$Message.success('修改成功！')
                 this.cancel()
+              } else {
+                this.$Message.error(res.data.message)
               }
             })
           }
@@ -99,12 +103,10 @@ export default {
     if (this.cityList.length === 0) {
       this.getCityList()
     }
-    console.log(this.$route)
     this.formItem = this.$route.params
   }
 }
 </script>
 
 <style lang="less" scoped>
-
 </style>

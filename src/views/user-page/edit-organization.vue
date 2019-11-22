@@ -38,7 +38,7 @@ export default {
   name: 'EditArea',
   data () {
     return {
-      formItemLabel: ['机构名称', '机构编码','上级机构', '机构电话', '机构地址', '备注'],
+      formItemLabel: ['机构名称', '机构编码', '上级机构', '机构电话', '机构地址', '备注'],
       formItem: {}
     }
   },
@@ -71,7 +71,10 @@ export default {
       }
       addOrganization(this.formItem).then(res => {
         if (res.data.code === 0) {
+          this.$Message.success('添加成功！')
           this.cancel()
+        } else {
+          this.$Message.warning(res.data.message)
         }
       })
     }

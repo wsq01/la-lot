@@ -7,7 +7,7 @@
           </FormItem>
           <FormItem :label="formItemLabel[1]">
             <Select v-model="formItem.parentId">
-              <Option value="">无</Option>
+              <Option value="0">无</Option>
               <Option v-for="(item, index) in menuList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
@@ -16,8 +16,8 @@
           </FormItem>
           <FormItem :label="formItemLabel[3]">
             <Select v-model="formItem.isShow">
-              <Option :value="1">是</Option>
-              <Option :value="0">否</Option>
+              <Option value="1">是</Option>
+              <Option value="0">否</Option>
             </Select>
           </FormItem>
           <FormItem :label="formItemLabel[4]">
@@ -25,12 +25,14 @@
           </FormItem>
           <FormItem :label="formItemLabel[5]">
             <Select v-model="formItem.sort">
-              <Option :value="1">是</Option>
-              <Option :value="0">否</Option>
+              <Option value="1">是</Option>
+              <Option value="0">否</Option>
             </Select>
           </FormItem>
           <FormItem :label="formItemLabel[6]">
-            <Input v-model="formItem.uri" />
+            <Select v-model="formItem.uri">
+              <Option v-for="(item, index) in uriList" :key="index" :value="item.value">{{item.name}}</Option>
+            </Select>
           </FormItem>
           <FormItem :label="formItemLabel[7]">
             <Input v-model="formItem.description" />
@@ -55,7 +57,73 @@ export default {
   data () {
     return {
       formItemLabel: ['菜单名称', '父级', '方法', '是否展示', '路径', '排序', 'URI', '描述', '备注'],
-      formItem: {}
+      formItem: {},
+      uriList: [
+        {
+          name: '区域管理',
+          value: '/area'
+        },
+        {
+          name: '场景管理',
+          value: '/scene'
+        },
+        {
+          name: '接收器管理',
+          value: 'receiver'
+        },
+        {
+          name: '资产管理',
+          value: 'device'
+        },
+        {
+          name: '资产类型管理',
+          value: 'devicetype'
+        },
+        {
+          name: '流动资产调拨',
+          value: '/allot'
+        },
+        {
+          name: '盘点',
+          value: '/check'
+        },
+        {
+          name: '资产数据',
+          value: '/devicedata'
+        },
+        {
+          name: '用户管理',
+          value: '/user'
+        },
+        {
+          name: '角色管理',
+          value: '/role'
+        },
+        {
+          name: '菜单管理',
+          value: '/menus'
+        },
+        {
+          name: '机构管理',
+          value: '/organization'
+        },
+        {
+          name: '按钮管理',
+          value: '/btn'
+        },
+        {
+          name: '用户角色关联管理',
+          value: '/reluser'
+        },
+        {
+          name: '菜单角色关联管理',
+          value: '/relmenu'
+        },
+        {
+          name: '资源角色关联管理',
+          value: '/relresource'
+        }
+      ]
     }
   },
   computed: {
@@ -86,13 +154,20 @@ export default {
         this.formItem.organizationId = this.$store.state.user.organizationId
         addMenus(this.formItem).then(res => {
           if (res.data.code === 0) {
+            this.$Message.success('添加成功！')
+            this.getMenuList()
             this.cancel()
+          } else {
+            this.$Message.warning(res.data.message)
           }
         })
-      } else {        
+      } else {
         editMenus(this.formItem).then(res => {
           if (res.data.code === 0) {
+            this.$Message.success('修改成功！')
             this.cancel()
+          } else {
+            this.$Message.warning(res.data.message)
           }
         })
       }

@@ -6,17 +6,9 @@
             <Input v-model="formItem.name" />
           </FormItem>
           <FormItem :label="formItemLabel[1]">
-            <Input v-model="formItem.receiverNum" />
-          </FormItem>
-          <FormItem :label="formItemLabel[2]">
-            <Select v-model="formItem.sceneId">
-              <Option v-for="(item, index) in sceneList" :key="index" :value="item.id">{{item.name}}</Option>
-            </Select>
-          </FormItem>
-          <FormItem :label="formItemLabel[3]">
             <Input v-model="formItem.type" />
           </FormItem>
-          <FormItem :label="formItemLabel[4]">
+          <FormItem :label="formItemLabel[2]">
             <Input v-model="formItem.remark" type="textarea"/>
           </FormItem>
           <FormItem>
@@ -29,57 +21,66 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
-import { addReceiver } from '@/api/data'
+import { mapMutations } from 'vuex'
+import { addRelresource, editRelresource } from '@/api/user'
 export default {
   name: 'EditArea',
   data () {
     return {
-      formItemLabel: ['接收器名称', '接收器编号', '场景', '类型', '备注'],
+      formItemLabel: ['资源ID', '角色ID', '备注'],
       formItem: {}
     }
   },
   computed: {
-    ...mapState({
-      sceneList: state => state.app.sceneList
-    })
+    // ...mapState({
+    //   areaList: state => state.app.areaList
+    // })
   },
   methods: {
+    // ...mapActions(['getAreaList']),
     ...mapMutations([
       'closeTag'
     ]),
-    ...mapActions(['getSceneList']),
     cancel () {
-      if (this.$route.name === 'edit-receiver') {
+      if (this.$route.name === 'edit-relresource') {
         this.closeTag({
-          name: 'edit-receiver',
+          name: 'edit-relresource',
           params: this.$route.params
         })
       } else {
         this.closeTag({
-          name: 'add-receiver',
+          name: 'add-relresource',
           params: this.$route.params
         })
       }
     },
     submit () {
-      if (this.$route.name === 'add-receiver') {
+      if (this.$route.name === 'add-relresource') {
         this.formItem.organizationId = this.$store.state.user.organizationId
+        addRelresource(this.formItem).then(res => {
+          if (res.data.code === 0) {
+            this.$Message.success('添加成功！')
+            this.cancel()
+          } else {
+            this.$Message.warning(res.data.message)
+          }
+        })
+      } else {
+        editRelresource(this.formItem).then(res => {
+          if (res.data.code === 0) {
+            this.$Message.success('修改成功！')
+            this.cancel()
+          } else {
+            this.$Message.warning(res.data.message)
+          }
+        })
       }
-      addReceiver(this.formItem).then(res => {
-        if (res.data.code === 0) {
-          this.$Message.success('添加成功！')
-          this.cancel()
-        } else {
-          this.$Message.error(res.data.message)
-        }
-      })
     }
   },
   mounted () {
-    if (this.sceneList.length === 0) {
-      this.getSceneList()
-    }
+    // if (this.areaList.length === 0) {
+    //   this.getAreaList()
+    // }
     this.formItem = this.$route.params
   }
 }

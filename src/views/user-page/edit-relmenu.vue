@@ -3,17 +3,17 @@
       <i-col span="6">
         <Form :model="formItem" :label-width="80">
           <FormItem :label="formItemLabel[0]">
-            <Input v-model="formItem.name" />
-          </FormItem>
-          <FormItem :label="formItemLabel[1]">
-            <Input v-model="formItem.type" />
-          </FormItem>
-          <FormItem :label="formItemLabel[2]">
-            <Select v-model="formItem.areaId">
-              <Option v-for="(item, index) in areaList" :key="index" :value="item.id">{{item.name}}</Option>
+            <Select v-model="formItem.menuId">
+              <Option value="">无</Option>
+              <Option v-for="(item, index) in menuList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
-          <FormItem :label="formItemLabel[3]">
+          <FormItem :label="formItemLabel[1]">
+            <Select v-model="formItem.roleId" label-in-value>
+              <Option v-for="(item, index) in roleList" :key="index" :value="item.id">{{item.name}}</Option>
+            </Select>
+          </FormItem>
+          <FormItem :label="formItemLabel[2]">
             <Input v-model="formItem.remark" type="textarea"/>
           </FormItem>
           <FormItem>
@@ -27,65 +27,65 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
-import { addRole, editRole } from '@/api/user'
+import { addRelmenu, editRelmenu, getRole } from '@/api/user'
 export default {
   name: 'EditArea',
   data () {
     return {
-      formItemLabel: ['场景名称', '场景类型', '所属区域', '备注'],
-      formItem: {}
+      formItemLabel: ['菜单ID', '角色ID', '备注'],
+      formItem: {},
+      roleList: []
     }
   },
   computed: {
     ...mapState({
-      areaList: state => state.app.areaList
+      menuList: state => state.app.menuList
     })
   },
   methods: {
-    ...mapActions(['getAreaList']),
+    ...mapActions(['getMenuList']),
     ...mapMutations([
       'closeTag'
     ]),
     cancel () {
-      if (this.$route.name === 'edit-scene') {
+      if (this.$route.name === 'edit-relmenu') {
         this.closeTag({
-          name: 'edit-scene',
+          name: 'edit-relmenu',
           params: this.$route.params
         })
       } else {
         this.closeTag({
-          name: 'add-scene',
+          name: 'add-relmenu',
           params: this.$route.params
         })
       }
     },
     submit () {
-      if (this.$route.name === 'add-scene') {
+      if (this.$route.name === 'add-relmenu') {
         this.formItem.organizationId = this.$store.state.user.organizationId
-        addRole(this.formItem).then(res => {
+        addRelmenu(this.formItem).then(res => {
           if (res.data.code === 0) {
             this.$Message.success('添加成功！')
             this.cancel()
-          } else {
-            this.$Message.warning(res.data.message)
           }
         })
       } else {
-        editRole(this.formItem).then(res => {
+        editRelmenu(this.formItem).then(res => {
           if (res.data.code === 0) {
             this.$Message.success('修改成功！')
             this.cancel()
-          } else {
-            this.$Message.warning(res.data.message)
           }
         })
       }
     }
   },
   mounted () {
-    if (this.areaList.length === 0) {
-      this.getAreaList()
+    if (this.menuList.length === 0) {
+      this.getMenuList()
     }
+    getRole().then(res => {
+      this.roleList = res.data.data.list
+    })
     this.formItem = this.$route.params
   }
 }

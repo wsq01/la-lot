@@ -3,18 +3,14 @@
       <i-col span="6">
         <Form :model="formItem" :label-width="80">
           <FormItem :label="formItemLabel[0]">
-            <Input v-model="formItem.name" />
-          </FormItem>
-          <FormItem :label="formItemLabel[1]">
-            <Input v-model="formItem.type" />
-          </FormItem>
-          <FormItem :label="formItemLabel[2]">
-            <Select v-model="formItem.areaId">
-              <Option v-for="(item, index) in areaList" :key="index" :value="item.id">{{item.name}}</Option>
+            <Select v-model="formItem.name">
+              <Option v-for="(item, index) in btnNameList" :key="index" :value="item.value">{{item.name}}</Option>
             </Select>
           </FormItem>
-          <FormItem :label="formItemLabel[3]">
-            <Input v-model="formItem.remark" type="textarea"/>
+          <FormItem :label="formItemLabel[1]">
+            <Select v-model="formItem.menuId">
+              <Option v-for="(item, index) in menuList" :key="index" :value="item.id">{{item.name}}</Option>
+            </Select>
           </FormItem>
           <FormItem>
             <Button type="primary" @click="submit">提交</Button>
@@ -27,64 +23,78 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
-import { addRole, editRole } from '@/api/user'
+import { addBtn, editBtn } from '@/api/user'
 export default {
   name: 'EditArea',
   data () {
     return {
-      formItemLabel: ['场景名称', '场景类型', '所属区域', '备注'],
-      formItem: {}
+      formItemLabel: ['名称', '菜单ID'],
+      formItem: {},
+      btnNameList: [
+        {
+          name: '新增',
+          value: 'ADD'
+        },
+        {
+          name: '删除',
+          value: 'DELETE'
+        },
+        {
+          name: '批量删除',
+          value: 'DELETEBATCH'
+        },
+        {
+          name: '编辑',
+          value: 'EDIT'
+        }
+      ]
     }
   },
   computed: {
     ...mapState({
-      areaList: state => state.app.areaList
+      menuList: state => state.app.menuList
     })
   },
   methods: {
-    ...mapActions(['getAreaList']),
+    ...mapActions(['getMenuList']),
     ...mapMutations([
       'closeTag'
     ]),
     cancel () {
-      if (this.$route.name === 'edit-scene') {
+      if (this.$route.name === 'edit-btn') {
         this.closeTag({
-          name: 'edit-scene',
+          name: 'edit-btn',
           params: this.$route.params
         })
       } else {
         this.closeTag({
-          name: 'add-scene',
+          name: 'add-btn',
           params: this.$route.params
         })
       }
     },
     submit () {
-      if (this.$route.name === 'add-scene') {
+      if (this.$route.name === 'add-btn') {
         this.formItem.organizationId = this.$store.state.user.organizationId
-        addRole(this.formItem).then(res => {
+        addBtn(this.formItem).then(res => {
           if (res.data.code === 0) {
             this.$Message.success('添加成功！')
             this.cancel()
-          } else {
-            this.$Message.warning(res.data.message)
           }
         })
       } else {
-        editRole(this.formItem).then(res => {
+        editBtn(this.formItem).then(res => {
           if (res.data.code === 0) {
             this.$Message.success('修改成功！')
             this.cancel()
-          } else {
-            this.$Message.warning(res.data.message)
           }
         })
       }
     }
   },
   mounted () {
-    if (this.areaList.length === 0) {
-      this.getAreaList()
+    if (this.menuList.length === 0) {
+      this.getMenuList()
     }
     this.formItem = this.$route.params
   }

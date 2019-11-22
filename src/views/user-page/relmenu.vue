@@ -6,7 +6,7 @@
           <FormItem>
             <Select v-model="searchForm.key" class="search-item">
               <template v-for="item in columns">
-                <Option v-if="item.key && (item.key === 'userId' || item.key === 'roleId' || item.key === 'organizationId')" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
+                <Option v-if="item.key" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
               </template>
             </Select>
           </FormItem>
@@ -39,70 +39,22 @@
 </template>
 
 <script>
-import { getUser, deleteUser } from '@/api/user'
+import { getRelmenu, deleteRelmenu } from '@/api/user'
 import minxin from '@/assets/js/mixin'
 
 export default {
-  name: 'UserManager',
+  name: 'relmenu',
   mixins: [ minxin ],
   data () {
     return {
       columns: [
         {
-          title: '用户ID',
-          key: 'userId'
-        },
-        {
-          title: '用户名',
-          key: 'userName'
-        },
-        {
-          title: '英文名',
-          key: 'userNameEn'
-        },
-        {
           title: '角色ID',
           key: 'roleId'
         },
         {
-          title: '角色名',
-          key: 'roleName'
-        },
-        {
-          title: '角色备注',
-          key: 'roleRemark'
-        },
-        {
-          title: '用户机构ID',
-          key: 'userOrganizationId'
-        },
-        {
-          title: '用户机构名',
-          key: 'organizationName'
-        },
-        {
-          title: '手机号',
-          key: 'mobile'
-        },
-        {
-          title: '邮箱',
-          key: 'mail'
-        },
-        {
-          title: '登录时间',
-          key: 'loginTime'
-        },
-        {
-          title: '创建时间',
-          key: 'createTime'
-        },
-        {
-          title: '短信报警',
-          key: 'messagePush'
-        },
-        {
-          title: '微信报警',
-          key: 'wechatPush'
+          title: '菜单ID',
+          key: 'menuId'
         },
         {
           title: '操作',
@@ -116,7 +68,7 @@ export default {
   methods: {
     // 获取列表
     getItems (params) {
-      getUser(params).then(res => {
+      getRelmenu(params).then(res => {
         this.loading = false
         if (res.data.code === 0) {
           this.tableData = res.data.data.list
@@ -126,20 +78,23 @@ export default {
     },
     // 删除
     deleteItem (row, index) {
-      deleteUser(row.userId).then(res => {
+      deleteRelmenu(row.id).then(res => {
         if (res.data.code === 0) {
           this.tableData.splice(index, 1)
+          this.$Message.success('删除成功！')
+        } else {
+          this.$Message.success(res.data.message)
         }
       })
     },
     addItem () {
       this.$router.push({
-        name: 'add-user'
+        name: 'add-relmenu'
       })
     },
     editItem (row, index) {
       this.$router.push({
-        name: 'edit-user',
+        name: 'edit-relmenu',
         params: row
       })
     }
@@ -154,4 +109,5 @@ export default {
   display: inline-block;
   width: 200px;
 }
+
 </style>

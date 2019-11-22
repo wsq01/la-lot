@@ -15,7 +15,7 @@ import Main from '@/components/main/main.vue'
  *  beforeCloseName: (-) 设置该字段，则在关闭当前tab页时会去'@/router/before-close.js'里寻找该字段名对应的方法，作为关闭前的钩子函数
  * }
  */
-export default [
+export const defaultRoutes = [
   {
     path: '/login',
     name: 'login',
@@ -49,13 +49,61 @@ export default [
     ]
   },
   {
+    path: '/401',
+    name: 'error_401',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/views/error-page/401.vue')
+  },
+  {
+    path: '/500',
+    name: 'error_500',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/views/error-page/500.vue')
+  },
+  {
+    path: '/missed',
+    name: '_missed',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'missed',
+        name: 'missed',
+        meta: {
+          icon: '',
+          title: '资产丢失'
+        },
+        component: () => import('@/views/single-page/missed/missed.vue')
+      }
+    ]
+  },
+  {
+    path: '*',
+    name: 'error_404',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/views/error-page/404.vue')
+  }
+]
+
+export const dynamicRoutes = [
+  {
     path: '/user',
-    name: 'user',
+    name: '_user',
+    redirect: 'user',
     component: Main,
     meta: {
       userControl: true,
       hideInBread: true,
-      hideInMenu: true,
+      hideInMenu: true
     },
     children: [
       {
@@ -94,7 +142,8 @@ export default [
   },
   {
     path: '/menus',
-    name: 'menus',
+    name: '_menus',
+    redirect: 'menus',
     component: Main,
     meta: {
       userControl: true,
@@ -136,7 +185,8 @@ export default [
   },
   {
     path: '/organization',
-    name: 'organization',
+    name: '_organization',
+    redirect: 'organization',
     component: Main,
     meta: {
       userControl: true,
@@ -178,7 +228,8 @@ export default [
   },
   {
     path: '/role',
-    name: 'role',
+    name: '_role',
+    redirect: 'role',
     component: Main,
     meta: {
       userControl: true,
@@ -219,8 +270,181 @@ export default [
     ]
   },
   {
+    path: '/btn',
+    name: '_btn',
+    redirect: 'btn',
+    component: Main,
+    meta: {
+      userControl: true,
+      hideInBread: true,
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'btn',
+        name: 'btn',
+        meta: {
+          userControl: true,
+          icon: 'md-globe',
+          title: '按钮管理'
+        },
+        component: () => import('@/views/user-page/btn.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-btn',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '编辑按钮'
+        },
+        component: () => import('@/views/user-page/edit-btn.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-btn',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '添加按钮'
+        },
+        component: () => import('@/views/user-page/edit-btn.vue')
+      }
+    ]
+  },
+  {
+    path: '/relresource',
+    name: '_relresource',
+    redirect: 'relresource',
+    component: Main,
+    meta: {
+      userControl: true,
+      hideInBread: true,
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'relresource',
+        name: 'relresource',
+        meta: {
+          userControl: true,
+          icon: 'md-globe',
+          title: '资源角色关联管理'
+        },
+        component: () => import('@/views/user-page/relresource.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-relresource',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '编辑关联'
+        },
+        component: () => import('@/views/user-page/edit-relresource.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-relresource',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '添加关联'
+        },
+        component: () => import('@/views/user-page/edit-relresource.vue')
+      }
+    ]
+  },
+  {
+    path: '/relmenu',
+    name: '_relmenu',
+    redirect: 'relmenu',
+    component: Main,
+    meta: {
+      userControl: true,
+      hideInBread: true,
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'relmenu',
+        name: 'relmenu',
+        meta: {
+          userControl: true,
+          icon: 'md-globe',
+          title: '菜单角色关联管理'
+        },
+        component: () => import('@/views/user-page/relmenu.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-relmenu',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '编辑关联'
+        },
+        component: () => import('@/views/user-page/edit-relmenu.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-relmenu',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '添加关联'
+        },
+        component: () => import('@/views/user-page/edit-relmenu.vue')
+      }
+    ]
+  },
+  {
+    path: '/reluser',
+    name: '_reluser',
+    redirect: 'reluser',
+    component: Main,
+    meta: {
+      userControl: true,
+      hideInBread: true,
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'reluser',
+        name: 'reluser',
+        meta: {
+          userControl: true,
+          icon: 'md-globe',
+          title: '用户角色关联管理'
+        },
+        component: () => import('@/views/user-page/reluser.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-reluser',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '编辑关联'
+        },
+        component: () => import('@/views/user-page/edit-reluser.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-reluser',
+        meta: {
+          icon: 'md-globe',
+          hideInMenu: true,
+          title: '添加关联'
+        },
+        component: () => import('@/views/user-page/edit-reluser.vue')
+      }
+    ]
+  },
+  {
     path: '/area',
-    name: 'area',
+    name: '_area',
+    redirect: 'area',
     component: Main,
     meta: {
       hideInBread: true
@@ -259,7 +483,8 @@ export default [
   },
   {
     path: '/scene',
-    name: 'scene',
+    name: '_scene',
+    redirect: 'scene',
     component: Main,
     meta: {
       hideInBread: true
@@ -310,7 +535,8 @@ export default [
         name: 'receiver',
         meta: {
           icon: 'md-menu',
-          title: '接收器'
+          title: '接收器',
+          hideInMenu: true
         },
         component: () => import('@/views/single-page/receiver/receiver.vue')
       },
@@ -319,7 +545,8 @@ export default [
         name: 'device',
         meta: {
           icon: 'md-menu',
-          title: '流动资产'
+          title: '流动资产',
+          hideInMenu: true
         },
         component: () => import('@/views/single-page/device/device.vue')
       },
@@ -328,7 +555,8 @@ export default [
         name: 'devicetype',
         meta: {
           icon: 'md-menu',
-          title: '资产编码'
+          title: '资产编码',
+          hideInMenu: true
         },
         component: () => import('@/views/single-page/device-type/device-type.vue')
       },
@@ -397,6 +625,7 @@ export default [
   {
     path: '/allot',
     name: '_allot',
+    redirect: 'allot',
     component: Main,
     meta: {
       hideInBread: true
@@ -414,28 +643,9 @@ export default [
     ]
   },
   {
-    path: '/missed',
-    name: '_missed',
-    component: Main,
-    meta: {
-      hideInBread: true,
-      hideInMenu: true
-    },
-    children: [
-      {
-        path: 'missed',
-        name: 'missed',
-        meta: {
-          icon: '',
-          title: '资产丢失'
-        },
-        component: () => import('@/views/single-page/missed/missed.vue')
-      }
-    ]
-  },
-  {
     path: '/check',
-    name: 'check',
+    name: '_check',
+    redirect: 'check',
     component: Main,
     meta: {
       hideInBread: true
@@ -454,14 +664,15 @@ export default [
   },
   {
     path: '/devicedata',
-    name: 'devicedata',
+    name: '_devicedata',
+    redirect: 'devicedata',
     component: Main,
     meta: {
       hideInBread: true
     },
     children: [
       {
-        path: '/devicedata',
+        path: 'devicedata',
         name: 'devicedata',
         meta: {
           icon: 'md-analytics',
@@ -470,29 +681,5 @@ export default [
         component: () => import('@/views/single-page/devicedata/devicedata.vue')
       }
     ]
-  },
-  {
-    path: '/401',
-    name: 'error_401',
-    meta: {
-      hideInMenu: true
-    },
-    component: () => import('@/views/error-page/401.vue')
-  },
-  {
-    path: '/500',
-    name: 'error_500',
-    meta: {
-      hideInMenu: true
-    },
-    component: () => import('@/views/error-page/500.vue')
-  },
-  {
-    path: '*',
-    name: 'error_404',
-    meta: {
-      hideInMenu: true
-    },
-    component: () => import('@/views/error-page/404.vue')
   }
 ]

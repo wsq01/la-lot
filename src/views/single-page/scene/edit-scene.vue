@@ -77,13 +77,19 @@ export default {
             this.formItem.organizationId = this.$store.state.user.organizationId
             addScene(this.formItem).then(res => {
               if (res.data.code === 0) {
+                this.$Message.success('添加成功！')
                 this.cancel()
+              } else {
+                this.$Message.error(res.data.message)
               }
             })
           } else {
             editScene(this.formItem).then(res => {
               if (res.data.code === 0) {
+                this.$Message.success('修改成功！')
                 this.cancel()
+              } else {
+                this.$Message.error(res.data.message)
               }
             })
           }

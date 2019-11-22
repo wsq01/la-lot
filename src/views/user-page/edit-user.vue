@@ -48,13 +48,13 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapMutations } from 'vuex'
 import { addUser, getOrganization, getRole } from '@/api/user'
 export default {
   name: 'EditArea',
   data () {
     return {
-      formItemLabel: ['用户名', '用户名(英文)', '密码','所属机构','角色','手机号','邮箱', '备注'],
+      formItemLabel: ['用户名', '用户名(英文)', '密码', '所属机构', '角色', '手机号', '邮箱', '备注'],
       formItem: {},
       organizationList: [],
       roleList: []
@@ -86,6 +86,7 @@ export default {
       }
       addUser(this.formItem).then(res => {
         if (res.data.code === 0) {
+          this.$Message.success('添加成功！')
           this.cancel()
         }
       })
@@ -99,7 +100,7 @@ export default {
     }).then(res => {
       this.roleList = res.data.data.list
     }).then(() => {
-      this.formItem = this.$route.params  
+      this.formItem = this.$route.params
       if (this.$route.name === 'edit-user') {
         this.formItem.organizationId = this.$route.params.userOrganizationId
       }

@@ -2,21 +2,21 @@
   <Card>
     <Row>
       <i-col :span="24">
-        <div class="search-con">
-          <Form :model="searchForm" inline :label-width="0">
-            <FormItem>
-              <Select v-model="searchForm.key" class="search-col">
-                <template v-for="item in searchKeyList">
-                  <Option :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
-                </template>
-              </Select>
-            </FormItem>
-            <FormItem>
-              <Input @on-change="handleClear" clearable placeholder="请输入关键字" v-model="searchForm.value" class="search-input" />
-            </FormItem>
-            <Button @click="handleSearch" type="primary" class="search-btn" icon="md-search">搜索</Button>
-          </Form>
-        </div>
+        <Form :model="searchForm" inline :label-width="0">
+          <FormItem>
+            <Select v-model="searchForm.key" class="search-item">
+              <template v-for="item in searchKeyList">
+                <Option :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
+              </template>
+            </Select>
+          </FormItem>
+          <FormItem>
+            <Input @on-change="handleClear" clearable placeholder="请输入关键字" v-model="searchForm.value" class="search-item" />
+          </FormItem>
+          <FormItem>
+            <Button @click="handleSearch" type="primary" icon="md-search">搜索</Button>
+          </FormItem>
+        </Form>
       </i-col>
     </Row>
     <Row>
@@ -30,13 +30,13 @@
 
 <script>
 import { getDeviceMissed } from '@/api/data'
+import minxin from '@/assets/js/mixin'
+
 export default {
   name: 'Missed',
+  mixins: [ minxin ],
   data () {
     return {
-      loading: true,
-      total: 0,
-      size: 10,
       columns: [
         {
           title: '名称',
@@ -67,9 +67,6 @@ export default {
           key: 'time'
         }
       ],
-      tableData: [],
-      selection: [],
-      searchForm: {},
       searchKeyList: [
         { key: 'sceneId', title: '场景' },
         { key: 'deviceNum', title: '设备编号' }
@@ -78,55 +75,17 @@ export default {
   },
   methods: {
     // 获取列表
-    getDeviceMissed (params) {
+    getItems (params) {
       getDeviceMissed(params).then(res => {
-        this.loading = false
-        if (res.data.code === 0) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.total
-        }
+        this.getSuccess(res)
       })
-    },
-    // 分页
-    handleChangePage (e) {
-      this.getDeviceMissed({ size: this.size, index: e })
-    },
-    // 搜索清除
-    handleClear (e) {
-      if (e.target.value === '') this.getDeviceMissed({ size: this.size })
     },
     // 搜索
     handleSearch () {
-      this.getDeviceMissed(this.searchForm)
-    },
-    // 设置默认的搜索key
-    setDefaultSearchKey () {
-      this.$set(this.searchForm, 'key', this.columns[0].key ? this.columns[0].key : this.columns[1].key)
+      this.getItems(this.searchForm)
     }
   },
   mounted () {
-    this.getDeviceMissed({ size: this.size })
-    this.setDefaultSearchKey()
   }
 }
 </script>
-
-<style lang="less" scoped>
-.search {
-  &-con {
-    padding: 10px 0;
-  }
-  &-col {
-    display: inline-block;
-    width: 200px;
-  }
-  &-input {
-    display: inline-block;
-    width: 200px;
-    margin-left: 2px;
-  }
-  &-btn {
-    margin-left: 2px;
-  }
-}
-</style>

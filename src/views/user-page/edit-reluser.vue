@@ -3,17 +3,14 @@
       <i-col span="6">
         <Form :model="formItem" :label-width="80">
           <FormItem :label="formItemLabel[0]">
-            <Input v-model="formItem.name" />
-          </FormItem>
-          <FormItem :label="formItemLabel[1]">
-            <Input v-model="formItem.type" />
-          </FormItem>
-          <FormItem :label="formItemLabel[2]">
-            <Select v-model="formItem.areaId">
-              <Option v-for="(item, index) in areaList" :key="index" :value="item.id">{{item.name}}</Option>
+            <Select v-model="formItem.roleId" label-in-value>
+              <Option v-for="(item, index) in roleList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
-          <FormItem :label="formItemLabel[3]">
+          <FormItem :label="formItemLabel[1]">
+            <Input v-model="formItem.userId" />
+          </FormItem>
+          <FormItem :label="formItemLabel[2]">
             <Input v-model="formItem.remark" type="textarea"/>
           </FormItem>
           <FormItem>
@@ -26,43 +23,43 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
-import { addRole, editRole } from '@/api/user'
+import { mapMutations } from 'vuex'
+import { addReluser, editReluser, getRole } from '@/api/user'
 export default {
   name: 'EditArea',
   data () {
     return {
-      formItemLabel: ['场景名称', '场景类型', '所属区域', '备注'],
+      formItemLabel: ['角色ID', '用户ID', '备注'],
       formItem: {}
     }
   },
   computed: {
-    ...mapState({
-      areaList: state => state.app.areaList
-    })
+    // ...mapState({
+    //   userList: state => state.app.userList
+    // })
   },
   methods: {
-    ...mapActions(['getAreaList']),
+    // ...mapActions(['getAreaList']),
     ...mapMutations([
       'closeTag'
     ]),
     cancel () {
-      if (this.$route.name === 'edit-scene') {
+      if (this.$route.name === 'edit-reluser') {
         this.closeTag({
-          name: 'edit-scene',
+          name: 'edit-reluser',
           params: this.$route.params
         })
       } else {
         this.closeTag({
-          name: 'add-scene',
+          name: 'add-reluser',
           params: this.$route.params
         })
       }
     },
     submit () {
-      if (this.$route.name === 'add-scene') {
+      if (this.$route.name === 'add-reluser') {
         this.formItem.organizationId = this.$store.state.user.organizationId
-        addRole(this.formItem).then(res => {
+        addReluser(this.formItem).then(res => {
           if (res.data.code === 0) {
             this.$Message.success('添加成功！')
             this.cancel()
@@ -71,7 +68,7 @@ export default {
           }
         })
       } else {
-        editRole(this.formItem).then(res => {
+        editReluser(this.formItem).then(res => {
           if (res.data.code === 0) {
             this.$Message.success('修改成功！')
             this.cancel()
@@ -83,9 +80,12 @@ export default {
     }
   },
   mounted () {
-    if (this.areaList.length === 0) {
-      this.getAreaList()
-    }
+    // if (this.areaList.length === 0) {
+    //   this.getAreaList()
+    // }
+    getRole().then(res => {
+      this.roleList = res.data.data.list
+    })
     this.formItem = this.$route.params
   }
 }

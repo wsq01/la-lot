@@ -16,14 +16,16 @@
             <FormItem>
               <Button @click="handleSearch" type="primary" icon="md-search">搜索</Button>
             </FormItem>
-            <FormItem>
-              <Poptip confirm title="确定要删除吗？" transfer @on-ok="handleDeleteBatch">
-                <Button type="primary" icon="md-trash">批量删除</Button>
-              </Poptip>
-            </FormItem>
-            <FormItem>
-              <Button @click="addItem" type="primary" icon="md-add">新增</Button>
-            </FormItem>
+            <span v-for="(bItem, bIndex) in btnList" :key="bIndex">
+              <FormItem v-if="bItem === 'DELETEBATCH'">
+                <Poptip confirm title="确定要删除吗？" transfer @on-ok="handleDeleteBatch">
+                  <Button type="primary" icon="md-trash">批量删除</Button>
+                </Poptip>
+              </FormItem>
+              <FormItem v-if="bItem === 'ADD'">
+                <Button @click="addItem" type="primary" icon="md-add">新增</Button>
+              </FormItem>
+            </span>
           </Form>
       </i-col>
     </Row>
@@ -31,10 +33,12 @@
       <i-col :span="24">
         <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select="handleSelectTableItem">
           <template slot-scope="{row, index}" slot="action">
-            <Button type="primary" size="small" style="margin-right: 5px" @click="editItem(row, index)">编辑</Button>
-            <Poptip confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
-              <Button type="error" size="small">删除</Button>
-            </Poptip>
+            <div v-for="(bItem, bIndex) in btnList" :key="bIndex" style="display: inline-block;margin-right: 5px">
+              <Poptip v-if="bItem === 'DELETE'" confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
+                <Button type="error" size="small">删除</Button>
+              </Poptip>
+              <Button v-if="bItem === 'EDIT'" type="primary" size="small" @click="editItem(row, index)">编辑</Button>
+            </div>
           </template>
         </Table>
         <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0"></Page>
@@ -45,13 +49,14 @@
 
 <script>
 import { getArea, deleteArea, deleteAreaList } from '@/api/data'
+import { getBtn } from '@/api/user'
+import minxin from '@/assets/js/mixin'
+
 export default {
   name: 'Area',
+  mixins: [ minxin ],
   data () {
     return {
-      loading: true,
-      total: 0,
-      size: 10,
       columns: [
         {
           type: 'selection',
@@ -94,35 +99,29 @@ export default {
           align: 'center'
         }
       ],
-      tableData: [],
-      selection: [],
-      searchForm: {}
+      btnList: []
     }
   },
   methods: {
-    // 获取列表
+    // 获取
     getItems (params) {
       getArea(params).then(res => {
-        this.loading = false
-        if (res.data.code === 0) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.total
-        }
+        this.getSuccess(res)
       })
     },
     // 删除
     deleteItem (row, index) {
       deleteArea(row.id).then(res => {
-        if (res.data.code === 0) {
-          this.tableData.splice(index, 1)
-        }
+        this.deleteSuccess(res, index)
       })
     },
+    // 添加
     addItem () {
       this.$router.push({
         name: 'add-area'
       })
     },
+    // 删除
     editItem (row, index) {
       this.$router.push({
         name: 'edit-area',
@@ -132,59 +131,30 @@ export default {
     // 批量删除
     handleDeleteBatch () {
       deleteAreaList(this.selection).then(res => {
+        this.deleteBatchSuccess(res)
+      })
+    },
+    initBtn () {
+      const uri = '/' + this.$route.name
+      const menuList = this.$store.state.user.userMenu
+      let menuId = '0'
+      menuList.forEach((item, index) => {
+        if (item.uri === uri) {
+          menuId = item.id
+        }
+      })
+      getBtn({ menuId }).then(res => {
         if (res.data.code === 0) {
-          this.selection.forEach((item, index) => {
-            this.tableData.forEach((sItem, sIndex) => {
-              if (sItem.id === item.id) {
-                this.tableData.splice(sIndex, 1)
-              }
-            })
+          const btnList = res.data.data.list
+          btnList.forEach((item, index) => {
+            this.btnList.push(item.buttonName)
           })
         }
       })
-    },
-    // 搜索清除
-    handleClear (e) {
-      if (e.target.value === '') this.getItems({ size: this.size })
-    },
-    // 搜索
-    handleSearch () {
-      const obj = {}
-      obj[this.searchForm.key] = this.searchForm.value
-      this.getItems(obj)
-    },
-    // 分页
-    handleChangePage (e) {
-      this.getItems({ size: this.size, index: e })
-    },
-    // 分页改变事件
-    handlePageSizeChange (e) {
-      this.size = e
-      const searchObj = { size: this.size }
-      if (this.searchForm.value) {
-        Object.assign(searchObj, this.searchForm)
-      }
-      this.getItems(searchObj)
-    },
-    // 设置默认的搜索key
-    setDefaultSearchKey () {
-      this.$set(this.searchForm, 'key', this.columns[0].key ? this.columns[0].key : this.columns[1].key)
-    },
-    // 多选
-    handleSelectTableItem (selection, row) {
-      this.selection = selection
     }
   },
   mounted () {
-    this.getItems({ size: this.size })
-    this.setDefaultSearchKey()
+    this.initBtn()
   }
 }
 </script>
-
-<style lang="less" scoped>
-.search-item {
-  display: inline-block;
-  width: 200px;
-}
-</style>

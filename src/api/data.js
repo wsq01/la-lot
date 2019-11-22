@@ -58,8 +58,11 @@ const editItem = (url, params) => {
 // 查询城市列表，区域列表和区域中各设备数
 export const getCityListByOid = (oid) => {
   return axios.request({
-    url: '/api/tb/city/list/' + oid,
-    method: 'get'
+    url: '/api/tb/city/list',
+    method: 'get',
+    params: {
+      organizationId: oid
+    }
   })
 }
 
@@ -132,3 +135,8 @@ export const deleteDeviceType = (id) => deleteItem('/api/tb/type', id)
 export const editDeviceType = (params) => editItem('/api/tb/type', params)
 
 export const getDeviceRealTime = (params) => getItems('/api/tb/device/realtime', params)
+
+export const getDeviceRealTimeReport = (params) => getItems('/api/tb/device/realtime/report', params)
+
+export const getDeviceRealTimeCheck = (params) => getItems('/api/tb/device/check', params)
+// export const getDeviceImport = (params) => getItems('/api/tb/device/import', params)

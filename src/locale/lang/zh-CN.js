@@ -33,4 +33,16 @@ export default {
   menus: '菜单管理',
   'edit-menus': '编辑菜单',
   'add-menus': '新增菜单',
+  relmenu: '菜单角色关联管理',
+  reluser: '用户角色关联管理',
+  relresource: '资源角色关联管理',
+  'add-relmenu': '添加关联',
+  'edit-relmenu': '编辑关联',
+  'add-reluser': '添加关联',
+  'edit-reluser': '编辑关联',
+  'add-relresource': '添加关联',
+  'edit-relresource': '编辑关联',
+  'btn': '按钮管理',
+  'add-btn': '添加按钮',
+  'edit-btn': '编辑按钮'
 }

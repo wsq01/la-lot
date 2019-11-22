@@ -16,9 +16,11 @@
           <FormItem>
             <Button @click="handleSearch" type="primary" icon="md-search">搜索</Button>
           </FormItem>
-          <FormItem>
-            <Button @click="addItem" type="primary" icon="md-add">新增</Button>
-          </FormItem>
+          <span v-for="(bItem, bIndex) in btnList" :key="bIndex">
+            <FormItem v-if="bItem === 'ADD'">
+              <Button @click="addItem" type="primary" icon="md-add">新增</Button>
+            </FormItem>
+          </span>
         </Form>
       </i-col>
     </Row>
@@ -26,10 +28,12 @@
       <i-col :span="24">
         <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select="handleSelectTableItem">
           <template slot-scope="{row, index}" slot="action">
-            <Button type="primary" size="small" style="margin-right: 5px" @click="editItem(row, index)">编辑</Button>
-            <Poptip confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
-              <Button type="error" size="small">删除</Button>
-            </Poptip>
+            <div v-for="(bItem, bIndex) in btnList" :key="bIndex" style="display: inline-block;margin-right: 5px">
+              <Poptip v-if="bItem === 'DELETE'" confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
+                <Button type="error" size="small">删除</Button>
+              </Poptip>
+              <Button v-if="bItem === 'EDIT'" type="primary" size="small" style="margin-right: 5px" @click="editItem(row, index)">编辑</Button>
+            </div>
           </template>
         </Table>
         <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0"></Page>
@@ -40,13 +44,14 @@
 
 <script>
 import { getReceiver, deleteReceiver } from '@/api/data'
+import { getBtn } from '@/api/user'
+import minxin from '@/assets/js/mixin'
+
 export default {
   name: 'Receiver',
+  mixins: [ minxin ],
   data () {
     return {
-      loading: true,
-      total: 0,
-      size: 10,
       columns: [
         // {
         //   type: 'selection',
@@ -83,28 +88,20 @@ export default {
           align: 'center'
         }
       ],
-      tableData: [],
-      selection: [],
-      searchForm: {}
+      btnList: []
     }
   },
   methods: {
     // 获取列表
     getItems (params) {
       getReceiver(params).then(res => {
-        this.loading = false
-        if (res.data.code === 0) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.total
-        }
+        this.getSuccess(res)
       })
     },
     // 删除
     deleteItem (row, index) {
       deleteReceiver(row.id).then(res => {
-        if (res.data.code === 0) {
-          this.tableData.splice(index, 1)
-        }
+        this.deleteSuccess(res)
       })
     },
     addItem () {
@@ -118,48 +115,27 @@ export default {
         params: row
       })
     },
-    // 分页
-    handleChangePage (e) {
-      this.getItems({ size: this.size, index: e })
-    },
-    // 多选
-    handleSelectTableItem (selection, row) {
-      this.selection = selection
-    },
-    // 分页改变事件
-    handlePageSizeChange (e) {
-      this.size = e
-      const searchObj = { size: this.size }
-      if (this.searchForm.value) {
-        Object.assign(searchObj, this.searchForm)
-      }
-      this.getItems(searchObj)
-    },
-    // 搜索清除
-    handleClear (e) {
-      if (e.target.value === '') this.getItems({ size: this.size })
-    },
-    // 搜索
-    handleSearch () {
-      const obj = {}
-      obj[this.searchForm.key] = this.searchForm.value
-      this.getItems(obj)
-    },
-    // 设置默认的搜索key
-    setDefaultSearchKey () {
-      this.$set(this.searchForm, 'key', this.columns[0].key ? this.columns[0].key : this.columns[1].key)
+    initBtn () {
+      const uri = this.$route.name
+      const menuList = this.$store.state.user.userMenu
+      let menuId = '0'
+      menuList.forEach((item, index) => {
+        if (item.uri === uri) {
+          menuId = item.id
+        }
+      })
+      getBtn({ menuId }).then(res => {
+        if (res.data.code === 0) {
+          const btnList = res.data.data.list
+          btnList.forEach((item, index) => {
+            this.btnList.push(item.buttonName)
+          })
+        }
+      })
     }
   },
   mounted () {
-    this.getItems({ size: this.size })
-    this.setDefaultSearchKey()
+    this.initBtn()
   }
 }
 </script>
-
-<style lang="less" scoped>
-.search-item {
-  display: inline-block;
-  width: 200px;
-}
-</style>

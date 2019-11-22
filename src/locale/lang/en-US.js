@@ -33,4 +33,16 @@ export default {
   menus: 'MenuManager',
   'edit-menus': 'EditMenu',
   'add-menus': 'AddMenu',
+  relmenu: 'relmenu',
+  reluser: 'reluser',
+  relresource: 'relresource',
+  'add-relmenu': 'add-relmenu',
+  'edit-relmenu': 'edit-relresource',
+  'add-reluser': 'add-relmenu',
+  'edit-reluser': 'edit-relresource',
+  'add-relresource': 'add-relmenu',
+  'edit-relresource': 'edit-relresource',
+  'btn': 'buttonManager',
+  'add-btn': 'addButton',
+  'edit-btn': 'editButton'
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="home-container">
     <Row>
       <i-col>
         <Card>
@@ -16,10 +16,10 @@
     <Row>
       <i-col>
         <baidu-map class="bm-view" ak="XP1alssWsEscC3NfYAhj6YfqKvgQgUXF" :center="initMap.center" :zoom="initMap.zoom" :scroll-wheel-zoom="initMap.isScrollWheelZoom">
-          <bm-copyright
+          <!-- <bm-copyright
             anchor="BMAP_ANCHOR_TOP_RIGHT"
             :copyright="[{id: 1, content: initMap.copyrightContent}]">
-          </bm-copyright>
+          </bm-copyright> -->
            <bm-marker v-for="(item, index) in points" :key="index" :position="item" @click="item.show=true" @mouseover="item.show=!item.show" @mouseleave="item.show=!item.show" animation="BMAP_ANIMATION_DROP">
              <bm-info-window :show="item.show">
                <p>{{item.name}}区域</p>
@@ -27,10 +27,10 @@
                </bm-info-window>
                <!-- <bm-label  /> -->
           </bm-marker>
-          <Drawer scrollable title="库区" width="11" class="center" placement="left" :closable="false" v-model="isShowDrawerLeft" :inner="true" :transfer="false" @on-visible-change="handleLeftDrawerClose">
+          <Drawer scrollable :mask-style="{background: 'transparent'}" class-name="drawer-style" title="库区" width="11" class="center" placement="left" :closable="false" v-model="isShowDrawerLeft" :inner="true" :transfer="false" @on-visible-change="handleLeftDrawerClose">
             <Dropdown @on-click="handleClickleftDrawerMenu" v-for="(item, index) in leftDrawerList" :key="index" placement="right-start" :transfer="true" transfer-class-name="show-menu">
               <a href="javascript:;" @click="handleClickleftDrawerMenu('areaId/' + item.id + '/' + item.name)">
-                <Button type="text" long>{{item.name}}<Icon type="ios-arrow-forward"></Icon></Button>
+                <Button type="text" ghost long>{{item.name}}<Icon type="ios-arrow-forward"></Icon></Button>
                 <Divider size="small"/>
               </a>
               <DropdownMenu slot="list">
@@ -38,16 +38,16 @@
               </DropdownMenu>
             </Dropdown>
           </Drawer>
-          <Drawer width="60" :closable="false" placement="right" :mask="false" v-model="isShowDrawerRight" :inner="true" :transfer="false">
+          <Drawer class-name="drawer-style" width="60" :closable="false" placement="right" :mask="false" v-model="isShowDrawerRight" :inner="true" :transfer="false">
             <Row>
               <i-col span="14">
-                <Card :padding="0">
+                <Card :padding="0" :bordered="false" style="background: transparent;">
                   <p slot="title">{{chartTitle}}</p>
                   <chart-bar :option="chartBarOption" style="height: 200px"></chart-bar>
                 </Card>
               </i-col>
               <i-col span="10">
-                <Card :padding="0">
+                <Card :padding="0" :bordered="false" style="background: transparent;">
                   <p slot="title">资产丢失</p>
                   <div slot="extra"> <a href="javascript:;" @click.prevent="toMissed"> 查看详情<Icon type="ios-arrow-forward" /></a></div>
                   <chart-pie :option="chartPieOption" style="width: 100%;height: 200px"></chart-pie>
@@ -56,7 +56,7 @@
             </Row>
             <Row>
               <i-col span="24">
-                <Card :padding="0">
+                <Card :padding="0" :bordered="false" style="background: transparent;">
                   <p slot="title">设备详情</p>
                   <chart-pie :option="secondChartPieOption" style="width: 100%;height: 250px"></chart-pie>
                 </Card>
@@ -79,7 +79,7 @@ import ChartBar from '@/components/charts/bar'
 import ChartPie from '@/components/charts/pie'
 
 import { getCityListByOid, getCityInfo, getDeviceNumber } from '@/api/data'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 export default {
   name: 'home',
   data () {
@@ -90,7 +90,6 @@ export default {
         isScrollWheelZoom: true,
         copyrightContent: '中集制冷'
       },
-      cityList: [],
       points: [],
       selectedCity: '', // 选中的城市
       isShowDrawerLeft: false, // 是否显示左抽屉
@@ -110,6 +109,11 @@ export default {
     BmInfoWindow,
     ChartBar,
     ChartPie
+  },
+  computed: {
+    ...mapState({
+      cityList: state => state.app.cityList
+    })
   },
   methods: {
     ...mapActions(['getCityList']),
@@ -292,24 +296,50 @@ export default {
         if (res.data && res.data.code === 0) {
           const lists = res.data.data.list
           this.points = this.traverseCityList(lists)
-          this.cityList = this.points
+          // this.cityList = this.points
         }
       })
     }
   },
-  mounted () {
+  created () {
     this.addPoints()
-    this.getCityList().then(res => {
-      if (res.data && res.data.code === 0) {
-        const lists = res.data.data.list
-        this.points = this.traverseCityList(lists)
-        this.cityList = this.points
-      }
-    })
+    if(this.cityList.length === 0) {
+      this.getCityList().then(res => {
+        if (res.data && res.data.code === 0) {
+          const lists = res.data.data.list
+          this.cityList = this.traverseCityList(lists)
+        }
+      })
+    }
   }
 }
 </script>
 
+<style lang="less">
+  .show-menu {
+    background: rgba(0, 0, 0, 0.5);
+    ul li {
+      color: #fff;
+    }
+    .ivu-dropdown-item:hover {
+      background: transparent;
+    }
+  }
+.home-container {
+  .drawer-style .ivu-drawer-content {
+    background: rgba(0, 0, 0, 0.5);
+    .ivu-drawer-header-inner {
+      color: #fff;
+    }
+    button {
+      color: #fff;
+    }
+  }
+  .ivu-card-head p, .ivu-card-head-inner {
+    color: #fff;
+  }
+}
+</style>
 <style lang="less" scoped>
 .bm-view {
   width: 100%;

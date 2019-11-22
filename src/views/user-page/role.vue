@@ -40,13 +40,13 @@
 
 <script>
 import { getRole, deleteRole } from '@/api/user'
+import minxin from '@/assets/js/mixin'
+
 export default {
   name: 'Role',
+  mixins: [ minxin ],
   data () {
     return {
-      loading: true,
-      total: 0,
-      size: 10,
       columns: [
         {
           title: '角色ID',
@@ -70,10 +70,7 @@ export default {
           width: 130,
           align: 'center'
         }
-      ],
-      tableData: [],
-      searchForm: {},
-      selection: []
+      ]
     }
   },
   methods: {
@@ -92,6 +89,9 @@ export default {
       deleteRole(row.id).then(res => {
         if (res.data.code === 0) {
           this.tableData.splice(index, 1)
+          this.$Message.success('删除成功！')
+        } else {
+          this.$Message.warning(res.data.message)
         }
       })
     },
@@ -105,42 +105,9 @@ export default {
         name: 'edit-user',
         params: row
       })
-    },
-    // 分页
-    handleChangePage (e) {
-      this.getRole({ size: this.size, index: e })
-    },
-    // 多选
-    handleSelectTableItem (selection, row) {
-      this.selection = selection
-    },
-    // 搜索清除
-    handleClear (e) {
-      if (e.target.value === '') this.getRole({ size: this.size })
-    },
-    // 分页改变事件
-    handlePageSizeChange (e) {
-      this.size = e
-      const searchObj = { size: this.size }
-      if (this.searchForm.value) {
-        Object.assign(searchObj, this.searchForm)
-      }
-      this.getItems(searchObj)
-    },
-    // 搜索
-    handleSearch () {
-      const obj = {}
-      obj[this.searchForm.key] = this.searchForm.value
-      this.getRole(obj)
-    },
-    // 设置默认的搜索key
-    setDefaultSearchKey () {
-      this.$set(this.searchForm, 'key', this.columns[0].key ? this.columns[0].key : this.columns[1].key)
     }
   },
   mounted () {
-    this.getRole({ size: this.size })
-    this.setDefaultSearchKey()
   }
 }
 </script>
