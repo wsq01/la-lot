@@ -26,7 +26,7 @@
                   <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                   <p>批量上传</p>
               </div>
-          </Upload>
+            </Upload>
           </FormItem>
           <FormItem>
             <Button type="primary" @click="submit">提交</Button>

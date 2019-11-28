@@ -99,6 +99,14 @@ export const editScene = (params) => editItem('/api/tb/scene', params)
 
 export const addReceiver = (params) => addItem('/api/tb/receiver', params)
 
+export const orderReceiver = (data) => {
+  return axios.request({
+    url: '/api/tb/receiver/order',
+    method: 'post',
+    data
+  })
+}
+
 export const deleteReceiver = (id) => deleteItem('/api/tb/receiver', id)
 
 export const editReceiver = (params) => editItem('/api/tb/receiver', params)
