@@ -30,7 +30,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
-import { addReceiver } from '@/api/data'
+import { addReceiver, editReceiver } from '@/api/data'
 export default {
   name: 'EditArea',
   data () {
@@ -65,15 +65,24 @@ export default {
     submit () {
       if (this.$route.name === 'add-receiver') {
         this.formItem.organizationId = this.$store.state.user.organizationId
+        addReceiver(this.formItem).then(res => {
+          if (res.data.code === 0) {
+            this.$Message.success('添加成功！')
+            this.cancel()
+          } else {
+            this.$Message.error(res.data.message)
+          }
+        })
+      } else {
+        editReceiver(this.formItem).then(res => {
+          if (res.data.code === 0) {
+            this.$Message.success('修改成功！')
+            this.cancel()
+          } else {
+            this.$Message.error(res.data.message)
+          }
+        })
       }
-      addReceiver(this.formItem).then(res => {
-        if (res.data.code === 0) {
-          this.$Message.success('添加成功！')
-          this.cancel()
-        } else {
-          this.$Message.error(res.data.message)
-        }
-      })
     }
   },
   mounted () {

@@ -1,28 +1,28 @@
 <template>
-    <Row type="flex" justify="center">
-      <i-col span="6">
-        <Form ref="formValidate" :model="formItem" :label-width="80" :rules="rules">
-          <FormItem :label="formItemLabel[0]" prop="name">
-            <Input v-model="formItem.name" />
-          </FormItem>
-          <FormItem :label="formItemLabel[1]" prop="type">
-            <Input v-model="formItem.type" />
-          </FormItem>
-          <FormItem :label="formItemLabel[2]" prop="cityId">
-            <Select v-model="formItem.cityId">
-              <Option v-for="(item, index) in cityList" :key="index" :value="item.id">{{item.name}}</Option>
-            </Select>
-          </FormItem>
-          <FormItem :label="formItemLabel[3]">
-            <Input v-model="formItem.remark" type="textarea"/>
-          </FormItem>
-          <FormItem>
-            <Button type="primary" @click="submit('formValidate')">提交</Button>
-            <Button @click="cancel" style="margin-left: 8px">取消</Button>
-          </FormItem>
-        </Form>
-      </i-col>
-    </Row>
+  <Row type="flex" justify="center">
+    <i-col span="6">
+      <Form ref="formValidate" :model="formItem" :label-width="80" :rules="rules">
+        <FormItem :label="formItemLabel[0]" prop="name">
+          <Input v-model="formItem.name" />
+        </FormItem>
+        <FormItem :label="formItemLabel[1]" prop="type">
+          <Input v-model="formItem.type" />
+        </FormItem>
+        <FormItem :label="formItemLabel[2]" prop="cityId">
+          <Select v-model="formItem.cityId">
+            <Option v-for="(item, index) in cityList" :key="index" :value="item.id">{{item.name}}</Option>
+          </Select>
+        </FormItem>
+        <FormItem :label="formItemLabel[3]">
+          <Input v-model="formItem.remark" type="textarea"/>
+        </FormItem>
+        <FormItem>
+          <Button type="primary" @click="submit('formValidate')">提交</Button>
+          <Button @click="cancel" style="margin-left: 8px">取消</Button>
+        </FormItem>
+      </Form>
+    </i-col>
+  </Row>
 </template>
 
 <script>

@@ -127,7 +127,6 @@ export default {
       this.isShowDrawerLeft = true
     },
     handleClickleftDrawerMenu (e) {
-      console.log(e)
       getDeviceNumber({ organizationId: this.$store.state.user.organizationId, key: e.split('/')[0], value: e.split('/')[1] }).then(res => {
         if (res.data.code === 0) {
           let lists = res.data.data.list
@@ -149,45 +148,54 @@ export default {
     },
     traverseDeviceList (lists) {
       if (lists.length === 0) return {}
-      var xAxis = []
-      var yAxis = []
-      var grid = []
-      var series = []
+      var xAxis = {
+        type: 'value',
+        axisLabel: {
+          color: '#fff'
+        },
+        splitLine: {show: true}
+      }
+      var textStyle = {
+        color: '#fff'
+      }
+      var yAxis = {
+        type: 'category',
+        axisLabel: {
+          color: '#fff'
+        },
+        splitLine: {show: false},
+        data: []
+      }
+      var tooltip = {
+        trigger: 'axis',
+        axisPointer : {   
+          type : 'shadow'  
+        }
+      }
+      var grid = {
+        left: '25%',
+        right: 20,
+        top: 10,
+        bottom: 30
+      }
+      var series = [{
+        name:'数量',
+        type:'bar',
+        barWidth: '60%',
+        data:[]
+      }]
       lists.forEach((item, index) => {
-        xAxis.push({ gridIndex: index })
-        yAxis.push({
-          gridIndex: index,
-          type: 'category',
-          data: [],
-          name: item.name,
-          nameLocation: 'center',
-          nameRotate: 360,
-          nameTextStyle: { fontSize: 14 }
-        })
-        grid.push({ height: ((100 / item.sub.length) + '%'), top: ((100 / item.sub.length * index) + '%'), containLabel: true })
-        series.push({
-          type: 'bar',
-          seriesLayoutBy: 'column',
-          xAxisIndex: index,
-          yAxisIndex: index,
-          data: [],
-          label: {
-            normal: {
-              show: true,
-              position: 'inside'
-            }
-          }
-        })
         item.sub.forEach((sItem, sIndex) => {
-          yAxis[index].data.push(sItem.name)
-          series[index].data.push(sItem.number)
+          yAxis.data.push(item.name + '/' + sItem.name)
+          series[0].data.push(sItem.number)
         })
       })
       return {
-        tooltip: {},
+        tooltip,
+        textStyle,
+        grid,
         xAxis,
         yAxis,
-        grid,
         series
       }
     },
@@ -234,7 +242,6 @@ export default {
       })
       return {
         tooltip,
-        // legend,
         series
       }
     },
@@ -245,21 +252,20 @@ export default {
         formatter: '{a} <br/>{b} : {c}'
       }
       var legend = {
-        bottom: 10,
+        bottom: 'bottom',
         textStyle: {
-          fontSize: 18
+          fontSize: 16,
+          color: '#fff'
         }
       }
-      var series = []
-      lists.forEach((item, index) => {
-        const obj = {
-          name: item.name,
+      var series = [{
+          name: '丢失',
           type: 'pie',
           radius: '50%',
           label: {
             show: true,
-            position: 'center',
-            fontSize: 40,
+            // position: 'center',
+            fontSize: 20,
             color: '#fff',
             formatter: '{c}',
             emphasis: {
@@ -270,14 +276,11 @@ export default {
               }
             }
           },
-          center: [(100 / (lists.length * 2) * (2 * index + 1) + '%'),
-            '40%'
-          ],
-          data: [
-            { value: item.missed, name: item.name }
-          ]
-        }
-        series.push(obj)
+          center: ['50%', '40%'],
+          data: []
+        }]
+      lists.forEach((item, index) => {
+        series[0].data.push({value: item.missed, name: item.name})
       })
       return {
         tooltip,

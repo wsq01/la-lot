@@ -34,6 +34,7 @@
               </Poptip>
               <Button v-if="bItem === 'EDIT'" type="primary" size="small" style="margin-right: 5px" @click="editItem(row, index)">编辑</Button>
             </div>
+            <Button type="primary" size="small" style="margin-right: 5px" @click="editItem(row, index)">重载固件</Button>
           </template>
         </Table>
         <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0"></Page>
