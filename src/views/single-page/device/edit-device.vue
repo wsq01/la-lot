@@ -21,7 +21,8 @@
             <Upload
               multiple
               type="drag"
-              action="//39.105.79.197:8002/api/tb/excel">
+              :on-success="uploadSuccess"
+              action="//39.105.79.197:8002/api/tb/device/import">
               <div style="padding: 20px 0">
                   <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                   <p>批量上传</p>
@@ -62,6 +63,15 @@ export default {
         this.closeTag({
           name: 'add-device',
           params: this.$route.params
+        })
+      }
+    },
+    uploadSuccess (res, file, fileList) {
+      if (res.code === 0) {
+        this.$Message.success(res.message)
+      } else {
+        this.$Notice.error({
+          title: res.message
         })
       }
     },

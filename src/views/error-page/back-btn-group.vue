@@ -25,6 +25,7 @@ export default {
     }
   },
   mounted () {
+    this.backPrev()
     this.timer = setInterval(() => {
       if (this.second === 0) this.backPrev()
       else this.second--

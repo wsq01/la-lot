@@ -1,5 +1,6 @@
 <template>
-  <error-content code="404" desc="Oh~~您的页面好像飞走了~" :src="src"/>
+  <!-- <error-content code="404" desc="Oh~~您的页面好像飞走了~" :src="src"/> -->
+  <div></div>
 </template>
 
 <script>
@@ -14,6 +15,9 @@ export default {
     return {
       src: error404
     }
+  },
+  beforeCreate () {
+    this.$router.go(-1)
   }
 }
 </script>

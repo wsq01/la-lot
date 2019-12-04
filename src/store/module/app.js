@@ -38,6 +38,7 @@ export default {
     organizationList: [],
     menuList: [], // 全部menu
     roleList: [],
+    socketMsg: '{}',
     menuTheme: localRead('menuTheme') || 'dark',
     topTheme: localRead('topTheme') || 'light'
   },
@@ -50,6 +51,9 @@ export default {
   mutations: {
     setBreadCrumb (state, route) { // 设置面包屑导航
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
+    },
+    setSocketMsg (state, msg) {
+      state.socketMsg = msg
     },
     setHomeRoute (state, defaultRoutes) { // 设置首页路由
       state.homeRoute = getHomeRoute(defaultRoutes, homeName)
@@ -117,6 +121,18 @@ export default {
     }
   },
   actions: {
+    reqSocketMsg ({ state, commit }, msg) {
+      return new Promise((resolve, reject) => {
+        try {
+          setTimeout(() => {
+            commit('setSocketMsg', msg)
+            resolve(msg)
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     getCityList ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {

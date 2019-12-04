@@ -4,7 +4,7 @@ import {
 } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
 import Cookies from 'js-cookie'
-import config from '@/config'
+// import config from '@/config'
 
 export default {
   state: {
@@ -40,7 +40,6 @@ export default {
       setToken(token)
     },
     setOrganizationId (state, organizationId) {
-      Cookies.set('organizationId', organizationId, { expires: config.cookieExpires || 1 })
       state.organizationId = organizationId
     },
     setRoleIds (state, roleIds) {
@@ -70,6 +69,8 @@ export default {
             commit('setOrganizationId', data.organizationId)
             commit('setRoleIds', data.roleIds)
             // commit('setHasGetInfo', true)
+            Cookies.set('organizationId', data.organizationId)
+            Cookies.set('userId', data.userId)
             Cookies.set('roleIds', data.roleIds)
           }
           resolve(res)
@@ -84,6 +85,8 @@ export default {
         // logout(state.token).then(() => {
         commit('setToken', '')
         Cookies.remove('organizationId')
+        Cookies.remove('roleIds')
+        Cookies.remove('userId')
         commit('setAccess', [])
         resolve()
         // }).catch(err => {
@@ -115,6 +118,7 @@ export default {
           //   reject(err)
           // }),
           Promise.all(promises).then(res => {
+            console.log(res)
             commit('setHasGetInfo', true)
             commit('setUserMenu', res[0].data.data.list)
             resolve(res)

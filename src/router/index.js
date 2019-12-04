@@ -25,6 +25,7 @@ const turnTo = (to, access, next) => {
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start() // 加载进度条组件
   const token = getToken()
+  console.log(to)
   if (!token && to.name !== LOGIN_PAGE_NAME) {
     // 未登录且要跳转的页面不是登录页
     next({
@@ -39,7 +40,6 @@ router.beforeEach((to, from, next) => {
       name: homeName
     })
   } else {
-    // turnTo(to, store.state.user.access, next)
     if (store.state.user.hasGetInfo) {
       turnTo(to, store.state.user.access, next)
     } else {
@@ -51,8 +51,9 @@ router.beforeEach((to, from, next) => {
           const dynamicRouters = initDynamicRouter(res[0].data.data.list, dynamicRoutes)
           dynamicRouters.forEach(item => router.options.routes.push(item))
           router.addRoutes(dynamicRouters)
+          // next()
+          turnTo(to, store.state.user.access, next)
         }
-        turnTo(to, store.state.user.access, next)
       }).catch((res) => {
         setToken('')
         Cookies.remove('organizationId')

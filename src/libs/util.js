@@ -52,7 +52,6 @@ export const getUserControlMenuByRouter = (list) => {
   let res = []
   forEach(list, item => {
     if (item.meta.userControl) {
-      console.log(item)
       let obj = {
         icon: (item.meta && item.meta.icon) || '',
         name: item.name,
@@ -436,6 +435,5 @@ export const initDynamicRouter = (menuList, routers) => {
     result.push(route)
     offs1 = false
   })
-  console.log(result)
   return result
 }

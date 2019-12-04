@@ -17,7 +17,7 @@
             <Button @click="handleSearch" type="primary" icon="md-search">搜索</Button>
           </FormItem>
           <FormItem>
-            <Poptip confirm title="确定要重载固件吗？" transfer @on-ok="editItemReload(row, index)">
+            <Poptip confirm title="确定要重载固件吗？" transfer @on-ok="editItemReload()">
               <Button type="primary">重载固件</Button>
             </Poptip>
           </FormItem>
@@ -51,10 +51,10 @@
     <Modal v-model="modal" scrollable class-name="vertical-center-modal" title="设置参数" @on-ok="editItemParam" @on-cancel="closeModal">
       <Form :model="receiverParams" :label-width="80" style="padding: 0 50px">
         <FormItem label="条数">
-          <Input clearable placeholder="请输入条数" v-model="receiverParams.count" />
+          <Input clearable placeholder="请输入条数" v-model="receiverParams.counts" />
         </FormItem>
         <FormItem label="发送间隔(s)">
-          <Input clearable placeholder="请输入发送间隔秒数" v-model="receiverParams.interval" />
+          <Input clearable placeholder="请输入发送间隔秒数" v-model="receiverParams.seconds" />
         </FormItem>
       </Form>
     </Modal>
@@ -65,6 +65,7 @@
 </template>
 
 <script>
+// import { mapState } from 'vuex'
 import { getReceiver, deleteReceiver, orderReceiver } from '@/api/data'
 import { getBtn } from '@/api/user'
 import minxin from '@/assets/js/mixin'
@@ -116,24 +117,28 @@ export default {
         }
       ],
       btnList: [],
-      socketUrl: 'ws://39.105.79.197:8002/websocket',
-      socket: null,
       modal: false,
       modal1: false,
       receiverParams: {},
-      handleOption: '',
       clickedItem: {},
       isDisabled: [],
-      message: '',
-      progress: 0,
-      worker: null
+      progress: 0
     }
   },
   methods: {
     // 获取列表
     getItems (params) {
       getReceiver(params).then(res => {
-        this.getSuccess(res)
+        this.loading = false
+        if (res.data.code === 0) {
+          res.data.data.list.forEach((item, index) => {
+            item.status = 'offline'
+          })
+          this.tableData = res.data.data.list
+          this.total = res.data.data.total
+        } else {
+
+        }
       })
     },
     // 删除
@@ -174,7 +179,6 @@ export default {
     editItemUpdate (row, index) {
       this.clickedItem = row
       const obj = { order: 'update', receiverNum: row.receiverNum }
-      this.handleOption = 'update'
       orderReceiver(obj).then(res => {
         this.$Notice.info({
           title: '正在更新，请稍等...'
@@ -184,7 +188,6 @@ export default {
     editItemTimer (row, index) {
       this.clickedItem = row
       const obj = { order: 'timer', receiverNum: row.receiverNum }
-      this.handleOption = 'timer'
       orderReceiver(obj).then(res => {
         console.log(res)
         this.$Notice.info({
@@ -195,7 +198,6 @@ export default {
     editItemReset (row, index) {
       this.clickedItem = row
       const obj = { order: 'reset', receiverNum: row.receiverNum }
-      this.handleOption = 'reset'
       orderReceiver(obj).then(res => {
         this.$Notice.info({
           title: '正在重启，请稍等...'
@@ -203,7 +205,12 @@ export default {
       })
     },
     editItemReload () {
-
+      const obj = { order: 'reload' }
+      orderReceiver(obj).then(res => {
+        this.$Notice.info({
+          title: '正在重新加载，请稍等...'
+        })
+      })
     },
     openModal (row, index) {
       this.modal = true
@@ -215,7 +222,6 @@ export default {
     },
     editItemParam () {
       const obj = { order: 'param', receiverNum: this.selectedReceiverNum }
-      this.handleOption = 'param'
       Object.assign(obj, this.receiverParams)
       this.receiverParams = {}
       orderReceiver(obj).then(res => {
@@ -224,75 +230,72 @@ export default {
           title: '正在设置参数，请稍等...'
         })
       })
-    },
-    initScoket () {
-      if (typeof WebSocket === 'undefined') {
-        alert('您的浏览器不支持socket')
-      } else {
-        // 实例化socket
-        this.socket = new WebSocket(this.socketUrl)
-        // 监听socket连接
-        this.socket.onopen = this.open
-        // 监听socket错误信息
-        this.socket.onerror = this.error
-        // 监听socket消息
-        this.socket.onmessage = this.getMessage
-      }
-    },
-    open () {
-      console.log('socket连接成功')
-    },
-    error () {
-      this.$Notice.info({
-        title: '提示',
-        desc: 'socket连接失败！'
+    }
+  },
+  computed: {
+    socketMsg () {
+      if (!this.$store.state.app.socketMsg) return
+      const obj = JSON.parse(this.$store.state.app.socketMsg)
+      this.tableData.forEach((item, index) => {
+        if (item.receiverNum === obj.receive_num) {
+          this.isDisabled[index] = true
+          this.$set(this.tableData[index], 'status', obj.status)
+        } else {
+          this.isDisabled[index] = false
+        }
       })
-    },
-    getMessage (msg) {
-      this.message = msg.data
-    },
-    send () {
-      this.socket.send('params')
-    },
-    close () {
-      console.log('socket已经关闭')
-    },
-    initWorker () {
-
+      return JSON.parse(this.$store.state.app.socketMsg)
     }
   },
   watch: {
-    message: function(newVal, oldVal) {
-      const msg = JSON.parse(newVal)
-      console.log(msg)
-      if (msg.result === 'succeed') {
-        if (this.handleOption === 'timer') {
-          this.$set(this.tableData[this.clickedItem._index], 'status', msg.status)
-          this.isDisabled[this.clickedItem._index] = true
-          this.$Notice.success('对时完成！')
-        } else if(this.handleOption === 'reset') {
-
-        } else if(this.handleOption === 'param') {
-
-        } else if(this.handleOption === 'update') {
+    socketMsg (val) {
+      console.log(val)
+      if (val.result && val.result === 'succeed') {
+        if (val.order === 'timer') {
+          this.$Notice.success({
+            title: '对时成功！'
+          })
+          // const obj = JSON.parse(this.$store.state.app.socketMsg)
+          // this.tableData.forEach((item, index) => {
+          //   if (item.receiverNum === obj.receive_num) {
+          //   }
+          // })
+        } else if (val.order === 'pingpong') {
+          const obj = JSON.parse(this.$store.state.app.socketMsg)
+          this.tableData.forEach((item, index) => {
+            if (item.receiverNum === obj.receive_num) {
+              this.isDisabled[index] = true
+              this.$set(this.tableData[index], 'status', obj.status)
+            } else {
+              this.isDisabled[index] = false
+            }
+          })
+        } else if (val.order === 'reset') {
+          this.$Notice.success({
+            title: '重启成功！'
+          })
+        } else if (val.order === 'param') {
+          this.$Notice.success({
+            title: '设置参数成功！'
+          })
+        } else if (val.order === 'update') {
           this.modal1 = true
-          this.progress = res.count / res.total
+          this.progress = val.count / val.total
         }
-      } else {
+      } else if (val.result && val.result !== 'succeed') {
         this.$Notice.error({
-          title: msg.result
+          title: val.result
         })
-        this.message = {}
-      }
+        this.tableData.forEach((item, index) => {
+          if (item.receiverNum === val.receive_num) {
+            this.$set(this.tableData[index], 'status', val.status)
+          }
+        })
+      } else {}
     }
   },
   mounted () {
     this.initBtn()
-    this.initScoket()
-  },
-  beforeDestroy () {
-    // 销毁监听
-    if (this.socket) this.socket.onclose = this.close
   }
 }
 </script>
