@@ -31,7 +31,7 @@
     </Row>
     <Row>
       <i-col :span="24">
-        <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select="handleSelectTableItem">
+        <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select-change="handleSelectTableItem">
           <template slot-scope="{row, index}" slot="action">
             <div v-for="(bItem, bIndex) in btnList" :key="bIndex" style="display: inline-block;margin-right: 5px">
               <Poptip v-if="bItem === 'DELETE'" confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
@@ -41,7 +41,7 @@
             </div>
           </template>
         </Table>
-        <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" style="margin: 10px 0 0"></Page>
+        <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0"></Page>
       </i-col>
     </Row>
   </Card>
@@ -139,6 +139,16 @@ export default {
           })
         }
       })
+    },
+    // 搜索
+    handleSearch () {
+      const obj = {}
+      if (this.searchForm.key === 'id') {
+        obj['deviceId'] = this.searchForm.value
+      } else {
+        obj[this.searchForm.key] = this.searchForm.value
+      }
+      this.getItems(obj)
     }
   },
   mounted () {

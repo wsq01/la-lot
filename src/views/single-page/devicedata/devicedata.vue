@@ -30,7 +30,7 @@
           <i-col :span="24">
             <Form ref="traceForm" :model="historySearchForm" inline :label-width="70">
               <FormItem label="设备编码:">
-                <Input @on-change="handleClear" clearable placeholder="请输入关键字" v-model="historySearchForm.deviceNum" class="search-item" />
+                <Input clearable placeholder="请输入关键字" v-model="historySearchForm.deviceNum" class="search-item" />
               </FormItem>
               <FormItem label="场景:">
                 <Select v-model="historySearchForm.sceneId" class="search-item">
@@ -45,7 +45,7 @@
               <Button @click="handleSearchHistory" type="primary" icon="md-search">搜索</Button>
             </Form>
             <Table :loading="loading" stripe border :columns="columns" :data="historyTableData"></Table>
-            <Page :total="historyTotal" show-sizer show-total show-elevator @on-change="handleChangeHistoryPage" style="margin: 10px 0 0"></Page>
+            <Page :total="historyTotal" show-sizer show-total show-elevator @on-change="handleChangeHistoryPage" @on-page-size-change="handlePageSizeChangeHistory" style="margin: 10px 0 0"></Page>
           </i-col>
         </Row>
       </TabPane>
@@ -75,7 +75,7 @@ export default {
       total: 0,
       size: 10,
       historyTotal: 0,
-      historySize: 0,
+      historySize: 10,
       realTimeSearchForm: {},
       historySearchForm: {},
       searchKeyList: [
@@ -154,6 +154,15 @@ export default {
       }
       this.getDeviceRealTime(searchObj)
     },
+    handlePageSizeChangeHistory (e) {
+      this.size = e
+      var searchObj = { size: this.size }
+      searchObj.deviceNum = this.historySearchForm.deviceNum
+      searchObj.sceneId = this.historySearchForm.sceneId
+      searchObj.startTime = this.historySearchForm.time[0]
+      searchObj.stopTime = this.historySearchForm.time[1]
+      this.getDeviceHistory(searchObj)
+    },
     // 实时数据页码改变事件
     handleChangePage (e) {
       var searchObj = { size: this.size, index: e }
@@ -162,21 +171,13 @@ export default {
       }
       this.getDeviceRealTime(searchObj)
     },
-    // 实时数据分页数改变事件
-    handleHistoryPageSizeChange (e) {
-      this.historySize = e
-      var searchObj = { size: this.historySize }
-      if (this.historySearchForm.value) {
-        Object.assign(searchObj, this.realTimeSearchForm)
-      }
-      this.getDeviceRealTime(searchObj)
-    },
     // 历史数据页码改变事件
     handleChangeHistoryPage (e) {
       var searchObj = { size: this.historySize, index: e }
-      if (this.historySearchForm.value) {
-        Object.assign(searchObj, this.historySearchForm)
-      }
+      searchObj.deviceNum = this.historySearchForm.deviceNum
+      searchObj.sceneId = this.historySearchForm.sceneId
+      searchObj.startTime = this.historySearchForm.time[0]
+      searchObj.stopTime = this.historySearchForm.time[1]
       this.getDeviceHistory(searchObj)
     },
     handleClear () {
@@ -197,11 +198,11 @@ export default {
       if (this.historySearchForm.time[0]) {
         this.historySearchForm.time = this.historySearchForm.time.map((item, index) => new Date(item).getTime())
         reqData.startTime = this.historySearchForm.time[0]
-        reqData.endTime = this.historySearchForm.time[1]
+        reqData.stopTime = this.historySearchForm.time[1]
       }
       getDeviceHistory(reqData).then(res => {
         this.historyTableData = res.data.data.list
-        this.total = res.data.data.total
+        this.historyTotal = res.data.data.total
       })
     }
   },

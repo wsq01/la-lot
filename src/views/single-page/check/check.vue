@@ -334,7 +334,7 @@ export default {
       let link = document.createElement('a')
       link.style.display = 'none'
       if (this.importSearchForm.time) {
-        link.href = '//1.119.6.206:8003/api/hd/device/report/export?' + str
+        link.href = '//www.sscs58.com:8003/api/hd/device/report/export?' + str
       } else {
         link.href = '//39.105.79.197:8002/api/tb/device/report/export?' + str
       }
@@ -350,7 +350,7 @@ export default {
       let link = document.createElement('a')
       link.style.display = 'none'
       if (this.checkSearchForm.time) {
-        link.href = '//1.119.6.206:8003/api/hd/device/check/export?' + str
+        link.href = '//www.sscs58.com:8003/api/hd/device/check/export?' + str
       } else {
         link.href = '//39.105.79.197:8002/api/tb/device/check/export?' + str
       }

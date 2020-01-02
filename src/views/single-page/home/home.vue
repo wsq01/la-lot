@@ -185,7 +185,9 @@ export default {
         data:[]
       }]
       lists.forEach((item, index) => {
+        if (item.name === 'Unknown') return
         item.sub.forEach((sItem, sIndex) => {
+          if (sItem.name === 'Unknown') return
           yAxis.data.push(item.name + '/' + sItem.name)
           series[0].data.push(sItem.number)
         })
@@ -201,16 +203,23 @@ export default {
     },
     statisticList (lists) {
       if (lists.length === 0) return {}
+      const newList = []
+      lists.forEach((item, index) => {
+        if (item.name != 'Unknown') {
+          newList.push(item)
+        }
+      })
       var tooltip = {
         trigger: 'item'
       }
       var series = []
-      lists.forEach((item, index) => {
+      newList.forEach((item, index) => {
+        if (item.name === 'Unknown') return
         var obj = {
           name: item.name,
           type: 'pie',
-          radius: ['30%', (70 / lists.length) + '%'],
-          center: [(100 / (lists.length * 2) * (2 * index + 1) + '%'),
+          radius: ['60%', (70 / newList.length) + '%'],
+          center: [(200 / (newList.length * 2) * (2 * index + 1) + '%'),
             '50%'
           ],
           label: {
@@ -232,6 +241,7 @@ export default {
           data: []
         }
         item.sub.forEach((sItem, sIndex) => {
+          if (sItem.name === 'Unknown') return
           const sObj = {
             value: sItem.number,
             name: sItem.name
@@ -280,6 +290,7 @@ export default {
           data: []
         }]
       lists.forEach((item, index) => {
+        if (item.name === 'Unknown') return
         series[0].data.push({value: item.missed, name: item.name})
       })
       return {

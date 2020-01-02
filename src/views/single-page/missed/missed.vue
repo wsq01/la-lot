@@ -22,7 +22,7 @@
     <Row>
       <i-col :span="24">
         <Table :loading="loading" stripe border :columns="columns" :data="tableData"></Table>
-        <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" style="margin: 10px 0 0"></Page>
+        <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0"></Page>
       </i-col>
     </Row>
   </Card>

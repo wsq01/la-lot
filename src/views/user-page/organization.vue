@@ -24,7 +24,7 @@
     </Row>
     <Row>
       <i-col :span="24">
-        <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select="handleSelectTableItem">
+        <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select-change="handleSelectTableItem">
           <template slot-scope="{row, index}" slot="action">
             <Button type="primary" size="small" style="margin-right: 5px" @click="edit(row, index)">编辑</Button>
             <Poptip confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
