@@ -482,6 +482,46 @@ export const dynamicRoutes = [
     ]
   },
   {
+    path: '/repository',
+    name: 'repository',
+    redirect: 'repository',
+    component: Main,
+    meta: {
+      hideInBread: true
+    },
+    children: [
+      {
+        path: 'repository',
+        name: 'repository',
+        meta: {
+          icon: 'md-globe',
+          title: '区域管理'
+        },
+        component: () => import('@/views/single-page/repository/repository.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit-repository',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '编辑区域'
+        },
+        component: () => import('@/views/single-page/repository/edit-repository.vue')
+      },
+      {
+        path: 'add',
+        name: 'add-repository',
+        meta: {
+          hideInMenu: true,
+          notCache: true,
+          title: '新增区域'
+        },
+        component: () => import('@/views/single-page/repository/edit-repository.vue')
+      }
+    ]
+  },
+  {
     path: '/scene',
     name: '_scene',
     redirect: 'scene',

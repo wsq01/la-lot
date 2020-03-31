@@ -44,5 +44,8 @@ export default {
   'edit-relresource': 'edit-relresource',
   'btn': 'buttonManager',
   'add-btn': 'addButton',
-  'edit-btn': 'editButton'
+  'edit-btn': 'editButton',
+  'repository': 'repository',
+  'add-repository': 'addRepository',
+  'edit-repository': 'editRepository'
 }

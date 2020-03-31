@@ -93,6 +93,7 @@ export default {
     // 获取列表
     getItems (params) {
       getOrganization(params).then(res => {
+        this.loading = false
         if (res.data.code === 0) {
           this.tableData = res.data.data.list
           this.total = res.data.data.total

@@ -71,7 +71,7 @@
 
 <script>
 import BaiduMap from 'vue-baidu-map/components/map/Map'
-import BmCopyright from 'vue-baidu-map/components/controls/Copyright'
+// import BmCopyright from 'vue-baidu-map/components/controls/Copyright'
 // import BmLabel from 'vue-baidu-map/components/overlays/Label'
 import BmMarker from 'vue-baidu-map/components/overlays/Marker'
 import BmInfoWindow from 'vue-baidu-map/components/overlays/InfoWindow'
@@ -103,7 +103,7 @@ export default {
   },
   components: {
     BaiduMap,
-    BmCopyright,
+    // BmCopyright,
     // BmLabel,
     BmMarker,
     BmInfoWindow,
@@ -153,7 +153,7 @@ export default {
         axisLabel: {
           color: '#fff'
         },
-        splitLine: {show: true}
+        splitLine: { show: true }
       }
       var textStyle = {
         color: '#fff'
@@ -163,13 +163,13 @@ export default {
         axisLabel: {
           color: '#fff'
         },
-        splitLine: {show: false},
+        splitLine: { show: false },
         data: []
       }
       var tooltip = {
         trigger: 'axis',
-        axisPointer : {   
-          type : 'shadow'  
+        axisPointer: {
+          type: 'shadow'
         }
       }
       var grid = {
@@ -179,10 +179,10 @@ export default {
         bottom: 30
       }
       var series = [{
-        name:'数量',
-        type:'bar',
+        name: '数量',
+        type: 'bar',
         barWidth: '60%',
-        data:[]
+        data: []
       }]
       lists.forEach((item, index) => {
         if (item.name === 'Unknown') return
@@ -205,7 +205,7 @@ export default {
       if (lists.length === 0) return {}
       const newList = []
       lists.forEach((item, index) => {
-        if (item.name != 'Unknown') {
+        if (item.name !== 'Unknown') {
           newList.push(item)
         }
       })
@@ -213,13 +213,15 @@ export default {
         trigger: 'item'
       }
       var series = []
+      console.log(newList)
       newList.forEach((item, index) => {
         if (item.name === 'Unknown') return
+        console.log((2 * index + 1) / 2 / newList.length * 100 + '%')
         var obj = {
           name: item.name,
           type: 'pie',
           radius: ['60%', (70 / newList.length) + '%'],
-          center: [(200 / (newList.length * 2) * (2 * index + 1) + '%'),
+          center: [(2 * index + 1) / 2 / newList.length * 100 + '%',
             '50%'
           ],
           label: {
@@ -269,29 +271,29 @@ export default {
         }
       }
       var series = [{
-          name: '丢失',
-          type: 'pie',
-          radius: '50%',
-          label: {
+        name: '丢失',
+        type: 'pie',
+        radius: '50%',
+        label: {
+          show: true,
+          // position: 'center',
+          fontSize: 20,
+          color: '#fff',
+          formatter: '{c}',
+          emphasis: {
             show: true,
-            // position: 'center',
-            fontSize: 20,
-            color: '#fff',
-            formatter: '{c}',
-            emphasis: {
-              show: true,
-              textStyle: {
-                fontSize: '30',
-                fontWeight: 'bold'
-              }
+            textStyle: {
+              fontSize: '30',
+              fontWeight: 'bold'
             }
-          },
-          center: ['50%', '40%'],
-          data: []
-        }]
+          }
+        },
+        center: ['50%', '40%'],
+        data: []
+      }]
       lists.forEach((item, index) => {
         if (item.name === 'Unknown') return
-        series[0].data.push({value: item.missed, name: item.name})
+        series[0].data.push({ value: item.missed, name: item.name })
       })
       return {
         tooltip,
@@ -317,7 +319,7 @@ export default {
   },
   created () {
     this.addPoints()
-    if(this.cityList.length === 0) {
+    if (this.cityList.length === 0) {
       this.getCityList().then(res => {
         if (res.data && res.data.code === 0) {
           const lists = res.data.data.list

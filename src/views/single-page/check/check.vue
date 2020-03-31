@@ -8,7 +8,7 @@
             <i-col :span="24">
               <Form ref="checkForm" :model="importSearchForm" inline :label-width="90">
                 <FormItem label="区域:">
-                  <Select v-model="importSearchForm.areaId" transfer clearable class="search-col" label-in-value  @on-change="handleChangeImportArea">
+                  <Select v-model="importSearchForm.areaId" transfer clearable class="search-col" label-in-value  @on-change="handleChangeImportArea" @clear="handleChangeImportArea">
                     <template v-for="item in areaList">
                       <Option :value="item.id" :key="`search-${item.id}`">{{item.name}}</Option>
                     </template>
@@ -48,14 +48,14 @@
             <i-col :span="24">
               <Form ref="checkForm" :model="checkSearchForm" inline :label-width="90">
                 <FormItem label="区域:">
-                  <Select v-model="checkSearchForm.areaId" transfer class="search-col" label-in-value @on-change="handleChangeArea">
+                  <Select v-model="checkSearchForm.areaId" transfer class="search-col" label-in-value @on-change="handleChangeArea" @clear="handleChangeArea">
                     <template v-for="item in areaList">
                       <Option :value="item.id" :key="`search-${item.id}`">{{item.name}}</Option>
                     </template>
                   </Select>
                 </FormItem>
                 <FormItem label="场景:">
-                  <Select v-model="checkSearchForm.sceneId" transfer label-in-value class="search-col">
+                  <Select v-model="checkSearchForm.sceneId" transfer label-in-value class="search-col" @clear="handleChangeArea">
                     <template v-for="item in sceneList">
                       <Option :value="item.id" :key="`search-${item.id}`">{{item.name}}</Option>
                     </template>
@@ -329,10 +329,13 @@ export default {
       this.importSearchForm.organizationId = this.$store.state.user.organizationId
       let str = ''
       for (let [key, val] of Object.entries(this.importSearchForm)) {
-        str += key + '=' + val + '&'
+        if(val) {
+          str += key + '=' + val + '&'
+        }
       }
       let link = document.createElement('a')
       link.style.display = 'none'
+      console.log(str)
       if (this.importSearchForm.time) {
         link.href = '//www.sscs58.com:8003/api/hd/device/report/export?' + str
       } else {
@@ -482,16 +485,27 @@ export default {
     },
     // 报表区域改变事件
     handleChangeImportArea (e) {
-      getScene({ areaId: e.value }).then(res => {
-        this.sceneList = res.data.data.list
-      })
+      console.log(e)
+      if(e) {
+        getScene({ areaId: e.value }).then(res => {
+          this.sceneList = res.data.data.list
+        })
+      } else {
+        this.sceneList = []
+        this.$set(this.importSearchForm, 'sceneId', '')
+      }
     },
     // 盘点区域改变事件
     handleChangeArea (e) {
-      // this.checkSearchForm.areaName = e.label
-      getScene({ areaId: e.value }).then(res => {
-        this.sceneList = res.data.data.list
-      })
+      console.log(e)
+      if(e) {
+        getScene({ areaId: e.value }).then(res => {
+          this.sceneList = res.data.data.list
+        })
+      } else {
+        this.sceneList = []
+        this.$set(this.checkSearchForm, 'sceneId', '')
+      }
     },
     handleChangeTrendArea (e) {
       getScene({ areaId: e.value }).then(res => {

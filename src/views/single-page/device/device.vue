@@ -140,6 +140,16 @@ export default {
         }
       })
     },
+    handleChangePage (e) {
+      const obj = {}
+      if (this.searchForm.key === 'id') {
+        obj['deviceId'] = this.searchForm.value
+      } else {
+        obj[this.searchForm.key] = this.searchForm.value
+      }
+      Object.assign(obj, { size: this.size, index: e })
+      this.getItems(obj)
+    },
     // 搜索
     handleSearch () {
       const obj = {}

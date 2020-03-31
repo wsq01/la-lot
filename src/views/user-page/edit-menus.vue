@@ -30,9 +30,10 @@
             </Select>
           </FormItem>
           <FormItem :label="formItemLabel[6]">
-            <Select v-model="formItem.uri">
+            <Input v-model="formItem.uri" />
+            <!-- <Select v-model="formItem.uri">
               <Option v-for="(item, index) in uriList" :key="index" :value="item.value">{{item.name}}</Option>
-            </Select>
+            </Select> -->
           </FormItem>
           <FormItem :label="formItemLabel[7]">
             <Input v-model="formItem.description" />

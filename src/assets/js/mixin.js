@@ -12,7 +12,11 @@ export default {
   methods: {
     // 分页
     handleChangePage (e) {
-      this.getItems({ size: this.size, index: e })
+      const obj = { size: this.size, index: e }
+      if (this.searchForm.value) {
+        Object.assign(obj, this.searchForm)
+      }
+      this.getItems(obj)
     },
     // 搜索清除
     handleClear (e) {

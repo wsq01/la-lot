@@ -230,10 +230,8 @@ export default {
           title: '正在设置参数，请稍等...'
         })
       })
-    }
-  },
-  computed: {
-    socketMsg () {
+    },
+    computedSocketMsg () {
       if (!this.$store.state.app.socketMsg) return
       const obj = JSON.parse(this.$store.state.app.socketMsg)
       this.tableData.forEach((item, index) => {
@@ -241,12 +239,17 @@ export default {
           this.$set(this.tableData[index], 'status', obj.status)
         }
         if (item.status === 'online') {
-          this.isDisabled[index] = true
+          this.isDisabled[ index ] = true
         } else {
-          this.isDisabled[index] = false
+          this.isDisabled[ index ] = false
         }
       })
       return JSON.parse(this.$store.state.app.socketMsg)
+    }
+  },
+  computed: {
+    socketMsg () {
+      return this.computedSocketMsg()
     }
   },
   watch: {

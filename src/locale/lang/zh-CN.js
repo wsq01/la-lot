@@ -44,5 +44,8 @@ export default {
   'edit-relresource': '编辑关联',
   'btn': '按钮管理',
   'add-btn': '添加按钮',
-  'edit-btn': '编辑按钮'
+  'edit-btn': '编辑按钮',
+  'repository': '库位管理',
+  'add-repository': '添加库位',
+  'edit-repository': '编辑库位'
 }
