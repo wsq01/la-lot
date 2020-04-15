@@ -3,6 +3,7 @@ import config from '@/config'
 
 const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev.second : config.baseUrl.pro.second
 const axios = new HttpRequest(baseUrl)
+
 const UID = ''
 const getItems = (url, params) => {
   return axios.request({

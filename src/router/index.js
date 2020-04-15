@@ -7,6 +7,7 @@ import config from '@/config'
 import store from '@/store'
 import Cookies from 'js-cookie'
 import { defaultRoutes, dynamicRoutes } from './router.js'
+console.log(dynamicRoutes)
 
 Vue.use(Router)
 
@@ -25,7 +26,6 @@ const turnTo = (to, access, next) => {
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start() // 加载进度条组件
   const token = getToken()
-  console.log(to)
   if (!token && to.name !== LOGIN_PAGE_NAME) {
     // 未登录且要跳转的页面不是登录页
     next({
@@ -51,6 +51,7 @@ router.beforeEach((to, from, next) => {
           const dynamicRouters = initDynamicRouter(res[0].data.data.list, dynamicRoutes)
           dynamicRouters.forEach(item => router.options.routes.push(item))
           router.addRoutes(dynamicRouters)
+          console.log(dynamicRouters)
           // next()
           turnTo(to, store.state.user.access, next)
         }

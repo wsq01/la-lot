@@ -1,6 +1,6 @@
 <template>
   <Row type="flex" :gutter="20">
-    <i-col :span="6" v-for="(item, index) in lists" :key="index">
+    <i-col :span="6" :xs="{span: 12}" v-for="(item, index) in lists" :key="index">
       <Card :padding="20" style="margin: 20px auto;text-align: center" :style="item.status === 1 ? 'color: green' : 'color: red'">
         <div>{{item.area_name}}</div>
         <div>{{item.name}}</div>
@@ -26,17 +26,24 @@ export default {
   methods: {
     getDeviceRealTime (params) {
       getDeviceRealTime(params).then(res => {
-          console.log(res)
         if (res.data.code === 0) {
-          this.lists = res.data.data.list
+          const list = res.data.data.list
+          const arr = []
+          list.forEach(item => {
+            if (item.device_num.startsWith('03')) {
+              arr.push(item)
+            }
+          })
+          console.log(arr)
+          this.lists = arr
         }
       })
-    },
+    }
   },
   mounted () {
-    this.getDeviceRealTime({ key: 'receiverNum', value: '33ffd4055054' })
+    this.getDeviceRealTime({ key: 'receiverNum', value: '000000000002', size: 743 })
     this.timer = setInterval(() => {
-      this.getDeviceRealTime({ key: 'receiverNum', value: '33ffd4055054' })
+      this.getDeviceRealTime({ key: 'receiverNum', value: '000000000002', size: 743 })
     }, 30000)
   },
   beforeDestroy () {
