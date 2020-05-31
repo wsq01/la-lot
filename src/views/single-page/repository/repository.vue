@@ -24,20 +24,17 @@ export default {
     }
   },
   methods: {
-    getDeviceRealTime (params) {
-      getDeviceRealTime(params).then(res => {
-        if (res.data.code === 0) {
-          const list = res.data.data.list
-          const arr = []
-          list.forEach(item => {
-            if (item.device_num.startsWith('03')) {
-              arr.push(item)
-            }
-          })
-          console.log(arr)
-          this.lists = arr
-        }
-      })
+    async getDeviceRealTime (params) {
+      const res = await getDeviceRealTime(params)
+      if (res.data.code === 0) {
+        const arr = []
+        res.data.data.list.forEach(item => {
+          if (item.device_num.startsWith('03')) {
+            arr.push(item)
+          }
+        })
+        this.lists = arr
+      }
     }
   },
   mounted () {

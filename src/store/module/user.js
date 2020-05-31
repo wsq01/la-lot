@@ -106,17 +106,6 @@ export default {
           const promises = roleIds.map(id => {
             return getMenus({ roleId: id })
           })
-          // getMenus(roleId).then(res => {
-          //   const data = res.data
-          //   // commit('setAvatar', data.avatar)
-          //   // commit('setUserName', data.name)
-          //   // commit('setUserId', data.user_id)
-          //   // commit('setAccess', data.access)
-          //   // commit('setHasGetInfo', true)
-          //   resolve(data)
-          // }).catch(err => {
-          //   reject(err)
-          // }),
           Promise.all(promises).then(res => {
             console.log(res)
             commit('setHasGetInfo', true)

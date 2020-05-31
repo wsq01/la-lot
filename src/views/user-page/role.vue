@@ -75,25 +75,14 @@ export default {
   },
   methods: {
     // 获取列表
-    getItems (params) {
-      getRole(params).then(res => {
-        this.loading = false
-        if (res.data.code === 0) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.total
-        }
-      })
+    async getItems (params) {
+      const res = await getRole(params)
+      this.getSuccess(res)
     },
     // 删除
-    deleteItem (row, index) {
-      deleteRole(row.id).then(res => {
-        if (res.data.code === 0) {
-          this.tableData.splice(index, 1)
-          this.$Message.success('删除成功！')
-        } else {
-          this.$Message.warning(res.data.message)
-        }
-      })
+    async deleteItem (row, index) {
+      const res = await deleteRole(row.id)
+      this.deleteSuccess(res, index)
     },
     addItem () {
       this.$router.push({

@@ -7,7 +7,6 @@ import config from '@/config'
 import store from '@/store'
 import Cookies from 'js-cookie'
 import { defaultRoutes, dynamicRoutes } from './router.js'
-console.log(dynamicRoutes)
 
 Vue.use(Router)
 

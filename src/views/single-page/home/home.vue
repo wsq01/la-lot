@@ -34,7 +34,7 @@
                 <Divider size="small"/>
               </a>
               <DropdownMenu slot="list">
-                <DropdownItem :name="'sceneId/' + sItem.areaId + '/' + sItem.name" v-for="(sItem, sIndex) in item.sceneList" :key="sIndex">{{sItem.name}}</DropdownItem>
+                <DropdownItem  :name="'sceneId/' + sItem.id + '/' + sItem.name" v-for="(sItem, sIndex) in item.sceneList" :key="sIndex">{{sItem.name}}</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </Drawer>
@@ -119,7 +119,6 @@ export default {
     ...mapActions(['getCityList']),
     handleCityChange (e) {
       getCityInfo(e).then(res => {
-        console.log(res)
         if (res.data.code === 0) {
           this.leftDrawerList = res.data && res.data.data.list
         }
@@ -127,6 +126,7 @@ export default {
       this.isShowDrawerLeft = true
     },
     handleClickleftDrawerMenu (e) {
+      console.log(e)
       getDeviceNumber({ organizationId: this.$store.state.user.organizationId, key: e.split('/')[0], value: e.split('/')[1] }).then(res => {
         if (res.data.code === 0) {
           let lists = res.data.data.list
@@ -138,7 +138,7 @@ export default {
       })
       this.isShowDrawerRight = true
     },
-    handleLeftDrawerClose (e) {
+    handleLeftDrawerClose () {
       this.isShowDrawerRight = false
     },
     toMissed () {

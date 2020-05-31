@@ -21,11 +21,21 @@
                     </template>
                   </Select>
                 </FormItem>
-                <FormItem label="一级类型编码:">
-                  <Input clearable placeholder="请输入一级类型编码" v-model="importSearchForm.code" class="search-col" />
+                <FormItem label="一级类型:">
+                  <Select v-model="importSearchForm.code" clearable transfer label-in-value class="search-col" @on-change="handleChangeFirstLevel">
+                    <template v-for="(item, index) in firstLevelList">
+                      <Option :value="item.code" :key="index">{{item.name}}</Option>
+                    </template>
+                  </Select>
+                  <!-- <Input clearable placeholder="请输入一级类型编码" v-model="importSearchForm.code" class="search-col" /> -->
                 </FormItem>
-                <FormItem label="二级类型编码:">
-                  <Input clearable placeholder="请输入二级类型编码" v-model="importSearchForm.subCode" class="search-col" />
+                <FormItem label="二级类型:">
+                  <Select v-model="importSearchForm.subCode" clearable transfer label-in-value class="search-col">
+                    <template v-for="(item, index) in secondLevelList">
+                      <Option :value="item.code" :key="index">{{item.name}}</Option>
+                    </template>
+                  </Select>
+                  <!-- <Input clearable placeholder="请输入二级类型编码" v-model="importSearchForm.subCode" class="search-col" /> -->
                 </FormItem>
                 <FormItem label="日期:">
                   <DatePicker type="datetime" @on-change="handleChangeDatetime" placeholder="请选择年" class="search-col" transfer></DatePicker>
@@ -156,7 +166,7 @@
 </template>
 
 <script>
-import { getScene, getDeviceRealTimeReport, getDeviceRealTimeCheck } from '@/api/data'
+import { getScene, getDeviceRealTimeReport, getDeviceRealTimeCheck, getFirstLevel, getSecondLevel } from '@/api/data'
 import { getCheck, getTrace, getTrend, getDeviceCheckHistory } from '@/api/history'
 import { mapState, mapActions } from 'vuex'
 import ChartLine from '@/components/charts/line'
@@ -251,7 +261,9 @@ export default {
       trendSearchForm: {},
       traceSearchForm: {},
       chartLineOption: {},
-      timelineList: []
+      timelineList: [],
+      firstLevelList: [],
+      secondLevelList: []
     }
   },
   components: {
@@ -298,6 +310,9 @@ export default {
         this.$delete(this.importSearchForm, 'time')
       }
     },
+    handleChangeFirstLevel () {
+      this.getSecondLevel()
+    },
     handleChangeCheckDatetime (e) {
       console.log(e)
       if (e) {
@@ -329,7 +344,7 @@ export default {
       this.importSearchForm.organizationId = this.$store.state.user.organizationId
       let str = ''
       for (let [key, val] of Object.entries(this.importSearchForm)) {
-        if(val) {
+        if (val) {
           str += key + '=' + val + '&'
         }
       }
@@ -435,11 +450,11 @@ export default {
     },
     handleChangeTraceTimeRange (e) {
       this.traceSearchForm.startTime = new Date(e[0]).getTime()
-      this.traceSearchForm.endTime = new Date(e[1]).getTime()
+      this.traceSearchForm.stopTime = new Date(e[1]).getTime()
     },
     handleChangeTrendTimeRange (e) {
       this.trendSearchForm.startTime = new Date(e[0]).getTime()
-      this.trendSearchForm.endTime = new Date(e[1]).getTime()
+      this.trendSearchForm.stopTime = new Date(e[1]).getTime()
     },
     // 资产流动折线图初始化
     initChartOption (data) {
@@ -486,7 +501,7 @@ export default {
     // 报表区域改变事件
     handleChangeImportArea (e) {
       console.log(e)
-      if(e) {
+      if (e) {
         getScene({ areaId: e.value }).then(res => {
           this.sceneList = res.data.data.list
         })
@@ -498,7 +513,7 @@ export default {
     // 盘点区域改变事件
     handleChangeArea (e) {
       console.log(e)
-      if(e) {
+      if (e) {
         getScene({ areaId: e.value }).then(res => {
           this.sceneList = res.data.data.list
         })
@@ -517,6 +532,18 @@ export default {
     // },
     handleChangeTrendScene (e) {
       // this.checkSearchForm.sceneName = e.label
+    },
+    async getFirstLevel () {
+      const res = await getFirstLevel()
+      if (res.data.code === 0) {
+        this.firstLevelList = res.data.data.list
+      }
+    },
+    async getSecondLevel () {
+      const res = await getSecondLevel(this.importSearchForm.code)
+      if (res.data.code === 0) {
+        this.secondLevelList = res.data.data.list
+      }
     }
   },
   mounted () {
@@ -524,6 +551,7 @@ export default {
       this.getAreaList()
     }
     this.getDeviceRealTimeReport()
+    this.getFirstLevel()
   }
 }
 </script>

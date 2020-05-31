@@ -212,7 +212,6 @@ export default {
       return new Promise((resolve, reject) => {
         try {
           getMenus().then(res => {
-            console.log('xxx:' + res)
             const data = res.data.data.list
             commit('setMenuList', data)
             resolve(data)

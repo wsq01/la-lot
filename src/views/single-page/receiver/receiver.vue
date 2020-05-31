@@ -4,7 +4,7 @@
       <i-col :span="24">
         <Form :model="searchForm" inline :label-width="0">
           <FormItem>
-            <Select v-model="searchForm.key" class="search-item">
+            <Select v-model="searchForm.key">
               <template v-for="item in columns">
                 <Option v-if="item.key && item.key !== 'remark'" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
               </template>
@@ -65,7 +65,6 @@
 </template>
 
 <script>
-// import { mapState } from 'vuex'
 import { getReceiver, deleteReceiver, orderReceiver } from '@/api/data'
 import { getBtn } from '@/api/user'
 import minxin from '@/assets/js/mixin'
@@ -76,11 +75,6 @@ export default {
   data () {
     return {
       columns: [
-        // {
-        //   type: 'selection',
-        //   width: 50,
-        //   align: 'center'
-        // },
         {
           title: '接收器ID',
           key: 'id'
@@ -91,7 +85,8 @@ export default {
         },
         {
           title: '接收器编号',
-          key: 'receiverNum'
+          key: 'receiverNum',
+          sortable: true
         },
         {
           title: '场景ID',

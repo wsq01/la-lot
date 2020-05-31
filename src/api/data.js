@@ -134,6 +134,9 @@ export const getDeviceTypeById = (id) => {
     method: 'get'
   })
 }
+export const getFirstLevel = () => getItems('/api/tb/type/firstLevel/all')
+
+export const getSecondLevel = (params) => getItems('/api/tb/type/secondLevel/' + params)
 
 export const getDeviceMissed = (params) => getItems('/api/tb/device/missed', params)
 

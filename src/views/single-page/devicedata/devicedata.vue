@@ -6,7 +6,7 @@
           <i-col :span="24">
             <Form :model="realTimeSearchForm" inline :label-width="0">
               <FormItem>
-                <Select v-model="realTimeSearchForm.key" class="search-item" @on-change="handleChangeSearchKey">
+                <Select v-model="realTimeSearchForm.key" @on-change="handleChangeSearchKey">
                   <template v-for="item in searchKeyList">
                     <Option :value="item.key" :key="`search-${item.key}`">{{item.name}}</Option>
                   </template>
@@ -18,12 +18,15 @@
                     <Option :value="item.id" :key="`search-${item.id}`">{{item.name}}</Option>
                   </template>
                 </Select>
-                <Input v-else @on-change="handleClear" clearable placeholder="请输入关键字" v-model="realTimeSearchForm.value" class="search-item" />
+                <Input v-else @on-clear="handleClear" clearable placeholder="请输入关键字" v-model="realTimeSearchForm.value" class="search-item" />
+              </FormItem>
+              <FormItem label="时间范围:" :label-width="70">
+                <DatePicker v-model="realTimeSearchForm.time" type="datetimerange" placeholder="请选择范围" class="search-item" transfer></DatePicker>
               </FormItem>
               <Button @click="handleSearch" type="primary" icon="md-search">搜索</Button>
             </Form>
             <Table :loading="loading" stripe border :columns="columns" :data="tableData"></Table>
-            <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0"></Page>
+            <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0" :page-size-opts="[10, 20, 30, 40, 1000]"></Page>
           </i-col>
         </Row>
         <Row v-else>
@@ -86,15 +89,23 @@ export default {
       columns: [
         {
           title: '设备编号',
-          key: 'device_num'
+          key: 'device_num',
+          sortable: true
         },
         {
           title: '接收器编号',
-          key: 'receiver_num'
+          key: 'receiver_num',
+          sortable: true
+        },
+        {
+          title: '保温箱编号',
+          key: 'business_id',
+          sortable: true
         },
         {
           title: '时间',
-          key: 'time'
+          key: 'time',
+          sortable: true
         },
         {
           title: '场景名称',
@@ -152,6 +163,10 @@ export default {
       if (this.realTimeSearchForm.value) {
         Object.assign(searchObj, this.realTimeSearchForm)
       }
+      if (this.realTimeSearchForm.time) {
+        searchObj.startTime = this.historySearchForm.time[0]
+        searchObj.stopTime = this.historySearchForm.time[1]
+      }
       this.getDeviceRealTime(searchObj)
     },
     handlePageSizeChangeHistory (e) {
@@ -159,8 +174,10 @@ export default {
       var searchObj = { size: this.size }
       searchObj.deviceNum = this.historySearchForm.deviceNum
       searchObj.sceneId = this.historySearchForm.sceneId
-      searchObj.startTime = this.historySearchForm.time[0]
-      searchObj.stopTime = this.historySearchForm.time[1]
+      if (this.historySearchForm.time) {
+        searchObj.startTime = this.historySearchForm.time[0]
+        searchObj.stopTime = this.historySearchForm.time[1]
+      }
       this.getDeviceHistory(searchObj)
     },
     // 实时数据页码改变事件
@@ -185,7 +202,17 @@ export default {
     },
     // 实时数据搜索
     handleSearch () {
-      getDeviceRealTime(this.realTimeSearchForm).then(res => {
+      const reqData = {
+        key: this.realTimeSearchForm.key,
+        size: this.size,
+        value: this.realTimeSearchForm.value
+      }
+      if (this.realTimeSearchForm.time[0]) {
+        this.realTimeSearchForm.time = this.realTimeSearchForm.time.map((item, index) => new Date(item).getTime())
+        reqData.startTime = this.realTimeSearchForm.time[0]
+        reqData.stopTime = this.realTimeSearchForm.time[1]
+      }
+      getDeviceRealTime(reqData).then(res => {
         this.tableData = res.data.data.list
         this.total = res.data.data.total
       })

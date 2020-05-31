@@ -115,22 +115,14 @@ export default {
   },
   methods: {
     // 获取列表
-    getItems (params) {
-      getUser(params).then(res => {
-        this.loading = false
-        if (res.data.code === 0) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.total
-        }
-      })
+    async getItems (params) {
+      const res = await getUser(params)
+      this.getSuccess(res)
     },
     // 删除
-    deleteItem (row, index) {
-      deleteUser(row.userId).then(res => {
-        if (res.data.code === 0) {
-          this.tableData.splice(index, 1)
-        }
-      })
+    async deleteItem (row, index) {
+      const res = await deleteUser(row.userId)
+      this.deleteSuccess(res, index)
     },
     addItem () {
       this.$router.push({

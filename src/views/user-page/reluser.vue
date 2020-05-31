@@ -76,22 +76,14 @@ export default {
   },
   methods: {
     // 获取列表
-    getItems (params) {
-      getReluser(params).then(res => {
-        this.loading = false
-        if (res.data.code === 0) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.total
-        }
-      })
+    async getItems (params) {
+      const res = await getReluser(params)
+      this.getSuccess(res)
     },
     // 删除
-    deleteItem (row, index) {
-      deleteReluser(row.id).then(res => {
-        if (res.data.code === 0) {
-          this.tableData.splice(index, 1)
-        }
-      })
+    async deleteItem (row, index) {
+      const res = deleteReluser(row.id)
+      this.deleteSuccess(res, index)
     },
     addItem () {
       this.$router.push({

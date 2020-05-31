@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapActions,mapMutations } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'User',
   props: {

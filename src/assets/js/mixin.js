@@ -51,7 +51,7 @@ export default {
         this.tableData = res.data.data.list
         this.total = res.data.data.total
       } else {
-
+        this.$Message.error(res.data.message)
       }
     },
     deleteSuccess (res, index) {
@@ -76,7 +76,7 @@ export default {
     }
   },
   mounted () {
-    this.getItems({ size: this.size })
+    this.getItems()
     this.setDefaultSearchKey()
   }
 }
