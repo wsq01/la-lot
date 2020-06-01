@@ -104,16 +104,14 @@ export default {
   },
   methods: {
     // 获取
-    getItems (params) {
-      getArea(params).then(res => {
-        this.getSuccess(res)
-      })
+    async getItems (params) {
+      const res = await getArea(params)
+      this.getSuccess(res)
     },
     // 删除
-    deleteItem (row, index) {
-      deleteArea(row.id).then(res => {
-        this.deleteSuccess(res, index)
-      })
+    async deleteItem (row, index) {
+      const res = await deleteArea(row.id)
+      this.deleteSuccess(res, index)
     },
     // 添加
     addItem () {
@@ -129,12 +127,11 @@ export default {
       })
     },
     // 批量删除
-    handleDeleteBatch () {
-      deleteAreaList(this.selection).then(res => {
-        this.deleteBatchSuccess(res)
-      })
+    async handleDeleteBatch () {
+      const res = await deleteAreaList(this.selection)
+      this.deleteBatchSuccess(res)
     },
-    initBtn () {
+    async initBtn () {
       const uri = '/' + this.$route.name
       const menuList = this.$store.state.user.userMenu
       let menuId = '0'
@@ -143,14 +140,10 @@ export default {
           menuId = item.id
         }
       })
-      getBtn({ menuId }).then(res => {
-        if (res.data.code === 0) {
-          const btnList = res.data.data.list
-          btnList.forEach((item, index) => {
-            this.btnList.push(item.buttonName)
-          })
-        }
-      })
+      const res = await getBtn({ menuId })
+      if (res.data.code === 0) {
+        this.btnList = res.data.data.list.map(item => item.buttonName)
+      }
     }
   },
   mounted () {

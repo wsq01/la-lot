@@ -74,18 +74,13 @@ export default {
     }
   },
   methods: {
-    // 获取列表
     async getItems (params) {
       const res = await getRelresource(params)
       this.getSuccess(res)
     },
-    // 删除
-    deleteItem (row, index) {
-      deleteRole(row.id).then(res => {
-        if (res.data.code === 0) {
-          this.tableData.splice(index, 1)
-        }
-      })
+    async deleteItem (row, index) {
+      const res = await deleteRole(row.id)
+      this.deleteSuccess(res, index)
     },
     addItem () {
       this.$router.push({
@@ -98,8 +93,6 @@ export default {
         params: row
       })
     }
-  },
-  mounted () {
   }
 }
 </script>

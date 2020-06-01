@@ -72,10 +72,20 @@
                   </Select>
                 </FormItem>
                 <FormItem label="一级类型编码:">
-                  <Input clearable placeholder="请输入一级类型编码" v-model="checkSearchForm.code" class="search-col" />
+                  <Select v-model="checkSearchForm.code" clearable transfer label-in-value class="search-col" @on-change="handleChangeChickFirstLevel">
+                    <template v-for="(item, index) in firstLevelList">
+                      <Option :value="item.code" :key="index">{{item.name}}</Option>
+                    </template>
+                  </Select>
+                  <!-- <Input clearable placeholder="请输入一级类型编码" v-model="checkSearchForm.code" class="search-col" /> -->
                 </FormItem>
                 <FormItem label="二级类型编码:">
-                  <Input clearable placeholder="请输入二级类型编码" v-model="checkSearchForm.subCode" class="search-col" />
+                  <Select v-model="checkSearchForm.subCode" clearable transfer label-in-value class="search-col">
+                    <template v-for="(item, index) in secondLevelList">
+                      <Option :value="item.code" :key="index">{{item.name}}</Option>
+                    </template>
+                  </Select>
+                  <!-- <Input clearable placeholder="请输入二级类型编码" v-model="checkSearchForm.subCode" class="search-col" /> -->
                 </FormItem>
                 <FormItem label="日期:">
                   <DatePicker type="datetime" @on-change="handleChangeCheckDatetime" placeholder="请选择年" class="search-col" transfer></DatePicker>
@@ -310,8 +320,8 @@ export default {
         this.$delete(this.importSearchForm, 'time')
       }
     },
-    handleChangeFirstLevel () {
-      this.getSecondLevel()
+    handleChangeFirstLevel (code) {
+      this.getSecondLevel(code)
     },
     handleChangeCheckDatetime (e) {
       console.log(e)
@@ -444,7 +454,6 @@ export default {
     // 设备轨迹搜索
     handleTraceSearch () {
       getTrace(this.traceSearchForm).then(res => {
-        console.log(res)
         this.timelineList = res.data.data.list
       })
     },
@@ -539,8 +548,8 @@ export default {
         this.firstLevelList = res.data.data.list
       }
     },
-    async getSecondLevel () {
-      const res = await getSecondLevel(this.importSearchForm.code)
+    async getSecondLevel (code) {
+      const res = await getSecondLevel(code)
       if (res.data.code === 0) {
         this.secondLevelList = res.data.data.list
       }

@@ -91,15 +91,11 @@ export default {
       btnList: []
     }
   },
-  computed: {
-  },
   methods: {
-    // 获取列表
     async getItems (params) {
       const res = await getScene(params)
       this.getSuccess(res)
     },
-    // 删除
     async deleteItem (row, index) {
       const res = await deleteScene(row.id)
       this.deleteSuccess(res)
@@ -131,7 +127,7 @@ export default {
       })
       const res = await getBtn({ menuId })
       if (res.data.code === 0) {
-        res.data.data.list.forEach(item => this.btnList.push(item.buttonName))
+        this.btnList = res.data.data.list.forEach(item => item.buttonName)
       }
     }
   },

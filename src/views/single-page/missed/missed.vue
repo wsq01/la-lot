@@ -74,18 +74,14 @@ export default {
     }
   },
   methods: {
-    // 获取列表
-    getItems (params) {
-      getDeviceMissed(params).then(res => {
-        this.getSuccess(res)
-      })
+    async getItems (params) {
+      const res = await getDeviceMissed(params)
+      this.getSuccess(res)
     },
     // 搜索
     handleSearch () {
       this.getItems(this.searchForm)
     }
-  },
-  mounted () {
   }
 }
 </script>

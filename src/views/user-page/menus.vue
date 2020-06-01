@@ -32,7 +32,7 @@
         <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select-change="handleSelectTableItem">
           <template slot-scope="{row, index}" slot="action">
             <Button type="primary" size="small" style="margin-right: 5px" @click="edit(row, index)">编辑</Button>
-            <Poptip confirm title="确定要删除吗？" transfer @on-ok="delOk(row, index)">
+            <Poptip confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
               <Button type="error" size="small">删除</Button>
             </Poptip>
           </template>
@@ -254,22 +254,13 @@ export default {
     }
   },
   methods: {
-    // 获取列表
-    getItems (params) {
-      getMenus(params).then(res => {
-        this.getSuccess(res)
-      })
+    async getItems (params) {
+      const res = await getMenus(params)
+      this.getSuccess(res)
     },
-    // 删除
-    delOk (row, index) {
-      deleteMenus(row.id).then(res => {
-        if (res.data.code === 0) {
-          this.tableData.splice(index, 1)
-          this.$Message.success('删除成功！')
-        } else {
-          this.$Message.warning(res.data.message)
-        }
-      })
+    async deleteItem (row, index) {
+      const res = await deleteMenus(row.id)
+      this.deleteSuccess(res, index)
     },
     handleAdd () {
       this.$router.push({

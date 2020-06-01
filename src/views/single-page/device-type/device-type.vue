@@ -88,17 +88,13 @@ export default {
     }
   },
   methods: {
-    // 获取列表
-    getItems (params) {
-      getDeviceTypeList(params).then(res => {
-        this.getSuccess(res)
-      })
+    async getItems (params) {
+      const res = await getDeviceTypeList(params)
+      this.getSuccess(res)
     },
-    // 删除
-    deleteItem (row, index) {
-      deleteDeviceType(row.id).then(res => {
-        this.deleteSuccess(res)
-      })
+    async deleteItem (row, index) {
+      const res = await deleteDeviceType(row.id)
+      this.deleteSuccess(res)
     },
     addItem () {
       this.$router.push({
@@ -112,18 +108,17 @@ export default {
       })
     },
     // 搜索
-    handleSearch () {
+    async handleSearch () {
       const obj = {}
       obj[this.searchForm.key] = this.searchForm.value
-      getDeviceTypeById(this.searchForm.value).then(res => {
-        if (res.data.code === 0) {
-          this.tableData = []
-          this.tableData.push(res.data.data)
-          this.total = res.data.seqnum
-        }
-      })
+      const res = await getDeviceTypeById(this.searchForm.value)
+      if (res.data.code === 0) {
+        this.tableData = []
+        this.tableData.push(res.data.data)
+        this.total = res.data.seqnum
+      }
     },
-    initBtn () {
+    async initBtn () {
       const uri = this.$route.name
       const menuList = this.$store.state.user.userMenu
       let menuId = '0'
@@ -132,14 +127,10 @@ export default {
           menuId = item.id
         }
       })
-      getBtn({ menuId }).then(res => {
-        if (res.data.code === 0) {
-          const btnList = res.data.data.list
-          btnList.forEach((item, index) => {
-            this.btnList.push(item.buttonName)
-          })
-        }
-      })
+      const res = await getBtn({ menuId })
+      if (res.data.code === 0) {
+        this.btnList = res.data.data.list.map((item, index) => item.buttonName)
+      }
     }
   },
   mounted () {

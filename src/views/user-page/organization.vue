@@ -90,23 +90,13 @@ export default {
     }
   },
   methods: {
-    // 获取列表
-    getItems (params) {
-      getOrganization(params).then(res => {
-        this.loading = false
-        if (res.data.code === 0) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.total
-        }
-      })
+    async getItems (params) {
+      const res = await getOrganization(params)
+      this.getSuccess(res)
     },
-    // 删除
-    deleteItem (row, index) {
-      deleteOrganization(row.id).then(res => {
-        if (res.data.code === 0) {
-          this.tableData.splice(index, 1)
-        }
-      })
+    async deleteItem (row, index) {
+      const res = await deleteOrganization(row.id)
+      this.deleteSuccess(res)
     },
     addItem () {
       this.$router.push({
@@ -119,8 +109,6 @@ export default {
         params: row
       })
     }
-  },
-  mounted () {
   }
 }
 </script>

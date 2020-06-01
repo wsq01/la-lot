@@ -75,14 +75,12 @@ export default {
     }
   },
   methods: {
-    // 获取列表
     async getItems (params) {
       const res = await getReluser(params)
       this.getSuccess(res)
     },
-    // 删除
     async deleteItem (row, index) {
-      const res = deleteReluser(row.id)
+      const res = await deleteReluser(row.id)
       this.deleteSuccess(res, index)
     },
     addItem () {
@@ -96,8 +94,6 @@ export default {
         params: row
       })
     }
-  },
-  mounted () {
   }
 }
 </script>

@@ -94,16 +94,14 @@ export default {
   },
   methods: {
     // 获取列表
-    getItems (params) {
-      getDevice(params).then(res => {
-        this.getSuccess(res)
-      })
+    async getItems (params) {
+      const res = await getDevice(params)
+      this.getSuccess(res)
     },
     // 删除
-    deleteItem (row, index) {
-      deleteDevice(row.id).then(res => {
-        this.deleteSuccess(res, index)
-      })
+    async deleteItem (row, index) {
+      const res = await deleteDevice(row.id)
+      this.deleteSuccess(res, index)
     },
     addItem () {
       this.$router.push({
@@ -117,12 +115,11 @@ export default {
       })
     },
     // 批量删除
-    handleDeleteBatch () {
-      deleteDeviceList(this.selection).then(res => {
-        this.deleteBatchSuccess(res)
-      })
+    async handleDeleteBatch () {
+      const res = await deleteDeviceList(this.selection)
+      this.deleteBatchSuccess(res)
     },
-    initBtn () {
+    async initBtn () {
       const uri = this.$route.name
       const menuList = this.$store.state.user.userMenu
       let menuId = ''
@@ -131,14 +128,10 @@ export default {
           menuId = item.id
         }
       })
-      getBtn({ menuId }).then(res => {
-        if (res.data.code === 0) {
-          const btnList = res.data.data.list
-          btnList.forEach((item, index) => {
-            this.btnList.push(item.buttonName)
-          })
-        }
-      })
+      const res = await getBtn({ menuId })
+      if (res.data.code === 0) {
+        this.btnList = res.data.data.list.map((item, index) => item.buttonName)
+      }
     },
     handleChangePage (e) {
       const obj = {}

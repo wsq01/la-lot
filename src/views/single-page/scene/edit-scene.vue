@@ -74,7 +74,6 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           if (this.$route.name === 'add-scene') {
-            this.formItem.organizationId = this.$store.state.user.organizationId
             addScene(this.formItem).then(res => {
               if (res.data.code === 0) {
                 this.$Message.success('添加成功！')

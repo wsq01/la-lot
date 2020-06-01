@@ -122,25 +122,18 @@ export default {
   },
   methods: {
     // 获取列表
-    getItems (params) {
-      getReceiver(params).then(res => {
-        this.loading = false
-        if (res.data.code === 0) {
-          res.data.data.list.forEach((item, index) => {
-            item.status = 'offline'
-          })
-          this.tableData = res.data.data.list
-          this.total = res.data.data.total
-        } else {
-
-        }
-      })
+    async getItems (params) {
+      const res = await getReceiver(params)
+      if (res.data.code === 0) {
+        res.data.data.list.forEach((item, index) => {
+          item.status = 'offline'
+        })
+        this.getSuccess(res)
+      }
     },
-    // 删除
-    deleteItem (row, index) {
-      deleteReceiver(row.id).then(res => {
-        this.deleteSuccess(res)
-      })
+    async deleteItem (row, index) {
+      const res = await deleteReceiver(row.id)
+      this.deleteSuccess(res)
     },
     addItem () {
       this.$router.push({
@@ -153,7 +146,7 @@ export default {
         params: row
       })
     },
-    initBtn () {
+    async initBtn () {
       const uri = this.$route.name
       const menuList = this.$store.state.user.userMenu
       let menuId = '0'
@@ -162,14 +155,10 @@ export default {
           menuId = item.id
         }
       })
-      getBtn({ menuId }).then(res => {
-        if (res.data.code === 0) {
-          const btnList = res.data.data.list
-          btnList.forEach((item, index) => {
-            this.btnList.push(item.buttonName)
-          })
-        }
-      })
+      const res = await getBtn({ menuId })
+      if (res.data.code === 0) {
+        this.btnList = res.data.data.list.map((item, index) => item.buttonName)
+      }
     },
     editItemUpdate (row, index) {
       this.clickedItem = row

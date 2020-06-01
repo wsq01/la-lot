@@ -114,12 +114,10 @@ export default {
     }
   },
   methods: {
-    // 获取列表
     async getItems (params) {
       const res = await getUser(params)
       this.getSuccess(res)
     },
-    // 删除
     async deleteItem (row, index) {
       const res = await deleteUser(row.userId)
       this.deleteSuccess(res, index)
@@ -135,8 +133,6 @@ export default {
         params: row
       })
     }
-  },
-  mounted () {
   }
 }
 </script>
