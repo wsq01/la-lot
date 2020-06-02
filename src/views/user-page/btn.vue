@@ -4,7 +4,7 @@
       <i-col :span="24">
         <Form :model="searchForm" inline :label-width="0">
           <FormItem>
-            <Select v-model="searchForm.key" class="search-item">
+            <Select v-model="searchForm.key">
               <template v-for="item in columns">
                 <Option v-if="item.key" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
               </template>
@@ -26,9 +26,9 @@
       <i-col :span="24">
         <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select-change="handleSelectTableItem">
           <template slot-scope="{row, index}" slot="action">
-            <Button type="primary" size="small" style="margin-right: 5px" @click="editItem(row, index)">编辑</Button>
+            <Button type="primary" size="small" style="margin: 5px" @click="editItem(row, index)">编辑</Button>
             <Poptip confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
-              <Button type="error" size="small">删除</Button>
+              <Button type="error" size="small" style="margin: 5px">删除</Button>
             </Poptip>
           </template>
         </Table>
@@ -67,10 +67,11 @@ export default {
         {
           title: '操作',
           slot: 'action',
-          width: 130,
+          width: 140,
           align: 'center'
         }
-      ]
+      ],
+      pageName: 'btn'
     }
   },
   methods: {
@@ -83,17 +84,6 @@ export default {
     async deleteItem (row, index) {
       const res = await deleteBtn(row.id)
       this.deleteSuccess(res, index)
-    },
-    addItem () {
-      this.$router.push({
-        name: 'add-btn'
-      })
-    },
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-btn',
-        params: row
-      })
     }
   }
 }

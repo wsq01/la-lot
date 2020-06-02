@@ -32,6 +32,9 @@
     <Row>
       <i-col :span="24">
         <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select-change="handleSelectTableItem">
+          <template slot-scope="{ row }" slot="status">
+            <span :style="{ color: row.status === '在线' ? '#19be6b' : ''}">{{ row.status }}</span>
+          </template>
           <template slot-scope="{row, index}" slot="action">
             <div v-for="(bItem, bIndex) in btnList" :key="bIndex" style="display: inline-block;margin-right: 5px">
               <Poptip v-if="bItem === 'DELETE'" confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
@@ -102,7 +105,8 @@ export default {
         },
         {
           title: '接收器状态',
-          key: 'status'
+          key: 'status',
+          slot: 'status'
         },
         {
           title: '操作',
@@ -117,7 +121,8 @@ export default {
       receiverParams: {},
       clickedItem: {},
       isDisabled: [],
-      progress: 0
+      progress: 0,
+      pageName: 'receiver'
     }
   },
   methods: {
@@ -126,7 +131,7 @@ export default {
       const res = await getReceiver(params)
       if (res.data.code === 0) {
         res.data.data.list.forEach((item, index) => {
-          item.status = 'offline'
+          item.status = '离线'
         })
         this.getSuccess(res)
       }
@@ -135,29 +140,13 @@ export default {
       const res = await deleteReceiver(row.id)
       this.deleteSuccess(res)
     },
-    addItem () {
-      this.$router.push({
-        name: 'add-receiver'
-      })
-    },
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-receiver',
-        params: row
-      })
-    },
     async initBtn () {
       const uri = this.$route.name
       const menuList = this.$store.state.user.userMenu
-      let menuId = '0'
-      menuList.forEach((item, index) => {
-        if (item.uri === uri) {
-          menuId = item.id
-        }
-      })
-      const res = await getBtn({ menuId })
+      const menu = menuList.find(item => item.uri === uri || item.uri === '/' + uri)
+      const res = await getBtn({ menuId: menu.id })
       if (res.data.code === 0) {
-        this.btnList = res.data.data.list.map((item, index) => item.buttonName)
+        this.btnList = res.data.data.list.map(item => item.buttonName)
       }
     },
     editItemUpdate (row, index) {
@@ -220,9 +209,9 @@ export default {
       const obj = JSON.parse(this.$store.state.app.socketMsg)
       this.tableData.forEach((item, index) => {
         if (item.receiverNum === obj.receive_num) {
-          this.$set(this.tableData[index], 'status', obj.status)
+          this.$set(this.tableData[index], 'status', obj.status === 'online' ? '在线' : '离线')
         }
-        if (item.status === 'online') {
+        if (item.status === '在线') {
           this.isDisabled[ index ] = true
         } else {
           this.isDisabled[ index ] = false
@@ -238,24 +227,18 @@ export default {
   },
   watch: {
     socketMsg (val) {
-      console.log(val)
       if (val.result && val.result === 'succeed') {
         if (val.order === 'timer') {
           this.$Notice.success({
             title: '对时成功！'
           })
-          // const obj = JSON.parse(this.$store.state.app.socketMsg)
-          // this.tableData.forEach((item, index) => {
-          //   if (item.receiverNum === obj.receive_num) {
-          //   }
-          // })
         } else if (val.order === 'pingpong') {
           const obj = JSON.parse(this.$store.state.app.socketMsg)
           this.tableData.forEach((item, index) => {
             if (item.receiverNum === obj.receive_num) {
-              this.$set(this.tableData[index], 'status', obj.status)
+              this.$set(this.tableData[index], 'status', obj.status === 'online' ? '在线' : '离线')
             }
-            if (item.status === 'online') {
+            if (item.status === '在线') {
               this.isDisabled[index] = true
             } else {
               this.isDisabled[index] = false

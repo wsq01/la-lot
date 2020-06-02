@@ -4,7 +4,6 @@
       <i-col>
         <Card>
           <p slot="title">库区所在城市：</p>
-          <!-- <Tag @click="handleClickCity" checkable name="city" fade color="blue">{{item.name}}</Tag> -->
           <div class="center">
             <RadioGroup v-model="selectedCity" type="button" @on-change="handleCityChange">
               <Radio v-for="(item, index) in cityList" :key="index" :label="item.id">{{item.name}}</Radio>
@@ -23,7 +22,7 @@
            <bm-marker v-for="(item, index) in points" :key="index" :position="item" @click="item.show=true" @mouseover="item.show=!item.show" @mouseleave="item.show=!item.show" animation="BMAP_ANIMATION_DROP">
              <bm-info-window :show="item.show">
                <p>{{item.name}}区域</p>
-               设备总数：<span class="mark">{{item.nums}}</span>
+               设备总数：<span class="mark">{{item.number}}</span>
                </bm-info-window>
                <!-- <bm-label  /> -->
           </bm-marker>
@@ -111,23 +110,22 @@ export default {
     ChartPie
   },
   computed: {
-    ...mapState({
-      cityList: state => state.app.cityList
-    })
+    // ...mapState({
+    //   cityList: state => state.app.cityList
+    // })
   },
   methods: {
     ...mapActions(['getCityList']),
-    handleCityChange (e) {
-      getCityInfo(e).then(res => {
-        if (res.data.code === 0) {
-          this.leftDrawerList = res.data && res.data.data.list
-        }
-      })
+    async handleCityChange (e) {
+      const res = await getCityInfo(e)
+      if (res.data.code === 0) {
+        this.leftDrawerList = res.data && res.data.data.list
+      }
       this.isShowDrawerLeft = true
     },
     handleClickleftDrawerMenu (e) {
       console.log(e)
-      getDeviceNumber({ organizationId: this.$store.state.user.organizationId, key: e.split('/')[0], value: e.split('/')[1] }).then(res => {
+      getDeviceNumber({ key: e.split('/')[0], value: e.split('/')[1] }).then(res => {
         if (res.data.code === 0) {
           let lists = res.data.data.list
           this.chartTitle = e.split('/')[2]
@@ -213,10 +211,8 @@ export default {
         trigger: 'item'
       }
       var series = []
-      console.log(newList)
       newList.forEach((item, index) => {
         if (item.name === 'Unknown') return
-        console.log((2 * index + 1) / 2 / newList.length * 100 + '%')
         var obj = {
           name: item.name,
           type: 'pie',
@@ -303,30 +299,20 @@ export default {
     },
     traverseCityList (lists) { // 数据转换
       return lists.reduce((a, v) => {
-        const nums = (v.areaList && v.areaList.reduce((a, v) => a + v.number, 0)) || 0
-        return a.concat({ lng: v.longitude, lat: v.latitude, show: false, name: v.name, nums, id: v.id })
+        return a.concat({ lng: v.longitude, lat: v.latitude, show: false, name: v.name, number: v.number, id: v.id })
       }, [])
     },
-    addPoints () { // 地图添加点
-      getCityListByOid(this.$store.state.user.organizationId).then(res => {
-        if (res.data && res.data.code === 0) {
-          const lists = res.data.data.list
-          this.points = this.traverseCityList(lists)
-          // this.cityList = this.points
-        }
-      })
+    async addPoints () { // 地图添加点
+      const res = await getCityListByOid()
+      if (res.data && res.data.code === 0) {
+        const list = this.traverseCityList(res.data.data.list)
+        this.points = list
+        this.cityList = list
+      }
     }
   },
   created () {
     this.addPoints()
-    if (this.cityList.length === 0) {
-      this.getCityList().then(res => {
-        if (res.data && res.data.code === 0) {
-          const lists = res.data.data.list
-          this.cityList = this.traverseCityList(lists)
-        }
-      })
-    }
   }
 }
 </script>

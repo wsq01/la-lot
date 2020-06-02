@@ -26,7 +26,7 @@
       <i-col :span="24">
         <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select-change="handleSelectTableItem">
           <template slot-scope="{row, index}" slot="action">
-            <Button type="primary" size="small" style="margin-right: 5px" @click="edit(row, index)">编辑</Button>
+            <Button type="primary" size="small" style="margin-right: 5px" @click="editItem(row, index)">编辑</Button>
             <Poptip confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
               <Button type="error" size="small">删除</Button>
             </Poptip>
@@ -103,7 +103,7 @@ export default {
         name: 'add-organization'
       })
     },
-    edit (row, index) {
+    editItem (row, index) {
       this.$router.push({
         name: 'edit-organization',
         params: row

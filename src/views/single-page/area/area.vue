@@ -99,7 +99,8 @@ export default {
           align: 'center'
         }
       ],
-      btnList: []
+      btnList: [],
+      pageName: 'area'
     }
   },
   methods: {
@@ -113,19 +114,6 @@ export default {
       const res = await deleteArea(row.id)
       this.deleteSuccess(res, index)
     },
-    // 添加
-    addItem () {
-      this.$router.push({
-        name: 'add-area'
-      })
-    },
-    // 删除
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-area',
-        params: row
-      })
-    },
     // 批量删除
     async handleDeleteBatch () {
       const res = await deleteAreaList(this.selection)
@@ -134,13 +122,8 @@ export default {
     async initBtn () {
       const uri = '/' + this.$route.name
       const menuList = this.$store.state.user.userMenu
-      let menuId = '0'
-      menuList.forEach((item, index) => {
-        if (item.uri === uri) {
-          menuId = item.id
-        }
-      })
-      const res = await getBtn({ menuId })
+      const menu = menuList.find(item => item.uri === uri)
+      const res = await getBtn({ menuId: menu.id })
       if (res.data.code === 0) {
         this.btnList = res.data.data.list.map(item => item.buttonName)
       }

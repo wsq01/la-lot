@@ -88,7 +88,8 @@ export default {
           align: 'center'
         }
       ],
-      btnList: []
+      btnList: [],
+      pageName: 'scene'
     }
   },
   methods: {
@@ -100,34 +101,18 @@ export default {
       const res = await deleteScene(row.id)
       this.deleteSuccess(res)
     },
-    addItem () {
-      this.$router.push({
-        name: 'add-scene'
-      })
-    },
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-scene',
-        params: row
-      })
-    },
     // 批量删除
     async handleDeleteBatch () {
       const res = await deleteSceneList(this.selection)
       this.deleteBatchSuccess(res)
     },
     async initBtn () {
-      const uri = '/' + this.$route.name
+      const uri = this.$route.name
       const menuList = this.$store.state.user.userMenu
-      let menuId = ''
-      menuList.forEach((item, index) => {
-        if (item.uri === uri) {
-          menuId = item.id
-        }
-      })
-      const res = await getBtn({ menuId })
+      const menu = menuList.find(item => item.uri === uri || item.uri === '/' + uri)
+      const res = await getBtn({ menuId: menu.id })
       if (res.data.code === 0) {
-        this.btnList = res.data.data.list.forEach(item => item.buttonName)
+        this.btnList = res.data.data.list.map(item => item.buttonName)
       }
     }
   },

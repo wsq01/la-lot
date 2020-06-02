@@ -50,7 +50,15 @@ export default {
     },
     setUserMenu (state, list) { // 设置场景列表
       state.userMenu = list
+    },
+    resetUserData (state) {
+      state.userMenu = []
+      state.roleIds = []
+      state.btnList = []
+      state.hasGetInfo = false
+      state.token = ''
     }
+
   },
   getters: {},
   actions: {
@@ -87,7 +95,7 @@ export default {
         Cookies.remove('organizationId')
         Cookies.remove('roleIds')
         Cookies.remove('userId')
-        commit('setAccess', [])
+        commit('resetUserData')
         resolve()
         // }).catch(err => {
         //   reject(err)
@@ -107,10 +115,15 @@ export default {
             return getMenus({ roleId: id })
           })
           Promise.all(promises).then(res => {
-            console.log(res)
-            commit('setHasGetInfo', true)
-            commit('setUserMenu', res[0].data.data.list)
-            resolve(res)
+            if (res.length === 0 || res[0].data.code === 1201) {
+              commit('resetUserData')
+              commit('setHasGetInfo', false)
+              resolve(false)
+            } else {
+              commit('setHasGetInfo', true)
+              commit('setUserMenu', res[0].data.data.list)
+              resolve(res)
+            }
           })
         } catch (error) {
           reject(error)

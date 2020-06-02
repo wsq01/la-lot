@@ -70,7 +70,10 @@ export const getCityListByOid = (oid) => {
 export const getCityInfo = (cid) => {
   return axios.request({
     url: '/api/tb/city/list/info/' + cid,
-    method: 'get'
+    method: 'get',
+    params: {
+      organizationId: ''
+    }
   })
 }
 

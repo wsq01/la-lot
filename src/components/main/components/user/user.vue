@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 export default {
   name: 'User',
   props: {
@@ -28,14 +28,19 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'resetAppData'
+    ]),
     ...mapActions([
       'handleLogOut'
     ]),
     logout () {
       this.handleLogOut().then(() => {
-        this.$router.push({
-          name: 'login'
-        })
+        this.resetAppData()
+        location.reload()
+        // this.$router.push({
+        //   name: 'login'
+        // })
       })
     },
     control () {

@@ -10,6 +10,17 @@ export default {
     }
   },
   methods: {
+    addItem () {
+      this.$router.push({
+        name: `add-${this.pageName}`
+      })
+    },
+    editItem (row, index) {
+      this.$router.push({
+        name: `edit-${this.pageName}`,
+        params: row
+      })
+    },
     // 分页
     handleChangePage (e) {
       const obj = { size: this.size, index: e }
@@ -72,6 +83,8 @@ export default {
             }
           })
         })
+      } else {
+        this.$Message.error(res.data.message)
       }
     }
   },

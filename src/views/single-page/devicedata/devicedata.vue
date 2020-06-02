@@ -74,7 +74,7 @@ export default {
           name: 'historydata'
         }
       ],
-      loading: false,
+      loading: true,
       total: 0,
       size: 10,
       historyTotal: 0,
@@ -127,6 +127,7 @@ export default {
     //  获取实时数据
     getDeviceRealTime (params) {
       getDeviceRealTime(params).then(res => {
+        this.loading = false
         if (res.data.code === 0) {
           this.tableData = res.data.data.list
           this.total = res.data.data.total
@@ -158,14 +159,15 @@ export default {
     },
     // 实时数据分页数改变事件
     handlePageSizeChange (e) {
+      this.loading = true
       this.size = e
       var searchObj = { size: this.size }
       if (this.realTimeSearchForm.value) {
         Object.assign(searchObj, this.realTimeSearchForm)
       }
       if (this.realTimeSearchForm.time) {
-        searchObj.startTime = this.historySearchForm.time[0]
-        searchObj.stopTime = this.historySearchForm.time[1]
+        searchObj.startTime = this.realTimeSearchForm.time[0]
+        searchObj.stopTime = this.realTimeSearchForm.time[1]
       }
       this.getDeviceRealTime(searchObj)
     },
@@ -182,19 +184,27 @@ export default {
     },
     // 实时数据页码改变事件
     handleChangePage (e) {
+      this.loading = true
       var searchObj = { size: this.size, index: e }
       if (this.realTimeSearchForm.value) {
-        Object.assign(searchObj, this.realTimeSearchForm)
+        Object.assign(searchObj, { [this.realTimeSearchForm.key]: this.realTimeSearchForm.value })
+      }
+      if (this.realTimeSearchForm.time) {
+        searchObj.startTime = this.realTimeSearchForm.time[0]
+        searchObj.stopTime = this.realTimeSearchForm.time[1]
       }
       this.getDeviceRealTime(searchObj)
     },
     // 历史数据页码改变事件
     handleChangeHistoryPage (e) {
+      this.loading = true
       var searchObj = { size: this.historySize, index: e }
       searchObj.deviceNum = this.historySearchForm.deviceNum
       searchObj.sceneId = this.historySearchForm.sceneId
-      searchObj.startTime = this.historySearchForm.time[0]
-      searchObj.stopTime = this.historySearchForm.time[1]
+      if (this.historySearchForm.time) {
+        searchObj.startTime = this.historySearchForm.time[0]
+        searchObj.stopTime = this.historySearchForm.time[1]
+      }
       this.getDeviceHistory(searchObj)
     },
     handleClear () {
@@ -202,6 +212,7 @@ export default {
     },
     // 实时数据搜索
     handleSearch () {
+      this.loading = true
       const reqData = {
         key: this.realTimeSearchForm.key,
         size: this.size,
@@ -212,10 +223,7 @@ export default {
         reqData.startTime = this.realTimeSearchForm.time[0]
         reqData.stopTime = this.realTimeSearchForm.time[1]
       }
-      getDeviceRealTime(reqData).then(res => {
-        this.tableData = res.data.data.list
-        this.total = res.data.data.total
-      })
+      this.getDeviceRealTime(reqData)
     },
     // 历史数据搜索
     handleSearchHistory () {

@@ -124,7 +124,7 @@ export default {
       set (newVal) {}
     },
     menuList () { // 通过路由列表得到菜单列表
-      return this.$store.getters.menuList
+      return this.$store.getters.getMenuList
     },
     userMenuList () {
       return this.$store.getters.userMenuList

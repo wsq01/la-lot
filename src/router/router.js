@@ -483,7 +483,7 @@ export const dynamicRoutes = [
   },
   {
     path: '/repository',
-    name: 'repository',
+    name: '_repository',
     redirect: 'repository',
     component: Main,
     meta: {
@@ -495,29 +495,9 @@ export const dynamicRoutes = [
         name: 'repository',
         meta: {
           icon: 'md-globe',
-          title: '区域管理'
+          title: '库位管理'
         },
         component: () => import('@/views/single-page/repository/repository.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-repository',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '编辑区域'
-        },
-        component: () => import('@/views/single-page/repository/edit-repository.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-repository',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '新增区域'
-        },
-        component: () => import('@/views/single-page/repository/edit-repository.vue')
       }
     ]
   },
@@ -576,7 +556,7 @@ export const dynamicRoutes = [
         meta: {
           icon: 'md-menu',
           title: '接收器',
-          hideInMenu: true
+          // hideInMenu: true
         },
         component: () => import('@/views/single-page/receiver/receiver.vue')
       },
@@ -586,7 +566,7 @@ export const dynamicRoutes = [
         meta: {
           icon: 'md-menu',
           title: '流动资产',
-          hideInMenu: true
+          // hideInMenu: true
         },
         component: () => import('@/views/single-page/device/device.vue')
       },
@@ -596,7 +576,7 @@ export const dynamicRoutes = [
         meta: {
           icon: 'md-menu',
           title: '资产编码',
-          hideInMenu: true
+          // hideInMenu: true
         },
         component: () => import('@/views/single-page/device-type/device-type.vue')
       },
@@ -662,26 +642,26 @@ export const dynamicRoutes = [
       }
     ]
   },
-  {
-    path: '/allot',
-    name: '_allot',
-    redirect: 'allot',
-    component: Main,
-    meta: {
-      hideInBread: true
-    },
-    children: [
-      {
-        path: 'allot',
-        name: 'allot',
-        meta: {
-          icon: '_qq',
-          title: '流动资产调拨'
-        },
-        component: () => import('@/views/single-page/allot/allot.vue')
-      }
-    ]
-  },
+  // {
+  //   path: '/allot',
+  //   name: '_allot',
+  //   redirect: 'allot',
+  //   component: Main,
+  //   meta: {
+  //     hideInBread: true
+  //   },
+  //   children: [
+  //     {
+  //       path: 'allot',
+  //       name: 'allot',
+  //       meta: {
+  //         icon: '_qq',
+  //         title: '流动资产调拨'
+  //       },
+  //       component: () => import('@/views/single-page/allot/allot.vue')
+  //     }
+  //   ]
+  // },
   {
     path: '/check',
     name: '_check',

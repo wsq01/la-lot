@@ -18,7 +18,7 @@
           </FormItem>
           <span v-for="(bItem, bIndex) in btnList" :key="bIndex">
             <FormItem v-if="bItem === 'ADD'">
-              <Button @click="addItem" type="primary" icon="md-add">新增</Button>
+              <Button @click="addItem('device')" type="primary" icon="md-add">新增</Button>
             </FormItem>
             <FormItem v-if="bItem === 'DELETEBATCH'">
               <Poptip confirm title="确定要删除吗？" transfer @on-ok="handleDeleteBatch">
@@ -37,7 +37,7 @@
               <Poptip v-if="bItem === 'DELETE'" confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
                 <Button type="error" size="small">删除</Button>
               </Poptip>
-              <Button v-if="bItem === 'EDIT'" type="primary" size="small" @click="editItem(row, index)">编辑</Button>
+              <Button v-if="bItem === 'EDIT'" type="primary" size="small" @click="editItem(row, index, 'device')">编辑</Button>
             </div>
           </template>
         </Table>
@@ -73,7 +73,8 @@ export default {
         },
         {
           title: '设备编号',
-          key: 'deviceNum'
+          key: 'deviceNum',
+          sortable: true
         },
         {
           title: '类型',
@@ -89,7 +90,8 @@ export default {
           align: 'center'
         }
       ],
-      btnList: []
+      btnList: [],
+      pageName: 'device'
     }
   },
   methods: {
@@ -103,17 +105,6 @@ export default {
       const res = await deleteDevice(row.id)
       this.deleteSuccess(res, index)
     },
-    addItem () {
-      this.$router.push({
-        name: 'add-device'
-      })
-    },
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-device',
-        params: row
-      })
-    },
     // 批量删除
     async handleDeleteBatch () {
       const res = await deleteDeviceList(this.selection)
@@ -122,15 +113,10 @@ export default {
     async initBtn () {
       const uri = this.$route.name
       const menuList = this.$store.state.user.userMenu
-      let menuId = ''
-      menuList.forEach((item, index) => {
-        if (item.uri === uri) {
-          menuId = item.id
-        }
-      })
-      const res = await getBtn({ menuId })
+      const menu = menuList.find(item => item.uri === uri || item.uri === '/' + uri)
+      const res = await getBtn({ menuId: menu.id })
       if (res.data.code === 0) {
-        this.btnList = res.data.data.list.map((item, index) => item.buttonName)
+        this.btnList = res.data.data.list.map(item => item.buttonName)
       }
     },
     handleChangePage (e) {

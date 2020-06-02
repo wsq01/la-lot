@@ -4,7 +4,7 @@
       <i-col :span="24">
         <Form :model="searchForm" inline :label-width="0">
           <FormItem>
-            <Select v-model="searchForm.key" class="search-item">
+            <Select v-model="searchForm.key">
               <template v-for="item in columns">
                 <Option v-if="item.key && item.key === 'id'" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
               </template>
@@ -36,7 +36,7 @@
             </div>
           </template>
         </Table>
-        <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" style="margin: 10px 0 0"></Page>
+        <Page :total="total" :page-size="total" show-total @on-change="handleChangePage" style="margin: 10px 0 0"></Page>
       </i-col>
     </Row>
   </Card>
@@ -84,33 +84,22 @@ export default {
           align: 'center'
         }
       ],
-      btnList: []
+      btnList: [],
+      pageName: 'type'
     }
   },
   methods: {
     async getItems (params) {
       const res = await getDeviceTypeList(params)
       this.getSuccess(res)
+      this.total = res.data.data.list.length
     },
     async deleteItem (row, index) {
       const res = await deleteDeviceType(row.id)
       this.deleteSuccess(res)
     },
-    addItem () {
-      this.$router.push({
-        name: 'add-type'
-      })
-    },
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-type',
-        params: row
-      })
-    },
     // 搜索
     async handleSearch () {
-      const obj = {}
-      obj[this.searchForm.key] = this.searchForm.value
       const res = await getDeviceTypeById(this.searchForm.value)
       if (res.data.code === 0) {
         this.tableData = []
@@ -121,15 +110,10 @@ export default {
     async initBtn () {
       const uri = this.$route.name
       const menuList = this.$store.state.user.userMenu
-      let menuId = '0'
-      menuList.forEach((item, index) => {
-        if (item.uri === uri) {
-          menuId = item.id
-        }
-      })
-      const res = await getBtn({ menuId })
+      const menu = menuList.find(item => item.uri === uri || item.uri === '/' + uri)
+      const res = await getBtn({ menuId: menu.id })
       if (res.data.code === 0) {
-        this.btnList = res.data.data.list.map((item, index) => item.buttonName)
+        this.btnList = res.data.data.list.map(item => item.buttonName)
       }
     }
   },

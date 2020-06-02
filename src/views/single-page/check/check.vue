@@ -72,7 +72,7 @@
                   </Select>
                 </FormItem>
                 <FormItem label="一级类型编码:">
-                  <Select v-model="checkSearchForm.code" clearable transfer label-in-value class="search-col" @on-change="handleChangeChickFirstLevel">
+                  <Select v-model="checkSearchForm.code" clearable transfer label-in-value class="search-col" @on-change="handleChangeFirstLevel">
                     <template v-for="(item, index) in firstLevelList">
                       <Option :value="item.code" :key="index">{{item.name}}</Option>
                     </template>
@@ -287,33 +287,33 @@ export default {
   methods: {
     ...mapActions(['getAreaList']),
     handleClickTab (name) {
-      console.log(name)
       if (name === 'check') {
-        this.getDeviceRealTimeCheck({ size: this.size, total: this.total, organizationId: this.$store.state.user.organizationId })
+        this.getDeviceRealTimeCheck({ size: this.size, total: this.total })
       }
     },
     // 获取实时盘点列表
-    getDeviceRealTimeCheck (params) {
-      getDeviceRealTimeCheck(params).then(res => {
-        this.checkLoading = false
-        if (res.data.code === 0) {
-          this.checkTableData = res.data.data.list
-          this.total = res.data.data.total
-        }
-      })
+    async getDeviceRealTimeCheck (params) {
+      const res = await getDeviceRealTimeCheck(params)
+      this.checkLoading = false
+      if (res.data.code === 0) {
+        this.checkTableData = res.data.data.list
+        this.total = res.data.data.total
+      } else {
+        this.$Message.error(res.data.message)
+      }
     },
     // 获取实时报表列表
-    getDeviceRealTimeReport (params) {
-      getDeviceRealTimeReport(params).then(res => {
-        this.reportLoading = false
-        if (res.data.code === 0) {
-          this.importTableData = res.data.data.list
-          this.importTotal = res.data.data.total
-        }
-      })
+    async getDeviceRealTimeReport (params) {
+      const res = await getDeviceRealTimeReport(params)
+      this.reportLoading = false
+      if (res.data.code === 0) {
+        this.importTableData = res.data.data.list
+        this.importTotal = res.data.data.total
+      } else {
+        this.$Message.error(res.data.message)
+      }
     },
     handleChangeDatetime (e) {
-      console.log(e)
       if (e) {
         this.$set(this.importSearchForm, 'time', new Date(e).getTime())
       } else {
@@ -321,25 +321,16 @@ export default {
       }
     },
     handleChangeFirstLevel (code) {
-      this.getSecondLevel(code)
+      console.log(code)
+      this.getSecondLevel(code.value)
     },
     handleChangeCheckDatetime (e) {
-      console.log(e)
       if (e) {
         this.$set(this.checkSearchForm, 'time', new Date(e).getTime())
       } else {
         this.$delete(this.checkSearchForm, 'time')
       }
     },
-    // handleChangeYear (e) {
-    //   this.$set(this.checkSearchForm, 'year', e)
-    // },
-    // handleChangeMonth (e) {
-    //   this.$set(this.checkSearchForm, 'month', e)
-    // },
-    // handleChangeDay (e) {
-    //   this.$set(this.checkSearchForm, 'day', e)
-    // }
     // 分页改变事件
     handlePageSizeChange (e) {
       this.size = e
@@ -351,7 +342,6 @@ export default {
     },
     // 报表导出
     handleExportExcel () {
-      this.importSearchForm.organizationId = this.$store.state.user.organizationId
       let str = ''
       for (let [key, val] of Object.entries(this.importSearchForm)) {
         if (val) {
@@ -370,7 +360,6 @@ export default {
     },
     // 盘点导出
     handleExportExcel2 () {
-      this.checkSearchForm.organizationId = this.$store.state.user.organizationId
       let str = ''
       for (let [key, val] of Object.entries(this.checkSearchForm)) {
         str += key + '=' + val + '&'
@@ -389,7 +378,7 @@ export default {
     },
     // 盘点分页点击事件
     handleChangePage (e) {
-      const obj = { size: this.size, index: e, organizationId: this.$store.state.user.organizationId }
+      const obj = { size: this.size, index: e }
       Object.assign(obj, this.checkSearchForm)
       this.getDeviceRealTimeCheck(obj)
     },
@@ -401,7 +390,6 @@ export default {
     },
     // 报表搜索
     handleImportSearch () {
-      this.importSearchForm.organizationId = this.$store.state.user.organizationId
       if (this.importSearchForm.time) {
         this.reportLoading = true
         getDeviceCheckHistory(this.importSearchForm).then(res => {
@@ -424,7 +412,6 @@ export default {
     },
     // 盘点搜索
     handleSearch () {
-      this.checkSearchForm.organizationId = this.$store.state.user.organizationId
       if (this.checkSearchForm.time) {
         this.checkLoading = true
         getCheck(this.checkSearchForm).then(res => {
@@ -445,17 +432,14 @@ export default {
       }
     },
     // 流动图搜索
-    handleTrendSearch () {
-      this.trendSearchForm.organizationId = this.$store.state.user.organizationId
-      getTrend(this.trendSearchForm).then(res => {
-        this.chartLineOption = this.initChartOption(res.data.data)
-      })
+    async handleTrendSearch () {
+      const res = await getTrend(this.trendSearchForm)
+      this.chartLineOption = this.initChartOption(res.data.data)
     },
     // 设备轨迹搜索
-    handleTraceSearch () {
-      getTrace(this.traceSearchForm).then(res => {
-        this.timelineList = res.data.data.list
-      })
+    async handleTraceSearch () {
+      const res = await getTrace(this.traceSearchForm)
+      this.timelineList = res.data.data.list
     },
     handleChangeTraceTimeRange (e) {
       this.traceSearchForm.startTime = new Date(e[0]).getTime()
@@ -509,7 +493,6 @@ export default {
     },
     // 报表区域改变事件
     handleChangeImportArea (e) {
-      console.log(e)
       if (e) {
         getScene({ areaId: e.value }).then(res => {
           this.sceneList = res.data.data.list
@@ -521,7 +504,6 @@ export default {
     },
     // 盘点区域改变事件
     handleChangeArea (e) {
-      console.log(e)
       if (e) {
         getScene({ areaId: e.value }).then(res => {
           this.sceneList = res.data.data.list
@@ -531,27 +513,24 @@ export default {
         this.$set(this.checkSearchForm, 'sceneId', '')
       }
     },
-    handleChangeTrendArea (e) {
-      getScene({ areaId: e.value }).then(res => {
-        this.trendSceneList = res.data.data.list
-      })
-    },
-    // handleChangeScene (e) {
-    //   this.checkSearchForm.sceneName = e.label
-    // },
-    handleChangeTrendScene (e) {
-      // this.checkSearchForm.sceneName = e.label
+    async handleChangeTrendArea (e) {
+      const res = await getScene({ areaId: e.value })
+      this.trendSceneList = res.data.data.list
     },
     async getFirstLevel () {
       const res = await getFirstLevel()
       if (res.data.code === 0) {
         this.firstLevelList = res.data.data.list
+      } else {
+        this.$Message.error(res.data.message)
       }
     },
     async getSecondLevel (code) {
       const res = await getSecondLevel(code)
       if (res.data.code === 0) {
         this.secondLevelList = res.data.data.list
+      } else {
+        this.$Message.error(res.data.message)
       }
     }
   },

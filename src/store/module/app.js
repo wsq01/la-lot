@@ -40,15 +40,25 @@ export default {
     roleList: [],
     socketMsg: '{}',
     menuTheme: localRead('menuTheme') || 'dark',
-    topTheme: localRead('topTheme') || 'light'
+    topTheme: localRead('topTheme') || 'light',
+    computedMenuList: []
   },
   getters: {
     // 从路由获取菜单列表
     // rootState 根节点状态
-    menuList: (state, getters, rootState) => getMenuByRouter(defaultRoutes, rootState.user.access),
+    getMenuList: (state, getters, rootState) => state.computedMenuList,
     userMenuList: (state, getter, rootState) => getUserControlMenuByRouter(defaultRoutes)
   },
   mutations: {
+    resetAppData (state) {
+      state.cityList = []
+      state.areaList = []
+      state.roleList = []
+      state.menuList = []
+      state.sceneList = []
+      state.tagNavList = []
+      state.computedMenuList = []
+    },
     setBreadCrumb (state, route) { // 设置面包屑导航
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
     },
@@ -89,6 +99,9 @@ export default {
     },
     setMenuList (state, list) { // 设置场景列表
       state.menuList = list
+    },
+    setComputedMenuList (state, list) { // 设置场景列表
+      state.computedMenuList = list
     },
     closeTag (state, route) { // 关闭标签导航页
       let tag = state.tagNavList.filter(item => routeEqual(item, route))
@@ -147,6 +160,11 @@ export default {
           reject(error)
         }
       })
+    },
+    setComputedMenuList ({ state, commit, rootState }) {
+      console.log(defaultRoutes)
+      console.log(getMenuByRouter(defaultRoutes, rootState.user.access))
+      commit('setComputedMenuList', getMenuByRouter(defaultRoutes, rootState.user.access))
     },
     getAreaList ({ state, commit }) {
       return new Promise((resolve, reject) => {

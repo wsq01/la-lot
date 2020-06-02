@@ -43,16 +43,25 @@ router.beforeEach((to, from, next) => {
       turnTo(to, store.state.user.access, next)
     } else {
       store.dispatch('getMenus').then(res => {
+        if (!res) {
+          setToken('')
+          next({
+            name: LOGIN_PAGE_NAME
+          })
+        }
         if (res[0]) {
-          if (res[0].data && res[0].data.code === 1200) {
+          if (res[0].data && (res[0].data.code === 1200 || res[0].data.code === 1201)) {
             alert(res[0].data.message)
+            return false
           }
           const dynamicRouters = initDynamicRouter(res[0].data.data.list, dynamicRoutes)
           dynamicRouters.forEach(item => router.options.routes.push(item))
           router.addRoutes(dynamicRouters)
+          store.dispatch('setComputedMenuList').then(res => {
+            turnTo(to, store.state.user.access, next)
+          })
           console.log(dynamicRouters)
           // next()
-          turnTo(to, store.state.user.access, next)
         }
       }).catch((res) => {
         setToken('')
