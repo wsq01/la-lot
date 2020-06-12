@@ -4,7 +4,7 @@
       <i-col :span="24">
         <Form :model="searchForm" inline :label-width="0">
           <FormItem>
-            <Select v-model="searchForm.key" class="search-item">
+            <Select v-model="searchForm.key">
               <template v-for="item in columns">
                 <Option v-if="item.key && (item.key === 'id' || item.key === 'name' || item.key === 'code')" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
               </template>
@@ -35,12 +35,45 @@
         <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" style="margin: 10px 0 0"></Page>
       </i-col>
     </Row>
+    <Modal v-model="modalConfig.show" :width="400" :title="modalConfig.title">
+      <Row type="flex" justify="center">
+        <i-col span="24">
+          <Form ref="formValidate" :model="formItem" :label-width="80" :rules="rules">
+            <FormItem :label="formItemLabel[0]" prop="name">
+              <Input v-model="formItem.name" />
+            </FormItem>
+            <FormItem :label="formItemLabel[1]">
+              <Input v-model="formItem.badCount" />
+            </FormItem>
+            <FormItem :label="formItemLabel[2]">
+              <Select v-model="formItem.code">
+                <Option v-for="(item, index) in organizationList" :key="index" :value="item.code">{{item.name}}</Option>
+              </Select>
+            </FormItem>
+            <FormItem :label="formItemLabel[3]">
+              <Input v-model="formItem.telephone" />
+            </FormItem>
+            <FormItem :label="formItemLabel[4]">
+              <Input v-model="formItem.address" />
+            </FormItem>
+            <FormItem :label="formItemLabel[5]">
+              <Input v-model="formItem.remark" type="textarea"/>
+            </FormItem>
+          </Form>
+        </i-col>
+      </Row>
+      <div slot="footer">
+        <Button @click="cancel" style="margin-left: 8px">取消</Button>
+        <Button type="primary" @click="modalSubmit('formValidate')">提交</Button>
+      </div>
+    </Modal>
   </Card>
 </template>
 
 <script>
-import { getOrganization, deleteOrganization } from '@/api/user'
+import { getOrganization, deleteOrganization, addOrganization, editOrganization } from '@/api/user'
 import minxin from '@/assets/js/mixin'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'Organization',
@@ -50,64 +83,127 @@ export default {
       columns: [
         {
           title: '机构ID',
-          key: 'id'
+          key: 'id',
+          minWidth: 80,
+          align: 'center'
         },
         {
           title: '机构名称',
-          key: 'name'
+          key: 'name',
+          minWidth: 80,
+          align: 'center'
         },
         {
           title: '机构编码',
-          key: 'badCount'
+          key: 'badCount',
+          minWidth: 60,
+          align: 'center'
         },
         {
           title: '机构地址',
-          key: 'address'
+          key: 'address',
+          minWidth: 60,
+          align: 'center'
         },
         {
           title: '上级机构编码',
-          key: 'code'
+          key: 'code',
+          minWidth: 80,
+          align: 'center'
         },
         {
           title: '机构电话',
-          key: 'telephone'
+          key: 'telephone',
+          minWidth: 100,
+          align: 'center'
         },
         {
           title: '创建时间',
-          key: 'createTime'
+          key: 'createTime',
+          minWidth: 120,
+          align: 'center'
         },
         {
           title: '备注',
-          key: 'remark'
+          key: 'remark',
+          minWidth: 100,
+          align: 'center'
         },
         {
           title: '操作',
           slot: 'action',
-          width: 130,
+          minWidth: 120,
           align: 'center'
         }
-      ]
+      ],
+      modalConfig: {
+        show: false,
+        title: '',
+        type: ''
+      },
+      formItemLabel: ['机构名称', '机构编码', '上级机构', '机构电话', '机构地址', '备注'],
+      formItem: {},
+      rules: {
+        name: [
+          { required: true, message: '机构名称不能为空', trigger: 'blur' }
+        ]
+      }
     }
   },
+  computed: {
+    ...mapState({
+      organizationList: state => state.app.organizationList
+    })
+  },
   methods: {
+    ...mapActions(['getOrganizationList']),
     async getItems (params) {
       const res = await getOrganization(params)
       this.getSuccess(res)
     },
     async deleteItem (row, index) {
       const res = await deleteOrganization(row.id)
-      this.deleteSuccess(res)
+      this.deleteSuccess(res, index)
     },
-    addItem () {
-      this.$router.push({
-        name: 'add-organization'
+    modalSubmit (name) {
+      this.$refs[name].validate(async (valid) => {
+        if (valid) {
+          if (this.modalConfig.type === 'add') {
+            try {
+              const res = await addOrganization(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.getItems()
+                this.$Message.success('添加成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          } else {
+            try {
+              const res = await editOrganization(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.$Message.success('修改成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          }
+        }
       })
     },
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-organization',
-        params: row
-      })
+    cancel () {
+      this.$set(this.modalConfig, 'show', false)
+    }
+  },
+  mounted () {
+    if (this.organizationList.length === 0) {
+      this.getOrganizationList()
     }
   }
 }

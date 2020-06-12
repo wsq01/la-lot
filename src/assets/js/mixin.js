@@ -11,15 +11,23 @@ export default {
   },
   methods: {
     addItem () {
-      this.$router.push({
-        name: `add-${this.pageName}`
-      })
+      this.$refs.formValidate.resetFields()
+      this.formItem = {}
+      this.modalConfig = {
+        show: !this.modalConfig.show,
+        title: '添加',
+        type: 'add'
+      }
     },
     editItem (row, index) {
-      this.$router.push({
-        name: `edit-${this.pageName}`,
-        params: row
-      })
+      console.log(row)
+      // this.$refs.formValidate.resetFields()
+      this.formItem = row
+      this.modalConfig = {
+        show: !this.modalConfig.show,
+        title: '编辑',
+        type: 'edit'
+      }
     },
     // 分页
     handleChangePage (e) {
@@ -69,6 +77,7 @@ export default {
       if (res.data.code === 0) {
         this.$Message.success('删除成功！')
         this.tableData.splice(index, 1)
+        this.total = this.total - 1
       } else {
         this.$Message.error(res.data.message)
       }
@@ -78,11 +87,12 @@ export default {
         this.selection.forEach((item, index) => {
           this.tableData.forEach((sItem, sIndex) => {
             if (sItem.id === item.id) {
-              this.$Message.success('删除成功！')
               this.tableData.splice(sIndex, 1)
+              this.total = this.total - 1
             }
           })
         })
+        this.$Message.success('删除成功！')
       } else {
         this.$Message.error(res.data.message)
       }

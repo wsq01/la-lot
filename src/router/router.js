@@ -115,28 +115,6 @@ export const dynamicRoutes = [
           title: '用户管理'
         },
         component: () => import('@/views/user-page/user.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-user',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          notCache: true,
-          title: '编辑用户'
-        },
-        component: () => import('@/views/user-page/edit-user.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-user',
-        meta: {
-          icon: 'md-globe',
-          notCache: true,
-          hideInMenu: true,
-          title: '添加用户'
-        },
-        component: () => import('@/views/user-page/edit-user.vue')
       }
     ]
   },
@@ -203,26 +181,6 @@ export const dynamicRoutes = [
           title: '机构管理'
         },
         component: () => import('@/views/user-page/organization.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-organization',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '编辑机构'
-        },
-        component: () => import('@/views/user-page/edit-organization.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-organization',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '添加机构'
-        },
-        component: () => import('@/views/user-page/edit-organization.vue')
       }
     ]
   },
@@ -246,26 +204,6 @@ export const dynamicRoutes = [
           title: '角色管理'
         },
         component: () => import('@/views/user-page/role.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-role',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '编辑角色'
-        },
-        component: () => import('@/views/user-page/edit-role.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-role',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '添加角色'
-        },
-        component: () => import('@/views/user-page/edit-role.vue')
       }
     ]
   },
@@ -289,26 +227,6 @@ export const dynamicRoutes = [
           title: '按钮管理'
         },
         component: () => import('@/views/user-page/btn.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-btn',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '编辑按钮'
-        },
-        component: () => import('@/views/user-page/edit-btn.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-btn',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '添加按钮'
-        },
-        component: () => import('@/views/user-page/edit-btn.vue')
       }
     ]
   },
@@ -332,26 +250,6 @@ export const dynamicRoutes = [
           title: '资源角色关联管理'
         },
         component: () => import('@/views/user-page/relresource.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-relresource',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '编辑关联'
-        },
-        component: () => import('@/views/user-page/edit-relresource.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-relresource',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '添加关联'
-        },
-        component: () => import('@/views/user-page/edit-relresource.vue')
       }
     ]
   },
@@ -458,26 +356,6 @@ export const dynamicRoutes = [
           title: '区域管理'
         },
         component: () => import('@/views/single-page/area/area.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-area',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '编辑区域'
-        },
-        component: () => import('@/views/single-page/area/edit-area.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-area',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '新增区域'
-        },
-        component: () => import('@/views/single-page/area/edit-area.vue')
       }
     ]
   },
@@ -518,26 +396,6 @@ export const dynamicRoutes = [
           title: '场景管理'
         },
         component: () => import('@/views/single-page/scene/scene.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-scene',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '编辑场景'
-        },
-        component: () => import('@/views/single-page/scene/edit-scene.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-scene',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '新增场景'
-        },
-        component: () => import('@/views/single-page/scene/edit-scene.vue')
       }
     ]
   },
@@ -555,8 +413,7 @@ export const dynamicRoutes = [
         name: 'receiver',
         meta: {
           icon: 'md-menu',
-          title: '接收器',
-          // hideInMenu: true
+          title: '接收器'
         },
         component: () => import('@/views/single-page/receiver/receiver.vue')
       },
@@ -565,8 +422,7 @@ export const dynamicRoutes = [
         name: 'device',
         meta: {
           icon: 'md-menu',
-          title: '流动资产',
-          // hideInMenu: true
+          title: '流动资产'
         },
         component: () => import('@/views/single-page/device/device.vue')
       },
@@ -575,93 +431,12 @@ export const dynamicRoutes = [
         name: 'devicetype',
         meta: {
           icon: 'md-menu',
-          title: '资产编码',
-          // hideInMenu: true
+          title: '资产编码'
         },
         component: () => import('@/views/single-page/device-type/device-type.vue')
-      },
-      {
-        path: 'editType',
-        name: 'edit-type',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '编辑接收器'
-        },
-        component: () => import('@/views/single-page/device-type/edit-type.vue')
-      },
-      {
-        path: 'addType',
-        name: 'add-type',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '新增接收器'
-        },
-        component: () => import('@/views/single-page/device-type/edit-type.vue')
-      },
-      {
-        path: 'editReceiver',
-        name: 'edit-receiver',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '编辑接收器'
-        },
-        component: () => import('@/views/single-page/receiver/edit-receiver.vue')
-      },
-      {
-        path: 'addReceiver',
-        name: 'add-receiver',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '新增接收器'
-        },
-        component: () => import('@/views/single-page/receiver/edit-receiver.vue')
-      },
-      {
-        path: 'editDevice',
-        name: 'edit-device',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '编辑接收器'
-        },
-        component: () => import('@/views/single-page/device/edit-device.vue')
-      },
-      {
-        path: 'addDevice',
-        name: 'add-device',
-        meta: {
-          hideInMenu: true,
-          notCache: true,
-          title: '新增接收器'
-        },
-        component: () => import('@/views/single-page/device/edit-device.vue')
       }
     ]
   },
-  // {
-  //   path: '/allot',
-  //   name: '_allot',
-  //   redirect: 'allot',
-  //   component: Main,
-  //   meta: {
-  //     hideInBread: true
-  //   },
-  //   children: [
-  //     {
-  //       path: 'allot',
-  //       name: 'allot',
-  //       meta: {
-  //         icon: '_qq',
-  //         title: '流动资产调拨'
-  //       },
-  //       component: () => import('@/views/single-page/allot/allot.vue')
-  //     }
-  //   ]
-  // },
   {
     path: '/check',
     name: '_check',

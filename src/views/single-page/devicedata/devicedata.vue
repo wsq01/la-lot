@@ -23,7 +23,8 @@
               <FormItem label="时间范围:" :label-width="70">
                 <DatePicker v-model="realTimeSearchForm.time" type="datetimerange" placeholder="请选择范围" class="search-item" transfer></DatePicker>
               </FormItem>
-              <Button @click="handleSearch" type="primary" icon="md-search">搜索</Button>
+              <Button @click="handleSearch" type="primary" icon="md-search" class="search-btn">搜索</Button>
+              <Button @click="handleExportExcel" type="primary" class="search-btn"><Icon type="md-download" />&nbsp;&nbsp;导出Excel</Button>
             </Form>
             <Table :loading="loading" stripe border :columns="columns" :data="tableData"></Table>
             <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0" :page-size-opts="[10, 20, 30, 40, 1000]"></Page>
@@ -57,7 +58,7 @@
 </template>
 
 <script>
-import { getDeviceRealTime } from '@/api/data'
+import { getDeviceRealTime, getDeviceRealtimeExport } from '@/api/data'
 import { getDeviceHistory } from '@/api/history'
 import { mapState, mapActions } from 'vuex'
 export default {
@@ -133,6 +134,34 @@ export default {
           this.total = res.data.data.total
         }
       })
+    },
+    // 报表导出
+    async handleExportExcel () {
+      const obj = {}
+      if (this.realTimeSearchForm.time[0]) {
+        obj.startTime = this.realTimeSearchForm.time[0]
+        obj.endTime = this.realTimeSearchForm.time[1]
+      }
+      if (this.realTimeSearchForm.value) {
+        obj.key = this.realTimeSearchForm.key
+        obj.value = this.realTimeSearchForm.value
+      }
+      let params = {}
+      let res
+      let fileName = '导出.xls'
+      for (let [key, val] of Object.entries(this.realTimeSearchForm)) {
+        params[key] = val
+      }
+      res = await getDeviceRealtimeExport(obj)
+      fileName = '报表导出.xls'
+      const blob = new Blob([res.data], { type: 'application/octet-stream' })
+
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.download = fileName
+      link.href = URL.createObjectURL(blob)
+      link.click()
+      URL.revokeObjectURL(link.href)
     },
     // 获取历史数据
     getDeviceHistory (params) {
@@ -255,5 +284,33 @@ export default {
 .search-item {
   display: inline-block;
   width: 200px;
+}
+.search {
+  &-con {
+    padding: 10px 0;
+  }
+  &-col {
+    display: inline-block;
+    width: 200px;
+    margin-left: 2px;
+  }
+  &-datepicker {
+    width: 100px;
+  }
+  &-input {
+    display: inline-block;
+    width: 200px;
+    margin-left: 2px;
+  }
+  &-btn {
+    margin-left: 2px;
+    margin-bottom: 24px;
+  }
+}
+.timeline-item {
+  display: flex;
+}
+.time {
+  margin: 0 50px 0 0;
 }
 </style>

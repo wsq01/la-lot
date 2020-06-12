@@ -26,7 +26,7 @@
     </Row>
     <Row>
       <i-col :span="24">
-        <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select-change="handleSelectTableItem">
+        <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-selection-change="handleSelectTableItem">
           <template slot-scope="{row, index}" slot="action">
             <div v-for="(bItem, bIndex) in btnList" :key="bIndex" style="display: inline-block;margin-right: 5px">
               <Poptip v-if="bItem === 'DELETE'" confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
@@ -39,11 +39,39 @@
         <Page :total="total" :page-size="total" show-total @on-change="handleChangePage" style="margin: 10px 0 0"></Page>
       </i-col>
     </Row>
+
+    <Modal v-model="modalConfig.show" :width="400" :title="modalConfig.title">
+      <Row type="flex" justify="center">
+        <i-col span="24">
+          <Form ref="formValidate" :model="formItem" :label-width="80" :rules="rules">
+            <FormItem :label="formItemLabel[0]" prop="name">
+              <Input v-model="formItem.name" />
+            </FormItem>
+            <FormItem :label="formItemLabel[1]" prop="level">
+              <Input type="number" :number="true" v-model="formItem.level" />
+            </FormItem>
+            <FormItem :label="formItemLabel[2]" prop="parent">
+              <Input v-model="formItem.parent" />
+            </FormItem>
+            <FormItem :label="formItemLabel[3]" prop="code">
+              <Input v-model="formItem.code" />
+            </FormItem>
+            <FormItem :label="formItemLabel[4]">
+              <Input v-model="formItem.remark" type="textarea"/>
+            </FormItem>
+          </Form>
+        </i-col>
+      </Row>
+      <div slot="footer">
+        <Button @click="cancel" style="margin-right: 8px">取消</Button>
+        <Button type="primary" @click="modalSubmit('formValidate')">提交</Button>
+      </div>
+    </Modal>
   </Card>
 </template>
 
 <script>
-import { getDeviceTypeList, deleteDeviceType, getDeviceTypeById } from '@/api/data'
+import { getDeviceTypeList, deleteDeviceType, getDeviceTypeById, addDeviceType, editDeviceType } from '@/api/data'
 import { getBtn } from '@/api/user'
 import minxin from '@/assets/js/mixin'
 
@@ -54,38 +82,63 @@ export default {
     return {
       columns: [
         {
-          type: 'selection',
-          width: 50,
+          title: '设备类型ID',
+          key: 'id',
+          minWidth: 120,
           align: 'center'
         },
         {
-          title: '设备类型ID',
-          key: 'id'
+          title: '类型名称',
+          key: 'name',
+          minWidth: 100,
+          align: 'center'
         },
         {
-          title: '设备类型名称',
-          key: 'name'
+          title: '类型编号',
+          key: 'code',
+          minWidth: 80,
+          align: 'center'
         },
         {
-          title: '设备类型编号',
-          key: 'code'
-        },
-        {
-          title: '设备类型级别',
-          key: 'level'
+          title: '类型级别',
+          key: 'level',
+          minWidth: 80,
+          align: 'center'
         },
         {
           title: '备注',
+          minWidth: 40,
           key: 'remark'
         },
         {
           title: '操作',
           slot: 'action',
+          minWidth: 120,
           align: 'center'
         }
       ],
       btnList: [],
-      pageName: 'type'
+      modalConfig: {
+        show: false,
+        title: '',
+        type: ''
+      },
+      formItemLabel: ['类型名称', '类型等级', '类型父级', '类型编码', '备注'],
+      formItem: {},
+      rules: {
+        name: [
+          { required: true, message: '类型名称不能为空', trigger: 'blur' }
+        ],
+        level: [
+          { required: true, message: '类型等级不能为空', type: 'number', trigger: 'blur' }
+        ],
+        parent: [
+          { required: true, message: '父设备类型不能为空', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '类型编码不能为空', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
@@ -96,7 +149,7 @@ export default {
     },
     async deleteItem (row, index) {
       const res = await deleteDeviceType(row.id)
-      this.deleteSuccess(res)
+      this.deleteSuccess(res, index)
     },
     // 搜索
     async handleSearch () {
@@ -115,6 +168,42 @@ export default {
       if (res.data.code === 0) {
         this.btnList = res.data.data.list.map(item => item.buttonName)
       }
+    },
+    modalSubmit (name) {
+      this.$refs[name].validate(async (valid) => {
+        if (valid) {
+          if (this.modalConfig.type === 'add') {
+            this.formItem.organizationId = this.$store.state.user.organizationId
+            try {
+              const res = await addDeviceType(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.getItems()
+                this.$Message.success('添加成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          } else {
+            try {
+              const res = await editDeviceType(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.$Message.success('修改成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          }
+        }
+      })
+    },
+    cancel () {
+      this.$set(this.modalConfig, 'show', false)
     }
   },
   mounted () {

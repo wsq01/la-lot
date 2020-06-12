@@ -5,7 +5,6 @@ import iView from 'iview'
 import { setToken, getToken, canTurnTo, setTitle, initDynamicRouter } from '@/libs/util'
 import config from '@/config'
 import store from '@/store'
-import Cookies from 'js-cookie'
 import { defaultRoutes, dynamicRoutes } from './router.js'
 
 Vue.use(Router)
@@ -65,7 +64,6 @@ router.beforeEach((to, from, next) => {
         }
       }).catch((res) => {
         setToken('')
-        Cookies.remove('organizationId')
         next({
           name: LOGIN_PAGE_NAME
         })

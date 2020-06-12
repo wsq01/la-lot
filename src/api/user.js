@@ -45,6 +45,8 @@ export const login = (params) => getItems('/api/user/login', params)
 
 export const getUser = (params) => getItems('/api/user/user', params)
 
+export const editUser = (params) => editItem('/api/user/user', params)
+
 export const deleteUser = (id) => deleteItem('/api/user/user', id)
 
 export const addUser = (params) => addItem('/api/user/user', params)
@@ -54,6 +56,8 @@ export const getOrganization = (params) => getItems('/api/user/organization', pa
 export const getOrganizationList = () => getItems('/api/user/organization/list')
 
 export const addOrganization = (params) => addItem('/api/user/organization', params)
+
+export const editOrganization = (params) => editItem('/api/user/organization', params)
 
 export const deleteOrganization = (id) => deleteItem('api/user/organization', id)
 

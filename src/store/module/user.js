@@ -11,7 +11,6 @@ export default {
     userName: '',
     userId: '',
     avatarImgPath: '',
-    organizationId: Cookies.get('organizationId'),
     token: getToken(),
     roleIds: [],
     btnList: [],
@@ -38,9 +37,6 @@ export default {
     setToken (state, token) {
       state.token = token
       setToken(token)
-    },
-    setOrganizationId (state, organizationId) {
-      state.organizationId = organizationId
     },
     setRoleIds (state, roleIds) {
       state.roleIds = roleIds
@@ -74,10 +70,8 @@ export default {
             const data = res.data.data
             console.log(data)
             commit('setToken', data.jwt)
-            commit('setOrganizationId', data.organizationId)
             commit('setRoleIds', data.roleIds)
             // commit('setHasGetInfo', true)
-            Cookies.set('organizationId', data.organizationId)
             Cookies.set('userId', data.userId)
             Cookies.set('roleIds', data.roleIds)
           }
@@ -92,7 +86,6 @@ export default {
       return new Promise((resolve, reject) => {
         // logout(state.token).then(() => {
         commit('setToken', '')
-        Cookies.remove('organizationId')
         Cookies.remove('roleIds')
         Cookies.remove('userId')
         commit('resetUserData')

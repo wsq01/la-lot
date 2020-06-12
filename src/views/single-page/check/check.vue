@@ -27,7 +27,6 @@
                       <Option :value="item.code" :key="index">{{item.name}}</Option>
                     </template>
                   </Select>
-                  <!-- <Input clearable placeholder="请输入一级类型编码" v-model="importSearchForm.code" class="search-col" /> -->
                 </FormItem>
                 <FormItem label="二级类型:">
                   <Select v-model="importSearchForm.subCode" clearable transfer label-in-value class="search-col">
@@ -35,7 +34,6 @@
                       <Option :value="item.code" :key="index">{{item.name}}</Option>
                     </template>
                   </Select>
-                  <!-- <Input clearable placeholder="请输入二级类型编码" v-model="importSearchForm.subCode" class="search-col" /> -->
                 </FormItem>
                 <FormItem label="日期:">
                   <DatePicker type="datetime" @on-change="handleChangeDatetime" placeholder="请选择年" class="search-col" transfer></DatePicker>
@@ -77,7 +75,6 @@
                       <Option :value="item.code" :key="index">{{item.name}}</Option>
                     </template>
                   </Select>
-                  <!-- <Input clearable placeholder="请输入一级类型编码" v-model="checkSearchForm.code" class="search-col" /> -->
                 </FormItem>
                 <FormItem label="二级类型编码:">
                   <Select v-model="checkSearchForm.subCode" clearable transfer label-in-value class="search-col">
@@ -85,20 +82,10 @@
                       <Option :value="item.code" :key="index">{{item.name}}</Option>
                     </template>
                   </Select>
-                  <!-- <Input clearable placeholder="请输入二级类型编码" v-model="checkSearchForm.subCode" class="search-col" /> -->
                 </FormItem>
                 <FormItem label="日期:">
                   <DatePicker type="datetime" @on-change="handleChangeCheckDatetime" placeholder="请选择年" class="search-col" transfer></DatePicker>
                 </FormItem>
-                <!-- <FormItem label="年:">
-                  <DatePicker type="year" @on-change="handleChangeYear" placeholder="请选择年" class="search-col search-datepicker" transfer></DatePicker>
-                </FormItem>
-                <FormItem label="月:">
-                  <DatePicker type="month" format="M" @on-change="handleChangeMonth" placeholder="请选择月" class="search-col search-datepicker" transfer></DatePicker>
-                </FormItem>
-                <FormItem label="日:">
-                  <DatePicker type="date" format="d" @on-change="handleChangeDay" placeholder="请选择日" class="search-col search-datepicker" transfer></DatePicker>
-                </FormItem> -->
                 <Button @click="handleSearch" type="primary" class="search-btn"><Icon type="md-search" />&nbsp;&nbsp;搜索</Button>
                 <Button @click="handleExportExcel2" type="primary" class="search-btn"><Icon type="md-download" />&nbsp;&nbsp;导出Excel</Button>
               </Form>
@@ -176,8 +163,8 @@
 </template>
 
 <script>
-import { getScene, getDeviceRealTimeReport, getDeviceRealTimeCheck, getFirstLevel, getSecondLevel } from '@/api/data'
-import { getCheck, getTrace, getTrend, getDeviceCheckHistory } from '@/api/history'
+import { getScene, getDeviceRealTimeReport, getDeviceRealTimeCheck, getFirstLevel, getSecondLevel, getDeviceCheckExport, getDeviceReportExport } from '@/api/data'
+import { getCheck, getTrace, getTrend, getDeviceCheckHistory, getHDDeviceCheckExport, getHDDeviceReportExport } from '@/api/history'
 import { mapState, mapActions } from 'vuex'
 import ChartLine from '@/components/charts/line'
 export default {
@@ -341,37 +328,53 @@ export default {
       this.getItems(searchObj)
     },
     // 报表导出
-    handleExportExcel () {
-      let str = ''
+    async handleExportExcel () {
+      let params = {}
+      let res
+      let fileName = '导出.xls'
       for (let [key, val] of Object.entries(this.importSearchForm)) {
-        if (val) {
-          str += key + '=' + val + '&'
-        }
+        params[key] = val
       }
+      console.log(params)
+      if (this.importSearchForm.time) {
+        res = await getHDDeviceReportExport(params)
+        fileName = '报表导出.xls'
+      } else {
+        res = await getDeviceReportExport(params)
+        fileName = '报表导出.xls'
+      }
+      const blob = new Blob([res.data], { type: 'application/octet-stream' })
+
       let link = document.createElement('a')
       link.style.display = 'none'
-      console.log(str)
-      if (this.importSearchForm.time) {
-        link.href = '//www.sscs58.com:8003/api/hd/device/report/export?' + str
-      } else {
-        link.href = '//39.105.79.197:8002/api/tb/device/report/export?' + str
-      }
+      link.download = fileName
+      link.href = URL.createObjectURL(blob)
       link.click()
+      URL.revokeObjectURL(link.href)
     },
     // 盘点导出
-    handleExportExcel2 () {
-      let str = ''
+    async handleExportExcel2 () {
+      let params = {}
+      let res
+      let fileName = '导出.xls'
       for (let [key, val] of Object.entries(this.checkSearchForm)) {
-        str += key + '=' + val + '&'
+        params[key] = val
       }
+      if (this.checkSearchForm.time) {
+        res = await getHDDeviceCheckExport(params)
+        fileName = '盘点导出.xls'
+      } else {
+        res = await getDeviceCheckExport(params)
+        fileName = '盘点导出.xls'
+      }
+      const blob = new Blob([res.data], { type: 'application/octet-stream' })
+
       let link = document.createElement('a')
       link.style.display = 'none'
-      if (this.checkSearchForm.time) {
-        link.href = '//www.sscs58.com:8003/api/hd/device/check/export?' + str
-      } else {
-        link.href = '//39.105.79.197:8002/api/tb/device/check/export?' + str
-      }
+      link.download = fileName
+      link.href = URL.createObjectURL(blob)
       link.click()
+      URL.revokeObjectURL(link.href)
     },
     handleClear () {
 

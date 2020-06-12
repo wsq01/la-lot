@@ -14,6 +14,14 @@
             <Input @on-change="handleClear" clearable placeholder="请输入关键字" v-model="searchForm.value" class="search-item" />
           </FormItem>
           <FormItem>
+            <RadioGroup v-model="searchForm.state" type="button">
+              <Radio label="">全部</Radio>
+              <Radio label="0">空闲</Radio>
+              <Radio label="1">在线</Radio>
+              <Radio label="2">离线</Radio>
+          </RadioGroup>
+          </FormItem>
+          <FormItem>
             <Button @click="handleSearch" type="primary" icon="md-search">搜索</Button>
           </FormItem>
           <FormItem>
@@ -33,7 +41,8 @@
       <i-col :span="24">
         <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select-change="handleSelectTableItem">
           <template slot-scope="{ row }" slot="status">
-            <span :style="{ color: row.status === '在线' ? '#19be6b' : ''}">{{ row.status }}</span>
+            <!-- 0: 空闲 1: 在线 2: 离线 -->
+            <span :style="{color: row.state === 1 ? '#19be6b' : row.state === 2 ? '#c5c8ce' : ''}">{{ row.state === 0 ? '空闲' : row.state === 1 ? '在线' : '离线' }}</span>
           </template>
           <template slot-scope="{row, index}" slot="action">
             <div v-for="(bItem, bIndex) in btnList" :key="bIndex" style="display: inline-block;margin-right: 5px">
@@ -43,7 +52,7 @@
               <Button v-if="bItem === 'EDIT'" type="primary" size="small" @click="editItem(row, index)">编辑</Button>
             </div>
             <Button type="success" size="small" style="margin-right: 5px" @click="editItemTimer(row, index)">对时</Button>
-            <Button type="success" size="small" style="margin-right: 5px" :disabled="!isDisabled[index]" @click="editItemReset(row, index)">重启</Button>
+            <Button type="success" size="small" style="margin-right: 5px" :disabled="isDisabled[index]" @click="editItemReset(row, index)">重启</Button>
             <Button type="success" size="small" style="margin-right: 5px" @click="openModal(row, index)">设置参数</Button>
             <Button type="success" size="small" style="margin-right: 5px" @click="editItemUpdate(row, index)">更新固件</Button>
           </template>
@@ -64,13 +73,43 @@
     <Modal :styles="{top: '20px'}" v-model="modal1" draggable scrollable :footer-hide="true">
       <Progress :percent="progress" :stroke-color="['#108ee9', '#87d068']" />
     </Modal>
+    <Modal v-model="modalConfig.show" :width="400" :title="modalConfig.title">
+      <Row type="flex" justify="center">
+        <i-col span="24">
+          <Form ref="formValidate" :model="formItem" :label-width="80" :rules="rules">
+            <FormItem :label="formItemLabel[0]">
+              <Input v-model="formItem.name" />
+            </FormItem>
+            <FormItem :label="formItemLabel[1]" prop="receiverNum">
+              <Input v-model="formItem.receiverNum" />
+            </FormItem>
+            <FormItem :label="formItemLabel[2]">
+              <Select v-model="formItem.sceneId">
+                <Option v-for="(item, index) in sceneList" :key="index" :value="item.id">{{item.name}}</Option>
+              </Select>
+            </FormItem>
+            <FormItem :label="formItemLabel[3]">
+              <Input v-model="formItem.type" />
+            </FormItem>
+            <FormItem :label="formItemLabel[4]">
+              <Input v-model="formItem.remark" type="textarea"/>
+            </FormItem>
+          </Form>
+        </i-col>
+      </Row>
+      <div slot="footer">
+        <Button @click="cancel" style="margin-right: 8px">取消</Button>
+        <Button type="primary" @click="modalSubmit('formValidate')">提交</Button>
+      </div>
+    </Modal>
   </Card>
 </template>
 
 <script>
-import { getReceiver, deleteReceiver, orderReceiver } from '@/api/data'
+import { getReceiver, deleteReceiver, orderReceiver, addReceiver, editReceiver } from '@/api/data'
 import { getBtn } from '@/api/user'
 import minxin from '@/assets/js/mixin'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'Receiver',
@@ -80,38 +119,53 @@ export default {
       columns: [
         {
           title: '接收器ID',
-          key: 'id'
+          key: 'id',
+          minWidth: 100,
+          align: 'center'
         },
         {
           title: '接收器名称',
-          key: 'name'
+          key: 'name',
+          minWidth: 100,
+          align: 'center'
         },
         {
           title: '接收器编号',
           key: 'receiverNum',
-          sortable: true
+          sortable: true,
+          minWidth: 120,
+          align: 'center'
         },
         {
           title: '场景ID',
-          key: 'sceneId'
+          key: 'sceneId',
+          minWidth: 100,
+          align: 'center'
         },
         {
           title: '场景名称',
-          key: 'sceneName'
+          key: 'sceneName',
+          minWidth: 100,
+          align: 'center'
         },
         {
-          title: '接收器类型',
-          key: 'type'
+          title: '类型',
+          key: 'type',
+          minWidth: 70,
+          align: 'center'
         },
         {
-          title: '接收器状态',
-          key: 'status',
-          slot: 'status'
+          title: '状态',
+          key: 'state',
+          slot: 'status',
+          minWidth: 70,
+          align: 'center'
         },
         {
           title: '操作',
           slot: 'action',
-          width: 400,
+          minWidth: 360,
+          fixed: 'right',
           align: 'center'
         }
       ],
@@ -122,23 +176,52 @@ export default {
       clickedItem: {},
       isDisabled: [],
       progress: 0,
-      pageName: 'receiver'
+      formItemLabel: ['接收器名称', '接收器编号', '场景', '类型', '备注'],
+      formItem: {},
+      rules: {
+        // name: [
+        //   { required: true, message: '名称不能为空', trigger: 'blur' }
+        // ],
+        receiverNum: [
+          { required: true, message: '编号不能为空', trigger: 'blur' }
+        ]
+      },
+      modalConfig: {
+        show: false,
+        title: '',
+        type: ''
+      }
+    }
+  },
+  computed: {
+    ...mapState({
+      sceneList: state => state.app.sceneList
+    }),
+    socketMsg () {
+      return this.computedSocketMsg()
     }
   },
   methods: {
-    // 获取列表
+    ...mapActions(['getSceneList']),
     async getItems (params) {
       const res = await getReceiver(params)
+      this.getSuccess(res)
       if (res.data.code === 0) {
-        res.data.data.list.forEach((item, index) => {
-          item.status = '离线'
+        this.isDisabled = []
+        this.tableData.forEach((item, index) => {
+          if (item.state === 1) {
+            // this.$set(this.isDisabled, index, false)
+            this.isDisabled[index] = false
+          } else {
+            // this.$set(this.isDisabled, index, true)
+            this.isDisabled[index] = true
+          }
         })
-        this.getSuccess(res)
       }
     },
     async deleteItem (row, index) {
       const res = await deleteReceiver(row.id)
-      this.deleteSuccess(res)
+      this.deleteSuccess(res, index)
     },
     async initBtn () {
       const uri = this.$route.name
@@ -148,6 +231,36 @@ export default {
       if (res.data.code === 0) {
         this.btnList = res.data.data.list.map(item => item.buttonName)
       }
+    },
+    handleSearch () {
+      const obj = {}
+      if (this.searchForm.state) {
+        obj.state = this.searchForm.state
+      }
+      obj[this.searchForm.key] = this.searchForm.value
+      this.getItems(obj)
+    },
+    // 分页改变事件
+    handlePageSizeChange (e) {
+      this.size = e
+      const searchObj = { size: this.size }
+      if (this.searchForm.state) {
+        Object.assign(searchObj, { state: this.searchForm.state })
+      }
+      if (this.searchForm.value) {
+        Object.assign(searchObj, { [this.searchForm.key]: this.searchForm.value })
+      }
+      this.getItems(searchObj)
+    },
+    handleChangePage (e) {
+      const searchObj = { size: this.size, index: e }
+      if (this.searchForm.state) {
+        Object.assign(searchObj, { state: this.searchForm.state })
+      }
+      if (this.searchForm.value) {
+        Object.assign(searchObj, { [this.searchForm.key]: this.searchForm.value })
+      }
+      this.getItems(searchObj)
     },
     editItemUpdate (row, index) {
       this.clickedItem = row
@@ -206,23 +319,53 @@ export default {
     },
     computedSocketMsg () {
       if (!this.$store.state.app.socketMsg) return
-      const obj = JSON.parse(this.$store.state.app.socketMsg)
-      this.tableData.forEach((item, index) => {
-        if (item.receiverNum === obj.receive_num) {
-          this.$set(this.tableData[index], 'status', obj.status === 'online' ? '在线' : '离线')
-        }
-        if (item.status === '在线') {
-          this.isDisabled[ index ] = true
-        } else {
-          this.isDisabled[ index ] = false
+      // const obj = JSON.parse(this.$store.state.app.socketMsg)
+      // this.tableData.forEach((item, index) => {
+      //   // if (item.receiverNum === obj.receive_num) {
+      //   //   this.$set(this.tableData[index], 'status', obj.status === 'online' ? '在线' : '离线')
+      //   // }
+      //   if (item.status === 0) {
+      //     this.isDisabled[ index ] = true
+      //   } else {
+      //     this.isDisabled[ index ] = false
+      //   }
+      // })
+      return JSON.parse(this.$store.state.app.socketMsg)
+    },
+    modalSubmit (name) {
+      this.$refs[name].validate(async (valid) => {
+        if (valid) {
+          if (this.modalConfig.type === 'add') {
+            try {
+              const res = await addReceiver(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.getItems()
+                this.$Message.success('添加成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          } else {
+            try {
+              const res = await editReceiver(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.$Message.success('修改成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          }
         }
       })
-      return JSON.parse(this.$store.state.app.socketMsg)
-    }
-  },
-  computed: {
-    socketMsg () {
-      return this.computedSocketMsg()
+    },
+    cancel () {
+      this.$set(this.modalConfig, 'show', false)
     }
   },
   watch: {
@@ -233,17 +376,17 @@ export default {
             title: '对时成功！'
           })
         } else if (val.order === 'pingpong') {
-          const obj = JSON.parse(this.$store.state.app.socketMsg)
-          this.tableData.forEach((item, index) => {
-            if (item.receiverNum === obj.receive_num) {
-              this.$set(this.tableData[index], 'status', obj.status === 'online' ? '在线' : '离线')
-            }
-            if (item.status === '在线') {
-              this.isDisabled[index] = true
-            } else {
-              this.isDisabled[index] = false
-            }
-          })
+          // const obj = JSON.parse(this.$store.state.app.socketMsg)
+          // this.tableData.forEach((item, index) => {
+          // if (item.receiverNum === obj.receive_num) {
+          //   this.$set(this.tableData[index], 'status', obj.status === 'online' ? '在线' : '离线')
+          // }
+          //   if (item.state === 0) {
+          //     this.isDisabled[index] = true
+          //   } else {
+          //     this.isDisabled[index] = false
+          //   }
+          // })
         } else if (val.order === 'reset') {
           this.$Notice.success({
             title: '重启成功！'
@@ -269,6 +412,9 @@ export default {
     }
   },
   mounted () {
+    if (this.sceneList.length === 0) {
+      this.getSceneList()
+    }
     this.initBtn()
   }
 }

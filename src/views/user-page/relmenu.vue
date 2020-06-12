@@ -4,7 +4,7 @@
       <i-col :span="24">
         <Form :model="searchForm" inline :label-width="0">
           <FormItem>
-            <Select v-model="searchForm.key" class="search-item">
+            <Select v-model="searchForm.key">
               <template v-for="item in columns">
                 <Option v-if="item.key" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
               </template>
@@ -35,11 +35,38 @@
         <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0"></Page>
       </i-col>
     </Row>
+
+    <Modal v-model="modalConfig.show" :width="400" :title="modalConfig.title">
+      <Row type="flex" justify="center">
+        <i-col span="24">
+          <Form ref="formValidate" :model="formItem" :label-width="80" :rules="rules">
+            <FormItem :label="formItemLabel[0]" prop="menuId">
+              <Select v-model="formItem.menuId">
+                <Option value="">无</Option>
+                <Option v-for="(item, index) in menuList" :key="index" :value="item.id">{{item.name}}</Option>
+              </Select>
+            </FormItem>
+            <FormItem :label="formItemLabel[1]" prop="roleId">
+              <Select v-model="formItem.roleId" label-in-value>
+                <Option v-for="(item, index) in roleList" :key="index" :value="item.id">{{item.name}}</Option>
+              </Select>
+            </FormItem>
+            <FormItem :label="formItemLabel[2]">
+              <Input v-model="formItem.remark" type="textarea"/>
+            </FormItem>
+          </Form>
+        </i-col>
+      </Row>
+      <div slot="footer">
+        <Button @click="cancel" style="margin-right: 8px">取消</Button>
+        <Button type="primary" @click="modalSubmit('formValidate')">提交</Button>
+      </div>
+    </Modal>
   </Card>
 </template>
 
 <script>
-import { getRelmenu, deleteRelmenu } from '@/api/user'
+import { getRelmenu, deleteRelmenu, addRelmenu, editRelmenu, getRole, getMenus } from '@/api/user'
 import minxin from '@/assets/js/mixin'
 
 export default {
@@ -50,19 +77,40 @@ export default {
       columns: [
         {
           title: '角色ID',
-          key: 'roleId'
+          key: 'roleId',
+          minWidth: 130,
+          align: 'center'
         },
         {
           title: '菜单ID',
-          key: 'menuId'
+          key: 'menuId',
+          minWidth: 130,
+          align: 'center'
         },
         {
           title: '操作',
           slot: 'action',
-          width: 130,
+          minWidth: 120,
           align: 'center'
         }
-      ]
+      ],
+      formItemLabel: ['菜单ID', '角色ID', '备注'],
+      formItem: {},
+      roleList: [],
+      menuList: [],
+      modalConfig: {
+        show: false,
+        title: '',
+        type: ''
+      },
+      rules: {
+        roleId: [
+          { required: true, message: '角色不能为空', trigger: 'change' }
+        ],
+        menuId: [
+          { required: true, message: '菜单不能为空', trigger: 'change' }
+        ]
+      }
     }
   },
   methods: {
@@ -74,17 +122,57 @@ export default {
       const res = await deleteRelmenu(row.id)
       this.deleteSuccess(res, index)
     },
-    addItem () {
-      this.$router.push({
-        name: 'add-relmenu'
+    modalSubmit (name) {
+      this.$refs[name].validate(async (valid) => {
+        if (valid) {
+          if (this.modalConfig.type === 'add') {
+            try {
+              const res = await addRelmenu(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.getItems()
+                this.$Message.success('添加成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          } else {
+            try {
+              const res = await editRelmenu(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.$Message.success('修改成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          }
+        }
       })
     },
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-relmenu',
-        params: row
-      })
+    cancel () {
+      this.$set(this.modalConfig, 'show', false)
+    },
+    async getRole () {
+      const res = await getRole()
+      if (res.data.code === 0) {
+        this.roleList = res.data.data.list
+      }
+    },
+    async getMenus () {
+      const res = await getMenus()
+      if (res.data.code === 0) {
+        this.menuList = res.data.data.list
+      }
     }
+  },
+  mounted () {
+    this.getRole()
+    this.getMenus()
   }
 }
 </script>

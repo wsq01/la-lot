@@ -38,7 +38,11 @@ class HttpRequest {
     // 响应拦截
     instance.interceptors.response.use(res => {
       this.destroy(url)
+      // console.log(res)
       const { data, status } = res
+      if (data.code === 1201) {
+        location.reload()
+      }
       return { data, status }
     }, error => {
       this.destroy(url)

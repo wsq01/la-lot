@@ -4,7 +4,7 @@
       <i-col :span="24">
         <Form :model="searchForm" inline :label-width="0">
           <FormItem>
-            <Select v-model="searchForm.key" class="search-item">
+            <Select v-model="searchForm.key">
               <template v-for="item in columns">
                 <Option v-if="item.key" :value="item.key" :key="`search-${item.key}`">{{item.title}}</Option>
               </template>
@@ -35,11 +35,37 @@
         <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0"></Page>
       </i-col>
     </Row>
+
+    <Modal v-model="modalConfig.show" :width="400" :title="modalConfig.title">
+      <Row type="flex" justify="center">
+        <i-col span="24">
+          <Form ref="formValidate" :model="formItem" :label-width="80" :rules="rules">
+            <FormItem :label="formItemLabel[0]" prop="roleId">
+              <Select v-model="formItem.roleId" label-in-value>
+                <Option v-for="(item, index) in roleList" :key="index" :value="item.id">{{item.name}}</Option>
+              </Select>
+            </FormItem>
+            <FormItem :label="formItemLabel[1]" prop="userId">
+              <Select v-model="formItem.userId" label-in-value>
+                <Option v-for="(item, index) in roleList" :key="index" :value="item.id">{{item.name}}</Option>
+              </Select>
+            </FormItem>
+            <FormItem :label="formItemLabel[2]">
+              <Input v-model="formItem.remark" type="textarea"/>
+            </FormItem>
+          </Form>
+        </i-col>
+      </Row>
+      <div slot="footer">
+        <Button @click="cancel" style="margin-right: 8px">取消</Button>
+        <Button type="primary" @click="modalSubmit('formValidate')">提交</Button>
+      </div>
+    </Modal>
   </Card>
 </template>
 
 <script>
-import { getReluser, deleteReluser } from '@/api/user'
+import { getReluser, deleteReluser, addReluser, editReluser, getRole, getUser } from '@/api/user'
 import minxin from '@/assets/js/mixin'
 
 export default {
@@ -50,28 +76,52 @@ export default {
       columns: [
         {
           title: '角色ID',
-          key: 'id'
+          key: 'id',
+          minWidth: 120,
+          align: 'center'
         },
         {
           title: '角色名称',
-          key: 'name'
+          key: 'name',
+          minWidth: 120,
+          align: 'center'
         },
         {
           title: '机构ID',
-          key: 'organizationId'
+          key: 'organizationId',
+          minWidth: 120,
+          align: 'center'
         },
         {
           title: '备注',
-          key: 'remark'
+          key: 'remark',
+          minWidth: 120,
+          align: 'center'
         },
         {
           title: '操作',
           slot: 'action',
-          width: 130,
+          minWidth: 120,
           align: 'center'
         }
       ],
-      roleList: []
+      roleList: [],
+      userList: [],
+      formItemLabel: ['角色ID', '用户ID', '备注'],
+      formItem: {},
+      modalConfig: {
+        show: false,
+        title: '',
+        type: ''
+      },
+      rules: {
+        roleId: [
+          { required: true, message: '角色不能为空', trigger: 'change' }
+        ],
+        userId: [
+          { required: true, message: '用户不能为空', trigger: 'change' }
+        ]
+      }
     }
   },
   methods: {
@@ -83,17 +133,57 @@ export default {
       const res = await deleteReluser(row.id)
       this.deleteSuccess(res, index)
     },
-    addItem () {
-      this.$router.push({
-        name: 'add-reluser'
+    async getRole () {
+      const res = await getRole()
+      if (res.data.code === 0) {
+        this.roleList = res.data.data.list
+      }
+    },
+    async getUser () {
+      const res = await getUser()
+      if (res.data.code === 0) {
+        this.userList = res.data.data.list
+      }
+    },
+    modalSubmit (name) {
+      this.$refs[name].validate(async (valid) => {
+        if (valid) {
+          if (this.modalConfig.type === 'add') {
+            try {
+              const res = await addReluser(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.getItems()
+                this.$Message.success('添加成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          } else {
+            try {
+              const res = await editReluser(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.$Message.success('修改成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          }
+        }
       })
     },
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-reluser',
-        params: row
-      })
+    cancel () {
+      this.$set(this.modalConfig, 'show', false)
     }
+  },
+  mounted () {
+    this.getRole()
+    this.getUser()
   }
 }
 </script>

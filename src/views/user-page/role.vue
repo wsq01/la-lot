@@ -24,7 +24,7 @@
     </Row>
     <Row>
       <i-col :span="24">
-        <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-select-change="handleSelectTableItem">
+        <Table :loading="loading" stripe border :columns="columns" :data="tableData" @on-selection-change="handleSelectTableItem">
           <template slot-scope="{row, index}" slot="action">
             <Button type="primary" size="small" style="margin-right: 5px" @click="editItem(row, index)">编辑</Button>
             <Poptip confirm title="确定要删除吗？" transfer @on-ok="deleteItem(row, index)">
@@ -35,11 +35,35 @@
         <Page :total="total" show-sizer show-total show-elevator @on-change="handleChangePage" @on-page-size-change="handlePageSizeChange" style="margin: 10px 0 0"></Page>
       </i-col>
     </Row>
+
+    <Modal v-model="modalConfig.show" :width="400" :title="modalConfig.title">
+      <Row type="flex" justify="center">
+        <i-col span="24">
+          <Form ref="formValidate" :model="formItem" :label-width="80" :rules="rules">
+            <FormItem :label="formItemLabel[0]" prop="name">
+              <Input v-model="formItem.name" />
+            </FormItem>
+            <FormItem :label="formItemLabel[1]">
+              <Select v-model="formItem.organizationId">
+                <Option v-for="(item, index) in organizationList" :key="index" :value="item.code">{{item.name}}</Option>
+              </Select>
+            </FormItem>
+            <FormItem :label="formItemLabel[2]">
+              <Input v-model="formItem.remark" type="textarea"/>
+            </FormItem>
+          </Form>
+        </i-col>
+      </Row>
+      <div slot="footer">
+        <Button @click="cancel" style="margin-left: 8px">取消</Button>
+        <Button type="primary" @click="modalSubmit('formValidate')">提交</Button>
+      </div>
+    </Modal>
   </Card>
 </template>
 
 <script>
-import { getRole, deleteRole } from '@/api/user'
+import { getRole, deleteRole, getOrganization, addRole, editRole } from '@/api/user'
 import minxin from '@/assets/js/mixin'
 
 export default {
@@ -50,27 +74,49 @@ export default {
       columns: [
         {
           title: '角色ID',
-          key: 'id'
+          key: 'id',
+          minWidth: 80,
+          align: 'center'
         },
         {
           title: '角色名称',
-          key: 'name'
+          key: 'name',
+          minWidth: 120,
+          align: 'center'
         },
         {
           title: '机构ID',
-          key: 'organizationId'
+          key: 'organizationId',
+          minWidth: 80,
+          align: 'center'
         },
         {
           title: '备注',
-          key: 'remark'
+          key: 'remark',
+          minWidth: 80,
+          align: 'center'
         },
         {
           title: '操作',
           slot: 'action',
-          width: 130,
-          align: 'center'
+          minWidth: 120,
+          align: 'center',
+          fixed: 'right'
         }
-      ]
+      ],
+      modalConfig: {
+        show: false,
+        title: '',
+        type: ''
+      },
+      formItemLabel: ['角色名', '所属组织', '备注'],
+      formItem: {},
+      rules: {
+        name: [
+          { required: true, message: '角色名不能为空', trigger: 'blur' }
+        ]
+      },
+      organizationList: []
     }
   },
   methods: {
@@ -82,17 +128,51 @@ export default {
       const res = await deleteRole(row.id)
       this.deleteSuccess(res, index)
     },
-    addItem () {
-      this.$router.push({
-        name: 'add-user'
+    async getOrganization () {
+      const res = await getOrganization()
+      if (res.data.code === 0) {
+        this.organizationList = res.data.data.list
+      }
+      console.log(this.organizationList)
+    },
+    modalSubmit (name) {
+      this.$refs[name].validate(async (valid) => {
+        if (valid) {
+          if (this.modalConfig.type === 'add') {
+            try {
+              const res = await addRole(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.getItems()
+                this.$Message.success('添加成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          } else {
+            try {
+              const res = await editRole(this.formItem)
+              if (res.data.code === 0) {
+                this.$set(this.modalConfig, 'show', false)
+                this.$Message.success('修改成功！')
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            } catch (err) {
+              this.$Message.error('服务器错误！')
+            }
+          }
+        }
       })
     },
-    editItem (row, index) {
-      this.$router.push({
-        name: 'edit-user',
-        params: row
-      })
+    cancel () {
+      this.$set(this.modalConfig, 'show', false)
     }
+  },
+  mounted () {
+    this.getOrganization()
   }
 }
 </script>

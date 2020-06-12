@@ -12,6 +12,14 @@ const getItems = (url, params) => {
     params
   })
 }
+const getBlob = (url, params) => {
+  return axios.request({
+    url,
+    method: 'get',
+    params,
+    responseType: 'blob'
+  })
+}
 const deleteItem = (url, id) => {
   return axios.request({
     url: url + '/' + id,
@@ -155,3 +163,6 @@ export const getDeviceRealTimeReport = (params) => getItems('/api/tb/device/real
 
 export const getDeviceRealTimeCheck = (params) => getItems('/api/tb/device/check', params)
 // export const getDeviceImport = (params) => getItems('/api/tb/device/import', params)
+export const getDeviceCheckExport = (params) => getBlob('/api/tb/device/check/export', params)
+export const getDeviceReportExport = (params) => getBlob('/api/tb/device/report/export', params)
+export const getDeviceRealtimeExport = (params) => getBlob('/api/tb/device/realtime/export', params)

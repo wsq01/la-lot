@@ -97,7 +97,8 @@ export default {
       chartBarOption: {},
       chartPieOption: {},
       secondChartPieOption: {},
-      chartTitle: ''
+      chartTitle: '',
+      cityList: []
     }
   },
   components: {
