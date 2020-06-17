@@ -149,10 +149,12 @@
             <i-col :span="12" offset="6">
               <Timeline>
                 <TimelineItem class="timeline-item" v-for="(item, index) in timelineList" :key="index">
-                  <p class="time">{{item.time}}</p>
-                  <p class="content">{{item.scene_name}}</p>
+                  <p class="content">{{item.sceneName}}</p>
+                  <p class="time">起始时间：{{item.startTime}}</p>
+                  <p class="time">结束时间：{{item.endTime}}</p>
                 </TimelineItem>
               </Timeline>
+              <Page v-if="timelineList.length != 0" :total="traceTotal" show-sizer show-total show-elevator @on-change="handleChangeTracePage" @on-page-size-change="handleTracePageSizeChange" style="margin: 10px 0 0"></Page>
             </i-col>
           </Row>
         </div>
@@ -260,7 +262,9 @@ export default {
       chartLineOption: {},
       timelineList: [],
       firstLevelList: [],
-      secondLevelList: []
+      secondLevelList: [],
+      traceTotal: 0,
+      traceSize: 10
     }
   },
   components: {
@@ -335,7 +339,6 @@ export default {
       for (let [key, val] of Object.entries(this.importSearchForm)) {
         params[key] = val
       }
-      console.log(params)
       if (this.importSearchForm.time) {
         res = await getHDDeviceReportExport(params)
         fileName = '报表导出.xls'
@@ -391,6 +394,15 @@ export default {
       Object.assign(obj, this.importSearchForm)
       this.getDeviceRealTimeReport(obj)
     },
+    handleTracePageSizeChange (e) {
+      this.traceSize = e
+      const obj = { size: e }
+      this.handleTraceSearch(obj)
+    },
+    handleChangeTracePage (e) {
+      const obj = { size: this.traceSize, index: e }
+      this.handleTraceSearch(obj)
+    },
     // 报表搜索
     handleImportSearch () {
       if (this.importSearchForm.time) {
@@ -440,9 +452,16 @@ export default {
       this.chartLineOption = this.initChartOption(res.data.data)
     },
     // 设备轨迹搜索
-    async handleTraceSearch () {
-      const res = await getTrace(this.traceSearchForm)
-      this.timelineList = res.data.data.list
+    async handleTraceSearch (params) {
+      const obj = JSON.parse(JSON.stringify(this.traceSearchForm))
+      if (params) {
+        Object.assign(obj, params)
+      }
+      const res = await getTrace(obj)
+      if (res.data.code === 0) {
+        this.timelineList = res.data.data.list
+        this.traceTotal = res.data.total
+      }
     },
     handleChangeTraceTimeRange (e) {
       this.traceSearchForm.startTime = new Date(e[0]).getTime()

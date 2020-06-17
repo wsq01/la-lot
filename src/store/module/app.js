@@ -162,8 +162,6 @@ export default {
       })
     },
     setComputedMenuList ({ state, commit, rootState }) {
-      console.log(defaultRoutes)
-      console.log(getMenuByRouter(defaultRoutes, rootState.user.access))
       commit('setComputedMenuList', getMenuByRouter(defaultRoutes, rootState.user.access))
     },
     getAreaList ({ state, commit }) {

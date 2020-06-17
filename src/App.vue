@@ -18,31 +18,6 @@ export default {
   mounted () {
     this.initScoket()
   },
-  // watch: {
-  //   message: function(newVal, oldVal) {
-  //     const msg = JSON.parse(newVal)
-  //     console.log(msg)
-  //     if (msg.result === 'succeed') {
-  //       if (this.handleOption === 'timer') {
-  //         this.$set(this.tableData[this.clickedItem._index], 'status', msg.status)
-  //         this.isDisabled[this.clickedItem._index] = true
-  //         this.$Notice.success('对时完成！')
-  //       } else if(this.handleOption === 'reset') {
-
-  //       } else if(this.handleOption === 'param') {
-
-  //       } else if(this.handleOption === 'update') {
-  //         this.modal1 = true
-  //         this.progress = res.count / res.total
-  //       }
-  //     } else {
-  //       this.$Notice.error({
-  //         title: msg.result
-  //       })
-  //       this.message = {}
-  //     }
-  //   }
-  // },
   methods: {
     ...mapActions(['reqSocketMsg']),
     initScoket () {
@@ -72,9 +47,6 @@ export default {
     getMessage (msg) {
       // this.message = msg.data
       this.reqSocketMsg(msg.data)
-    },
-    send () {
-      this.socket.send('params')
     },
     close () {
       console.log('socket已经关闭')
