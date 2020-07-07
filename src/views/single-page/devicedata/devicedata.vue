@@ -18,6 +18,9 @@
                     <Option :value="item.id" :key="`search-${item.id}`">{{item.name}}</Option>
                   </template>
                 </Select>
+                <Select filterable multiple remote :remote-method="remoteMethod" class="search-item-1" v-model="realTimeSearchForm.value" :loading="receiverNumSelectLoading" v-else-if="isShowReceiverNum">
+                  <Option v-for="(item, index) in receiverNumList" :value="item" :key="index">{{item}}</Option>
+                </Select>
                 <Input v-else @on-clear="handleClear" clearable placeholder="请输入关键字" v-model="realTimeSearchForm.value" class="search-item" />
               </FormItem>
               <FormItem label="时间范围:" :label-width="70">
@@ -58,7 +61,7 @@
 </template>
 
 <script>
-import { getDeviceRealTime, getDeviceRealtimeExport } from '@/api/data'
+import { getDeviceRealTime, getDeviceRealtimeExport, getReceiverList } from '@/api/data'
 import { getDeviceHistory } from '@/api/history'
 import { mapState, mapActions } from 'vuex'
 export default {
@@ -115,7 +118,10 @@ export default {
       ],
       tableData: [],
       historyTableData: [],
-      isShowScene: true
+      isShowScene: true,
+      isShowReceiverNum: false,
+      receiverNumSelectLoading: false,
+      receiverNumList: []
     }
   },
   computed: {
@@ -125,15 +131,30 @@ export default {
   },
   methods: {
     ...mapActions(['getSceneList']),
-    //  获取实时数据
-    getDeviceRealTime (params) {
-      getDeviceRealTime(params).then(res => {
-        this.loading = false
-        if (res.data.code === 0) {
-          this.tableData = res.data.data.list
-          this.total = res.data.data.total
-        }
-      })
+    async getDeviceRealTime (params) {
+      const res = await getDeviceRealTime(params)
+      this.loading = false
+      if (res.data.code === 0) {
+        this.tableData = res.data.data.list
+        this.total = res.data.data.total
+      }
+    },
+    async getReceiverList (receiverNum) {
+      const params = {}
+      if (receiverNum) Object.assign(params, { receiverNum })
+      const res = await getReceiverList(params)
+      if (res.data.code === 0) {
+        this.receiverNumSelectLoading = false
+        this.receiverNumList = res.data.data.list
+      }
+    },
+    async remoteMethod (query) {
+      if (query !== '') {
+        this.receiverNumSelectLoading = true
+        this.getReceiverList(query)
+      } else {
+        this.receiverNumList = []
+      }
     },
     // 报表导出
     async handleExportExcel () {
@@ -163,36 +184,42 @@ export default {
       link.click()
       URL.revokeObjectURL(link.href)
     },
-    // 获取历史数据
-    getDeviceHistory (params) {
-      getDeviceHistory(params).then(res => {
-        if (res.data.code === 0) {
-          this.historyTableData = res.data.data.list
-          this.historyTotal = res.data.data.total
-        }
-      })
+    async getDeviceHistory (params) {
+      const res = await getDeviceHistory(params)
+      if (res.data.code === 0) {
+        this.historyTableData = res.data.data.list
+        this.historyTotal = res.data.data.total
+      }
     },
-    // 设置搜索默认值
     setDefaultSearchKey () {
       this.$set(this.realTimeSearchForm, 'key', this.searchKeyList[0].key)
     },
-    // 切换搜索项
     handleChangeSearchKey (e) {
-      if (e === 'sceneId') this.isShowScene = true
-      else this.isShowScene = false
+      this.realTimeSearchForm.value = ''
+      if (e === 'sceneId') {
+        this.isShowScene = true
+        this.isShowReceiverNum = false
+      } else if (e === 'receiverNum') {
+        this.getReceiverList()
+        this.isShowReceiverNum = true
+        this.isShowScene = false
+      } else {
+        this.isShowScene = false
+        this.isShowReceiverNum = false
+      }
     },
     handleClickTab (name) {
       // if (name === 'historydata' && this.historyTableData.length === 0) {
       //   this.getDeviceHistory({ size: this.size })
       // }
     },
-    // 实时数据分页数改变事件
     handlePageSizeChange (e) {
       this.loading = true
       this.size = e
       var searchObj = { size: this.size }
       if (this.realTimeSearchForm.value) {
-        Object.assign(searchObj, this.realTimeSearchForm)
+        searchObj.key = this.realTimeSearchForm.key
+        searchObj.value = this.realTimeSearchForm.value.toString()
       }
       if (this.realTimeSearchForm.time) {
         searchObj.startTime = this.realTimeSearchForm.time[0]
@@ -211,12 +238,12 @@ export default {
       }
       this.getDeviceHistory(searchObj)
     },
-    // 实时数据页码改变事件
     handleChangePage (e) {
       this.loading = true
-      var searchObj = { size: this.size, index: e }
+      const searchObj = { size: this.size, index: e }
       if (this.realTimeSearchForm.value) {
-        Object.assign(searchObj, { [this.realTimeSearchForm.key]: this.realTimeSearchForm.value })
+        searchObj.key = this.realTimeSearchForm.key
+        searchObj.value = this.realTimeSearchForm.value.toString()
       }
       if (this.realTimeSearchForm.time) {
         searchObj.startTime = this.realTimeSearchForm.time[0]
@@ -224,7 +251,6 @@ export default {
       }
       this.getDeviceRealTime(searchObj)
     },
-    // 历史数据页码改变事件
     handleChangeHistoryPage (e) {
       this.loading = true
       var searchObj = { size: this.historySize, index: e }
@@ -239,13 +265,12 @@ export default {
     handleClear () {
       this.getDeviceRealTime({ size: this.size })
     },
-    // 实时数据搜索
     handleSearch () {
       this.loading = true
       const reqData = {
         key: this.realTimeSearchForm.key,
         size: this.size,
-        value: this.realTimeSearchForm.value
+        value: this.realTimeSearchForm.value.toString()
       }
       if (this.realTimeSearchForm.time[0]) {
         this.realTimeSearchForm.time = this.realTimeSearchForm.time.map((item, index) => new Date(item).getTime())
@@ -254,8 +279,7 @@ export default {
       }
       this.getDeviceRealTime(reqData)
     },
-    // 历史数据搜索
-    handleSearchHistory () {
+    async handleSearchHistory () {
       const reqData = {}
       reqData.deviceNum = this.historySearchForm.deviceNum
       reqData.sceneId = this.historySearchForm.sceneId
@@ -264,10 +288,9 @@ export default {
         reqData.startTime = this.historySearchForm.time[0]
         reqData.stopTime = this.historySearchForm.time[1]
       }
-      getDeviceHistory(reqData).then(res => {
-        this.historyTableData = res.data.data.list
-        this.historyTotal = res.data.data.total
-      })
+      const res = await getDeviceHistory(reqData)
+      this.historyTableData = res.data.data.list
+      this.historyTotal = res.data.data.total
     }
   },
   mounted () {
@@ -284,6 +307,10 @@ export default {
 .search-item {
   display: inline-block;
   width: 200px;
+}
+.search-item-1 {
+  display: inline-block;
+  min-width: 200px;
 }
 .search {
   &-con {

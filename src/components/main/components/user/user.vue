@@ -5,7 +5,7 @@
       <Avatar :src="userAvatar" style="background-color: #155efb" icon="ios-person" />
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
-        <DropdownItem name="control">用户中心</DropdownItem>
+        <DropdownItem v-if="isShowUserController != 0" name="control">用户中心</DropdownItem>
         <DropdownItem name="logout">退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
@@ -20,7 +20,8 @@ export default {
     userAvatar: {
       type: String,
       default: ''
-    }
+    },
+    isShowUserController: Number
   },
   computed: {
     userName () {

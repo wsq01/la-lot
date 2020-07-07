@@ -126,7 +126,8 @@
           </Row>
           <Row>
             <i-col :span="24">
-              <chart-line :option="chartLineOption" style="width: 100%;height: 400px"></chart-line>
+              <chart-line :option="chartLineOption" style="width: 100%;height: 500px"></chart-line>
+              <Spin size="large" fix v-if="isLoading"></Spin>
             </i-col>
           </Row>
         </div>
@@ -202,53 +203,72 @@ export default {
       importColumns: [
         {
           title: '设备编码',
-          key: 'device_num'
+          key: 'device_num',
+          align: 'center',
+          minWidth: 110
         },
         {
           title: '接收器编码',
-          key: 'receiver_num'
+          key: 'receiver_num',
+          align: 'center',
+          minWidth: 110
         },
         {
           title: '类型',
-          key: 'type'
+          key: 'type',
+          align: 'center',
+          minWidth: 60
         },
         {
           title: '区域名称',
-          key: 'area_name'
+          key: 'area_name',
+          align: 'center',
+          minWidth: 90
         },
         {
           title: '场景名称',
-          key: 'scene_name'
+          key: 'scene_name',
+          align: 'center',
+          minWidth: 120
         },
         {
           title: '业务ID',
-          key: 'business_id'
+          key: 'business_id',
+          align: 'center',
+          minWidth: 140
         },
         {
           title: '时间',
-          key: 'time'
+          key: 'time',
+          align: 'center',
+          minWidth: 150
         }
       ],
       columns: [
         {
           title: '设备名称',
-          key: 'name'
+          key: 'name',
+          align: 'center'
         },
         {
           title: '数量',
-          key: 'number'
+          key: 'number',
+          align: 'center'
         },
         {
           title: '类型',
-          key: 'type'
+          key: 'type',
+          align: 'center'
         },
         {
           title: '区域名称',
-          key: 'areaName'
+          key: 'areaName',
+          align: 'center'
         },
         {
           title: '场景名称',
-          key: 'sceneName'
+          key: 'sceneName',
+          align: 'center'
         }
       ],
       importTableData: [],
@@ -264,7 +284,8 @@ export default {
       firstLevelList: [],
       secondLevelList: [],
       traceTotal: 0,
-      traceSize: 10
+      traceSize: 10,
+      isLoading: false
     }
   },
   components: {
@@ -312,7 +333,6 @@ export default {
       }
     },
     handleChangeFirstLevel (code) {
-      console.log(code)
       this.getSecondLevel(code.value)
     },
     handleChangeCheckDatetime (e) {
@@ -426,30 +446,30 @@ export default {
       }
     },
     // 盘点搜索
-    handleSearch () {
+    async handleSearch () {
       if (this.checkSearchForm.time) {
         this.checkLoading = true
-        getCheck(this.checkSearchForm).then(res => {
-          this.checkLoading = false
-          if (res.data.code === 0) {
-            this.checkTableData = res.data.data.list
-            this.total = res.data.data.total
-          }
-        })
+        const res = await getCheck(this.checkSearchForm)
+        this.checkLoading = false
+        if (res.data.code === 0) {
+          this.checkTableData = res.data.data.list
+          this.total = res.data.data.total
+        }
       } else {
-        getDeviceRealTimeCheck(this.checkSearchForm).then(res => {
-          this.checkLoading = false
-          if (res.data.code === 0) {
-            this.checkTableData = res.data.data.list
-            this.total = res.data.data.total
-          }
-        })
+        const res = await getDeviceRealTimeCheck(this.checkSearchForm)
+        this.checkLoading = false
+        if (res.data.code === 0) {
+          this.checkTableData = res.data.data.list
+          this.total = res.data.data.total
+        }
       }
     },
     // 流动图搜索
     async handleTrendSearch () {
+      this.isLoading = true
       const res = await getTrend(this.trendSearchForm)
-      this.chartLineOption = this.initChartOption(res.data.data)
+      this.chartLineOption = this.initChartOption(res.data.data.list)
+      this.isLoading = false
     },
     // 设备轨迹搜索
     async handleTraceSearch (params) {
@@ -484,9 +504,10 @@ export default {
           left: '3%',
           right: '4%',
           bottom: '3%',
+          top: 100,
           containLabel: true
         },
-        legend: { data: [] },
+        legend: { data: [], top: 36 },
         xAxis: {
           type: 'category',
           boundaryGap: false,
@@ -497,20 +518,29 @@ export default {
         },
         series: []
       }
-      for (let [key, value] of Object.entries(data)) {
-        option.legend.data.push(key)
-        var obj = {
-          name: key,
+      data.forEach((item, index) => {
+        if (!option.legend.data.includes(item.sceneName)) {
+          option.legend.data.push(item.sceneName)
+        }
+
+        if (!option.xAxis.data.includes(item.dateTime)) {
+          option.xAxis.data.push(item.dateTime)
+        }
+      })
+      option.legend.data.forEach((item, index) => {
+        const obj = {
+          name: item,
           type: 'line',
-          stack: '总量',
+          stack: '数量',
           data: []
         }
-        for (let [sk, sv] of Object.entries(value)) {
-          option.xAxis.data.push(sk)
-          obj.data.push(sv)
-        }
+        data.forEach(sItem => {
+          if (sItem.sceneName === item) {
+            obj.data.push(sItem.number)
+          }
+        })
         option.series.push(obj)
-      }
+      })
       return option
     },
     // 报表区域改变事件

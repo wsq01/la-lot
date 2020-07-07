@@ -9,8 +9,7 @@ import {
   routeEqual,
   getRouteTitleHandled,
   localSave,
-  localRead,
-  getUserControlMenuByRouter
+  localRead
 } from '@/libs/util'
 import { getCityListByOid, getAreaList, getSceneList } from '@/api/data'
 import { getOrganizationList, getMenus, getRole } from '@/api/user'
@@ -46,8 +45,7 @@ export default {
   getters: {
     // 从路由获取菜单列表
     // rootState 根节点状态
-    getMenuList: (state, getters, rootState) => state.computedMenuList,
-    userMenuList: (state, getter, rootState) => getUserControlMenuByRouter(defaultRoutes)
+    getMenuList: (state, getters, rootState) => state.computedMenuList
   },
   mutations: {
     resetAppData (state) {

@@ -6,7 +6,7 @@
             <Icon type="ios-paper" />
             LA-IOT
         </MenuItem>
-        <MenuItem name="2">
+        <MenuItem name="2" v-if="isShowUserController != 0">
             <Icon type="ios-people" />
             用户中心
         </MenuItem>
@@ -20,7 +20,7 @@
 
 <script>
 import SiderTrigger from './sider-trigger'
-import CustomBreadCrumb from './custom-bread-crumb'
+// import CustomBreadCrumb from './custom-bread-crumb'
 
 export default {
   name: 'HeaderBar',
@@ -30,11 +30,12 @@ export default {
   props: {
     collapsed: Boolean,
     activeName: String,
-    theme: String
+    theme: String,
+    isShowUserController: Number
   },
   components: {
-    SiderTrigger,
-    CustomBreadCrumb
+    SiderTrigger
+    // CustomBreadCrumb
   },
   computed: {
     breadCrumbList () {

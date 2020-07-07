@@ -43,20 +43,17 @@
               <Input v-model="formItem.name" />
             </FormItem>
             <FormItem :label="formItemLabel[1]">
-              <Input v-model="formItem.badCount" />
-            </FormItem>
-            <FormItem :label="formItemLabel[2]">
-              <Select v-model="formItem.code">
+              <Select v-model="formItem.code" clearable>
                 <Option v-for="(item, index) in organizationList" :key="index" :value="item.code">{{item.name}}</Option>
               </Select>
             </FormItem>
-            <FormItem :label="formItemLabel[3]">
+            <FormItem :label="formItemLabel[2]">
               <Input v-model="formItem.telephone" />
             </FormItem>
-            <FormItem :label="formItemLabel[4]">
+            <FormItem :label="formItemLabel[3]">
               <Input v-model="formItem.address" />
             </FormItem>
-            <FormItem :label="formItemLabel[5]">
+            <FormItem :label="formItemLabel[4]">
               <Input v-model="formItem.remark" type="textarea"/>
             </FormItem>
           </Form>
@@ -141,7 +138,7 @@ export default {
         title: '',
         type: ''
       },
-      formItemLabel: ['机构名称', '机构编码', '上级机构', '机构电话', '机构地址', '备注'],
+      formItemLabel: ['机构名称', '机构编码', '机构电话', '机构地址', '备注'],
       formItem: {},
       rules: {
         name: [

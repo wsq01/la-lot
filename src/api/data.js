@@ -65,7 +65,7 @@ const editItem = (url, params) => {
   })
 }
 // 查询城市列表，区域列表和区域中各设备数
-export const getCityListByOid = (oid) => {
+export const getCityListByOid = oid => {
   return axios.request({
     url: '/api/tb/city/list',
     method: 'get',
@@ -75,7 +75,7 @@ export const getCityListByOid = (oid) => {
   })
 }
 
-export const getCityInfo = (cid) => {
+export const getCityInfo = cid => {
   return axios.request({
     url: '/api/tb/city/list/info/' + cid,
     method: 'get',
@@ -85,33 +85,33 @@ export const getCityInfo = (cid) => {
   })
 }
 
-export const getArea = (params) => getItems('/api/tb/area', params)
+export const getArea = params => getItems('/api/tb/area', params)
 
 export const getAreaList = () => getItems('/api/tb/area/list')
 
-export const deleteArea = (id) => deleteItem('api/tb/area', id)
+export const deleteArea = id => deleteItem('api/tb/area', id)
 
-export const deleteAreaList = (params) => deleteList('api/tb/area/list', params)
+export const deleteAreaList = params => deleteList('api/tb/area/list', params)
 
-export const addArea = (params) => addItem('/api/tb/area', params)
+export const addArea = params => addItem('/api/tb/area', params)
 
-export const editArea = (params) => editItem('/api/tb/area', params)
+export const editArea = params => editItem('/api/tb/area', params)
 
-export const getScene = (params) => getItems('/api/tb/scene', params)
+export const getScene = params => getItems('/api/tb/scene', params)
 
 export const getSceneList = () => getItems('/api/tb/scene/list')
 
-export const deleteScene = (id) => deleteItem('/api/tb/scene', id)
+export const deleteScene = id => deleteItem('/api/tb/scene', id)
 
-export const deleteSceneList = (params) => deleteList('/api/tb/scene/list', params)
+export const deleteSceneList = params => deleteList('/api/tb/scene/list', params)
 
-export const addScene = (params) => addItem('/api/tb/scene', params)
+export const addScene = params => addItem('/api/tb/scene', params)
 
-export const editScene = (params) => editItem('/api/tb/scene', params)
+export const editScene = params => editItem('/api/tb/scene', params)
 
-export const addReceiver = (params) => addItem('/api/tb/receiver', params)
+export const addReceiver = params => addItem('/api/tb/receiver', params)
 
-export const orderReceiver = (data) => {
+export const orderReceiver = data => {
   return axios.request({
     url: '/api/tb/receiver/order',
     method: 'post',
@@ -119,27 +119,27 @@ export const orderReceiver = (data) => {
   })
 }
 
-export const deleteReceiver = (id) => deleteItem('/api/tb/receiver', id)
+export const deleteReceiver = id => deleteItem('/api/tb/receiver', id)
 
-export const editReceiver = (params) => editItem('/api/tb/receiver', params)
+export const editReceiver = params => editItem('/api/tb/receiver', params)
 
-export const getReceiver = (params) => getItems('/api/tb/receiver', params)
+export const getReceiver = params => getItems('/api/tb/receiver', params)
 
-export const getDeviceNumber = (params) => getItems('/api/tb/device/number', params)
+export const getDeviceNumber = params => getItems('/api/tb/device/number', params)
 
-export const getDevice = (params) => getItems('/api/tb/device', params)
+export const getDevice = params => getItems('/api/tb/device', params)
 
-export const deleteDevice = (id) => deleteItem('/api/tb/device', id)
+export const deleteDevice = id => deleteItem('/api/tb/device', id)
 
-export const deleteDeviceList = (params) => deleteList('/api/tb/device/list', params)
+export const deleteDeviceList = params => deleteList('/api/tb/device/list', params)
 
-export const addDevice = (params) => addItem('/api/tb/device', params)
+export const addDevice = params => addItem('/api/tb/device', params)
 
-export const editDevice = (params) => editItem('/api/tb/device', params)
+export const editDevice = params => editItem('/api/tb/device', params)
 
-export const getDeviceTypeList = (params) => getItems('/api/tb/type/list', params)
+export const getDeviceTypeList = params => getItems('/api/tb/type/list', params)
 
-export const getDeviceTypeById = (id) => {
+export const getDeviceTypeById = id => {
   return axios.request({
     url: '/api/tb/type/' + id,
     method: 'get'
@@ -147,22 +147,24 @@ export const getDeviceTypeById = (id) => {
 }
 export const getFirstLevel = () => getItems('/api/tb/type/firstLevel/all')
 
-export const getSecondLevel = (params) => getItems('/api/tb/type/secondLevel/' + params)
+export const getSecondLevel = params => getItems('/api/tb/type/secondLevel/' + params)
 
-export const getDeviceMissed = (params) => getItems('/api/tb/device/missed', params)
+export const getDeviceMissed = params => getItems('/api/tb/device/missed', params)
 
-export const addDeviceType = (params) => addItem('/api/tb/type', params)
+export const addDeviceType = params => addItem('/api/tb/type', params)
 
-export const deleteDeviceType = (id) => deleteItem('/api/tb/type', id)
+export const deleteDeviceType = id => deleteItem('/api/tb/type', id)
 
-export const editDeviceType = (params) => editItem('/api/tb/type', params)
+export const editDeviceType = params => editItem('/api/tb/type', params)
 
-export const getDeviceRealTime = (params) => getItems('/api/tb/device/realtime', params)
+export const getDeviceRealTime = params => getItems('/api/tb/device/realtime', params)
 
-export const getDeviceRealTimeReport = (params) => getItems('/api/tb/device/realtime/report', params)
+export const getDeviceRealTimeReport = params => getItems('/api/tb/device/realtime/report', params)
 
-export const getDeviceRealTimeCheck = (params) => getItems('/api/tb/device/check', params)
+export const getDeviceRealTimeCheck = params => getItems('/api/tb/device/check', params)
 // export const getDeviceImport = (params) => getItems('/api/tb/device/import', params)
-export const getDeviceCheckExport = (params) => getBlob('/api/tb/device/check/export', params)
-export const getDeviceReportExport = (params) => getBlob('/api/tb/device/report/export', params)
-export const getDeviceRealtimeExport = (params) => getBlob('/api/tb/device/realtime/export', params)
+export const getDeviceCheckExport = params => getBlob('/api/tb/device/check/export', params)
+export const getDeviceReportExport = params => getBlob('/api/tb/device/report/export', params)
+export const getDeviceRealtimeExport = params => getBlob('/api/tb/device/realtime/export', params)
+
+export const getReceiverList = params => getItems('/api/tb/receiver/list', params)

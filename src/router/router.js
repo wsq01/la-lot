@@ -138,26 +138,6 @@ export const dynamicRoutes = [
           title: '菜单管理'
         },
         component: () => import('@/views/user-page/menus.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-menus',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '编辑菜单'
-        },
-        component: () => import('@/views/user-page/edit-menus.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-menus',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '添加菜单'
-        },
-        component: () => import('@/views/user-page/edit-menus.vue')
       }
     ]
   },
@@ -273,26 +253,6 @@ export const dynamicRoutes = [
           title: '菜单角色关联管理'
         },
         component: () => import('@/views/user-page/relmenu.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-relmenu',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '编辑关联'
-        },
-        component: () => import('@/views/user-page/edit-relmenu.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-relmenu',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '添加关联'
-        },
-        component: () => import('@/views/user-page/edit-relmenu.vue')
       }
     ]
   },
@@ -316,26 +276,6 @@ export const dynamicRoutes = [
           title: '用户角色关联管理'
         },
         component: () => import('@/views/user-page/reluser.vue')
-      },
-      {
-        path: 'edit',
-        name: 'edit-reluser',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '编辑关联'
-        },
-        component: () => import('@/views/user-page/edit-reluser.vue')
-      },
-      {
-        path: 'add',
-        name: 'add-reluser',
-        meta: {
-          icon: 'md-globe',
-          hideInMenu: true,
-          title: '添加关联'
-        },
-        component: () => import('@/views/user-page/edit-reluser.vue')
       }
     ]
   },

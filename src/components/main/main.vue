@@ -5,26 +5,18 @@
       <side-menu v-if="isMenu" :theme="menuTheme" accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage" :menu-list="menuList">
         <!-- 需要放在菜单上面的内容，如Logo，写在side-menu标签内部，如下 -->
         <p class="logo">智冷云</p>
-        <!-- <div class="logo-con">
-          <img v-show="!collapsed" :src="maxLogo" key="max-logo" />
-          <img v-show="collapsed" :src="minLogo" key="min-logo" />
-        </div> -->
       </side-menu>
       <side-menu v-else accordion ref="sideMenu2" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage" :menu-list="userMenuList">
         <!-- 需要放在菜单上面的内容，如Logo，写在side-menu标签内部，如下 -->
         <p class="logo">智冷云</p>
-        <!-- <div class="logo-con">
-          <img v-show="!collapsed" :src="maxLogo" key="max-logo" />
-          <img v-show="collapsed" :src="minLogo" key="min-logo" />
-        </div> -->
       </side-menu>
     </Sider>
 
     <Layout>
       <Header class="header-con" :style="{ background: topBgColor }">
-        <header-bar :theme="topTheme" :collapsed="collapsed" @on-coll-change="handleCollapsedChange" :active-name="topMenuActiveName" @on-select-top="handleSelectTopMenu">
+        <header-bar :theme="topTheme" :collapsed="collapsed" @on-coll-change="handleCollapsedChange" :active-name="topMenuActiveName" @on-select-top="handleSelectTopMenu" :isShowUserController="userMenuList.length">
           <Button type="text" style="height: 64px;font-size:24px" icon="md-more" @click="handleClickMore"></Button>
-          <user :user-avatar="userAvatar" @on-control="handleClickControl"/>
+          <user :user-avatar="userAvatar" :isShowUserController="userMenuList.length" @on-control="handleClickControl"/>
           <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
           <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
         </header-bar>
@@ -74,7 +66,7 @@ import Fullscreen from './components/fullscreen/fullscreen'
 import Language from './components/language/language'
 import { defaultRoutes } from '@/router/router'
 
-import { getNewTagList, routeEqual } from '@/libs/util'
+import { getNewTagList, routeEqual, getUserControlMenuByRouter } from '@/libs/util'
 import { mapMutations, mapActions } from 'vuex'
 
 export default {
@@ -87,7 +79,8 @@ export default {
       topMenuActiveName: '1',
       isShowMore: false,
       sdierBgColor: '#001529',
-      topBgColor: '#fff'
+      topBgColor: '#fff',
+      userMenuList: []
     }
   },
   components: {
@@ -105,6 +98,7 @@ export default {
     },
     menuTheme: {
       get () {
+        /* eslint-disable-next-line */
         this.$store.state.app.menuTheme === 'light' ? this.sdierBgColor = '#fff' : this.sdierBgColor = '#001529'
         return this.$store.state.app.menuTheme
       },
@@ -113,10 +107,13 @@ export default {
     topTheme: {
       get () {
         if (this.$store.state.app.topTheme === 'light') {
+          /* eslint-disable-next-line */
           this.topBgColor = '#fff'
         } else if (this.$store.state.app.topTheme === 'dark') {
+          /* eslint-disable-next-line */
           this.topBgColor = '#001529'
         } else {
+          /* eslint-disable-next-line */
           this.topBgColor = 'linear-gradient(90deg,#1d42ab,#2173dc,#1e93ff)'
         }
         return this.$store.state.app.topTheme
@@ -125,9 +122,6 @@ export default {
     },
     menuList () { // 通过路由列表得到菜单列表
       return this.$store.getters.getMenuList
-    },
-    userMenuList () {
-      return this.$store.getters.userMenuList
     },
     local () { // 设置当前语言
       return this.$store.state.app.local
@@ -235,6 +229,8 @@ export default {
     }
   },
   mounted () {
+    this.userMenuList = getUserControlMenuByRouter(defaultRoutes)
+    console.log(this.userMenuList)
     /**
      * @description 初始化设置面包屑导航和标签导航
      */

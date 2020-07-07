@@ -26,6 +26,17 @@
               </Poptip>
             </FormItem>
           </span>
+          <FormItem>
+            <Upload
+              multiple
+              :on-success="uploadSuccess"
+              :headers="{
+                Authorization: token
+              }"
+              action="//39.105.79.197:8002/api/tb/device/import">
+              <Button type="primary" icon="ios-cloud-upload-outline">批量上传</Button>
+            </Upload>
+          </FormItem>
         </Form>
       </i-col>
     </Row>
@@ -63,18 +74,6 @@
             <FormItem :label="formItemLabel[4]">
               <Input v-model="formItem.remark" type="textarea"/>
             </FormItem>
-            <FormItem>
-              <Upload
-                multiple
-                type="drag"
-                :on-success="uploadSuccess"
-                action="//39.105.79.197:8002/api/tb/device/import">
-                <div style="padding: 20px 0">
-                    <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                    <p>批量上传</p>
-                </div>
-              </Upload>
-            </FormItem>
           </Form>
         </i-col>
       </Row>
@@ -90,6 +89,7 @@
 import { getDevice, deleteDevice, deleteDeviceList, addDevice, editDevice } from '@/api/data'
 import { getBtn } from '@/api/user'
 import minxin from '@/assets/js/mixin'
+import { getToken } from '@/libs/util'
 
 export default {
   name: 'Device',
@@ -141,6 +141,7 @@ export default {
         }
       ],
       btnList: [],
+      token: getToken(),
       modalConfig: {
         show: false,
         title: '',
