@@ -17,8 +17,6 @@ export default {
   },
   mounted () {
     this.initScoket()
-
-    
   },
   methods: {
     ...mapActions(['reqSocketMsg']),
