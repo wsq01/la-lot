@@ -127,7 +127,7 @@
           <Row>
             <i-col :span="24">
               <chart-line :option="chartLineOption" style="width: 100%;height: 500px"></chart-line>
-              <Spin size="large" fix v-if="isLoading"></Spin>
+              <Spin size="large" fix v-if="trendLoading"></Spin>
             </i-col>
           </Row>
         </div>
@@ -155,7 +155,10 @@
                   <p class="time">结束时间：{{item.endTime}}</p>
                 </TimelineItem>
               </Timeline>
-              <Page v-if="timelineList.length != 0" :total="traceTotal" show-sizer show-total show-elevator @on-change="handleChangeTracePage" @on-page-size-change="handleTracePageSizeChange" style="margin: 10px 0 0"></Page>
+              <Spin size="large" fix v-if="tranceLoading"></Spin>
+            </i-col>
+            <i-col :span="24" style="text-center">
+              <Page v-if="timelineList.length != 0" :total="traceTotal" show-sizer show-total show-elevator @on-change="handleChangeTracePage" @on-page-size-change="handleTracePageSizeChange" style="margin: 10px 0"></Page>
             </i-col>
           </Row>
         </div>
@@ -285,7 +288,8 @@ export default {
       secondLevelList: [],
       traceTotal: 0,
       traceSize: 10,
-      isLoading: false
+      tranceLoading: false,
+      trendLoading: false
     }
   },
   components: {
@@ -466,21 +470,25 @@ export default {
     },
     // 流动图搜索
     async handleTrendSearch () {
-      this.isLoading = true
+      this.trendLoading = true
       const res = await getTrend(this.trendSearchForm)
       this.chartLineOption = this.initChartOption(res.data.data.list)
-      this.isLoading = false
+      this.trendLoading = false
     },
     // 设备轨迹搜索
     async handleTraceSearch (params) {
+      this.tranceLoading = true
       const obj = JSON.parse(JSON.stringify(this.traceSearchForm))
       if (params) {
         Object.assign(obj, params)
       }
       const res = await getTrace(obj)
+      this.tranceLoading = false
       if (res.data.code === 0) {
         this.timelineList = res.data.data.list
-        this.traceTotal = res.data.total
+        this.traceTotal = res.data.data.total
+      } else {
+        this.$Message.error(res.data.message)
       }
     },
     handleChangeTraceTimeRange (e) {
