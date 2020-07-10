@@ -93,23 +93,28 @@ export default {
         },
         {
           title: '场景ID',
-          key: 'id'
+          key: 'id',
+          align: 'center'
         },
         {
           title: '场景名称',
-          key: 'name'
+          key: 'name',
+          align: 'center'
         },
         {
           title: '区域ID',
-          key: 'areaId'
+          key: 'areaId',
+          align: 'center'
         },
         {
           title: '场景类型',
-          key: 'type'
+          key: 'type',
+          align: 'center'
         },
         {
           title: '备注',
-          key: 'remark'
+          key: 'remark',
+          align: 'center'
         },
         {
           title: '操作',

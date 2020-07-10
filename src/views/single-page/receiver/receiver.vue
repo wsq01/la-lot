@@ -120,13 +120,13 @@ export default {
         {
           title: '接收器ID',
           key: 'id',
-          minWidth: 100,
+          minWidth: 130,
           align: 'center'
         },
         {
           title: '接收器名称',
           key: 'name',
-          minWidth: 100,
+          minWidth: 140,
           align: 'center'
         },
         {
@@ -139,19 +139,19 @@ export default {
         {
           title: '场景ID',
           key: 'sceneId',
-          minWidth: 100,
+          minWidth: 130,
           align: 'center'
         },
         {
           title: '场景名称',
           key: 'sceneName',
-          minWidth: 100,
+          minWidth: 120,
           align: 'center'
         },
         {
           title: '类型',
           key: 'type',
-          minWidth: 70,
+          minWidth: 90,
           align: 'center'
         },
         {

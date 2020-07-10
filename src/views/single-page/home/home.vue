@@ -78,7 +78,7 @@ import ChartBar from '@/components/charts/bar'
 import ChartPie from '@/components/charts/pie'
 
 import { getCityListByOid, getCityInfo, getDeviceNumber } from '@/api/data'
-import { mapActions, mapState } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'home',
   data () {
@@ -90,9 +90,9 @@ export default {
         copyrightContent: '中集制冷'
       },
       points: [],
-      selectedCity: '', // 选中的城市
-      isShowDrawerLeft: false, // 是否显示左抽屉
-      isShowDrawerRight: false, // 是否显示右抽屉
+      selectedCity: '',
+      isShowDrawerLeft: false,
+      isShowDrawerRight: false,
       leftDrawerList: [],
       chartBarOption: {},
       chartPieOption: {},

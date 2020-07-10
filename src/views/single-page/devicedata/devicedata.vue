@@ -94,26 +94,31 @@ export default {
         {
           title: '设备编号',
           key: 'device_num',
-          sortable: true
+          sortable: true,
+          align: 'center'
         },
         {
           title: '接收器编号',
           key: 'receiver_num',
-          sortable: true
+          sortable: true,
+          align: 'center'
         },
         {
           title: '保温箱编号',
           key: 'business_id',
-          sortable: true
+          sortable: true,
+          align: 'center'
         },
         {
           title: '时间',
           key: 'time',
-          sortable: true
+          sortable: true,
+          align: 'center'
         },
         {
           title: '场景名称',
-          key: 'scene_name'
+          key: 'scene_name',
+          align: 'center'
         }
       ],
       tableData: [],
@@ -163,9 +168,9 @@ export default {
         obj.startTime = this.realTimeSearchForm.time[0]
         obj.endTime = this.realTimeSearchForm.time[1]
       }
-      if (this.realTimeSearchForm.value) {
+      if (this.realTimeSearchForm.value.toString()) {
         obj.key = this.realTimeSearchForm.key
-        obj.value = this.realTimeSearchForm.value
+        obj.value = this.realTimeSearchForm.value.toString()
       }
       let params = {}
       let res
@@ -217,7 +222,7 @@ export default {
       this.loading = true
       this.size = e
       var searchObj = { size: this.size }
-      if (this.realTimeSearchForm.value) {
+      if (this.realTimeSearchForm.value.toString()) {
         searchObj.key = this.realTimeSearchForm.key
         searchObj.value = this.realTimeSearchForm.value.toString()
       }
@@ -241,7 +246,7 @@ export default {
     handleChangePage (e) {
       this.loading = true
       const searchObj = { size: this.size, index: e }
-      if (this.realTimeSearchForm.value) {
+      if (this.realTimeSearchForm.value.toString()) {
         searchObj.key = this.realTimeSearchForm.key
         searchObj.value = this.realTimeSearchForm.value.toString()
       }
@@ -267,10 +272,10 @@ export default {
     },
     handleSearch () {
       this.loading = true
-      const reqData = {
-        key: this.realTimeSearchForm.key,
-        size: this.size,
-        value: this.realTimeSearchForm.value.toString()
+      const reqData = { size: this.size }
+      if (this.realTimeSearchForm.value.toString()) {
+        reqData.key = this.realTimeSearchForm.key
+        reqData.value = this.realTimeSearchForm.value.toString()
       }
       if (this.realTimeSearchForm.time[0]) {
         this.realTimeSearchForm.time = this.realTimeSearchForm.time.map((item, index) => new Date(item).getTime())
