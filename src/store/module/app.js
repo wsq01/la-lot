@@ -80,25 +80,25 @@ export default {
       state.tagNavList = tagList
       setTagNavListInLocalstorage([...tagList])
     },
-    setCityList (state, list) { // 设置城市列表
+    setCityList (state, list) {
       state.cityList = list
     },
-    setAreaList (state, list) { // 设置区域列表
+    setAreaList (state, list) {
       state.areaList = list
     },
-    setOrganizationList (state, list) { // 设置区域列表
+    setOrganizationList (state, list) {
       state.organizationList = list
     },
-    setSceneList (state, list) { // 设置场景列表
+    setSceneList (state, list) {
       state.sceneList = list
     },
-    setRoleList (state, list) { // 设置场景列表
+    setRoleList (state, list) {
       state.roleList = list
     },
-    setMenuList (state, list) { // 设置场景列表
+    setMenuList (state, list) {
       state.menuList = list
     },
-    setComputedMenuList (state, list) { // 设置场景列表
+    setComputedMenuList (state, list) {
       state.computedMenuList = list
     },
     closeTag (state, route) { // 关闭标签导航页
@@ -122,12 +122,12 @@ export default {
       localSave('local', lang) // 存localStoarage
       state.local = lang
     },
-    setMenuTheme (state, lang) { // 设置语言
-      localSave('menuTheme', lang) // 存localStoarage
+    setMenuTheme (state, lang) {
+      localSave('menuTheme', lang)
       state.menuTheme = lang
     },
-    setTopTheme (state, lang) { // 设置语言
-      localSave('topTheme', lang) // 存localStoarage
+    setTopTheme (state, lang) {
+      localSave('topTheme', lang)
       state.topTheme = lang
     }
   },

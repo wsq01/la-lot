@@ -48,21 +48,20 @@ export default {
   },
   methods: {
     ...mapActions(['handleLogin']),
-    handleSubmit ({ username, password }) {
+    async handleSubmit ({ username, password }) {
       this.loading = true
-      this.handleLogin({ username, password }).then(res => {
-        this.loading = false
-        if (res.data && res.data.code === 0) {
-          this.$router.push({
-            name: this.$config.homeName
-          })
-        } else {
-          this.$Message.error({
-            content: (res.data && res.data.message) || '登录失败',
-            duration: 2
-          })
-        }
-      })
+      const res = await this.handleLogin({ username, password })
+      this.loading = false
+      if (res.data && res.data.code === 0) {
+        this.$router.push({
+          name: this.$config.homeName
+        })
+      } else {
+        this.$Message.error({
+          content: (res.data && res.data.message) || '登录失败',
+          duration: 2
+        })
+      }
     }
   }
 }

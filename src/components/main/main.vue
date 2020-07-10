@@ -230,7 +230,6 @@ export default {
   },
   mounted () {
     this.userMenuList = getUserControlMenuByRouter(defaultRoutes)
-    console.log(this.userMenuList)
     /**
      * @description 初始化设置面包屑导航和标签导航
      */

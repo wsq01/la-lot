@@ -414,29 +414,7 @@ export const setTitle = (routeItem, vm) => {
   const resTitle = pageTitle ? `${title} - ${pageTitle}` : title
   window.document.title = resTitle
 }
-// export const initDynamicRouter = (menuList, routers) => {
-//   const result = []
-//   let offs1 = false // eslint-disable-line no-unused-vars
-//   routers.forEach((route, rIndex) => {
-//     menuList.forEach((menu, mIndex) => {
-//       if (menu.uri !== route.path && route.children && route.children.length !== 0) {
-//         route.children.forEach((sItem, sIndex) => {
-//           if (menu.uri === sItem.path) {
-//             sItem.meta.hideInMenu = false
-//             offs1 = true
-//           }
-//         })
-//       }
-//       if (menu.uri === route.path) {
-//         // result.push(route)
-//         offs1 = true
-//       }
-//     })
-//     result.push(route)
-//     offs1 = false
-//   })
-//   return result
-// }
+
 export const initDynamicRouter = (menuList, routers) => {
   let result = []
   result = routers.filter((route, index) => {
