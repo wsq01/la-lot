@@ -151,7 +151,6 @@ export default {
       const res = await deleteDeviceType(row.id)
       this.deleteSuccess(res, index)
     },
-    // 搜索
     async handleSearch () {
       const res = await getDeviceTypeById(this.searchForm.value)
       if (res.data.code === 0) {
@@ -173,28 +172,16 @@ export default {
       this.$refs[name].validate(async (valid) => {
         if (valid) {
           if (this.modalConfig.type === 'add') {
-            this.formItem.organizationId = this.$store.state.user.organizationId
             try {
               const res = await addDeviceType(this.formItem)
-              if (res.data.code === 0) {
-                this.$set(this.modalConfig, 'show', false)
-                this.getItems()
-                this.$Message.success('添加成功！')
-              } else {
-                this.$Message.error(res.data.message)
-              }
+              this.addSuccess(res)
             } catch (err) {
               this.$Message.error('服务器错误！')
             }
           } else {
             try {
               const res = await editDeviceType(this.formItem)
-              if (res.data.code === 0) {
-                this.$set(this.modalConfig, 'show', false)
-                this.$Message.success('修改成功！')
-              } else {
-                this.$Message.error(res.data.message)
-              }
+              this.editSuccess(res)
             } catch (err) {
               this.$Message.error('服务器错误！')
             }

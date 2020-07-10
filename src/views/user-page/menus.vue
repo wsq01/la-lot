@@ -406,25 +406,14 @@ export default {
           if (this.modalConfig.type === 'add') {
             try {
               const res = await addMenus(this.formItem)
-              if (res.data.code === 0) {
-                this.$set(this.modalConfig, 'show', false)
-                this.getItems()
-                this.$Message.success('添加成功！')
-              } else {
-                this.$Message.error(res.data.message)
-              }
+              this.addSuccess(res)
             } catch (err) {
               this.$Message.error('服务器错误！')
             }
           } else {
             try {
               const res = await editMenus(this.formItem)
-              if (res.data.code === 0) {
-                this.$set(this.modalConfig, 'show', false)
-                this.$Message.success('修改成功！')
-              } else {
-                this.$Message.error(res.data.message)
-              }
+              this.editSuccess(res)
             } catch (err) {
               this.$Message.error('服务器错误！')
             }

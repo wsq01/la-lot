@@ -153,7 +153,7 @@ export default {
         this.receiverNumList = res.data.data.list
       }
     },
-    async remoteMethod (query) {
+    remoteMethod (query) {
       if (query !== '') {
         this.receiverNumSelectLoading = true
         this.getReceiverList(query)
@@ -214,9 +214,6 @@ export default {
       }
     },
     handleClickTab (name) {
-      // if (name === 'historydata' && this.historyTableData.length === 0) {
-      //   this.getDeviceHistory({ size: this.size })
-      // }
     },
     handlePageSizeChange (e) {
       this.loading = true

@@ -125,7 +125,6 @@ export default {
       this.isShowDrawerLeft = true
     },
     handleClickleftDrawerMenu (e) {
-      console.log(e)
       getDeviceNumber({ key: e.split('/')[0], value: e.split('/')[1] }).then(res => {
         if (res.data.code === 0) {
           let lists = res.data.data.list
@@ -298,12 +297,12 @@ export default {
         series
       }
     },
-    traverseCityList (lists) { // 数据转换
+    traverseCityList (lists) {
       return lists.reduce((a, v) => {
         return a.concat({ lng: v.longitude, lat: v.latitude, show: false, name: v.name, number: v.number, id: v.id })
       }, [])
     },
-    async addPoints () { // 地图添加点
+    async addPoints () {
       const res = await getCityListByOid()
       if (res.data && res.data.code === 0) {
         const list = this.traverseCityList(res.data.data.list)

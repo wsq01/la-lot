@@ -179,9 +179,6 @@ export default {
       formItemLabel: ['接收器名称', '接收器编号', '场景', '类型', '备注'],
       formItem: {},
       rules: {
-        // name: [
-        //   { required: true, message: '名称不能为空', trigger: 'blur' }
-        // ],
         receiverNum: [
           { required: true, message: '编号不能为空', trigger: 'blur' }
         ]
@@ -210,10 +207,8 @@ export default {
         this.isDisabled = []
         this.tableData.forEach((item, index) => {
           if (item.state === 1) {
-            // this.$set(this.isDisabled, index, false)
             this.isDisabled[index] = false
           } else {
-            // this.$set(this.isDisabled, index, true)
             this.isDisabled[index] = true
           }
         })
@@ -240,7 +235,6 @@ export default {
       obj[this.searchForm.key] = this.searchForm.value
       this.getItems(obj)
     },
-    // 分页改变事件
     handlePageSizeChange (e) {
       this.size = e
       const searchObj = { size: this.size }
@@ -275,7 +269,6 @@ export default {
       this.clickedItem = row
       const obj = { order: 'timer', receiverNum: row.receiverNum }
       orderReceiver(obj).then(res => {
-        console.log(res)
         this.$Notice.info({
           title: '正在对时，请稍等...'
         })
@@ -311,7 +304,6 @@ export default {
       Object.assign(obj, this.receiverParams)
       this.receiverParams = {}
       orderReceiver(obj).then(res => {
-        console.log(res)
         this.$Notice.info({
           title: '正在设置参数，请稍等...'
         })
@@ -319,17 +311,6 @@ export default {
     },
     computedSocketMsg () {
       if (!this.$store.state.app.socketMsg) return
-      // const obj = JSON.parse(this.$store.state.app.socketMsg)
-      // this.tableData.forEach((item, index) => {
-      //   // if (item.receiverNum === obj.receive_num) {
-      //   //   this.$set(this.tableData[index], 'status', obj.status === 'online' ? '在线' : '离线')
-      //   // }
-      //   if (item.status === 0) {
-      //     this.isDisabled[ index ] = true
-      //   } else {
-      //     this.isDisabled[ index ] = false
-      //   }
-      // })
       return JSON.parse(this.$store.state.app.socketMsg)
     },
     modalSubmit (name) {
@@ -338,25 +319,14 @@ export default {
           if (this.modalConfig.type === 'add') {
             try {
               const res = await addReceiver(this.formItem)
-              if (res.data.code === 0) {
-                this.$set(this.modalConfig, 'show', false)
-                this.getItems()
-                this.$Message.success('添加成功！')
-              } else {
-                this.$Message.error(res.data.message)
-              }
+              this.addSuccess(res)
             } catch (err) {
               this.$Message.error('服务器错误！')
             }
           } else {
             try {
               const res = await editReceiver(this.formItem)
-              if (res.data.code === 0) {
-                this.$set(this.modalConfig, 'show', false)
-                this.$Message.success('修改成功！')
-              } else {
-                this.$Message.error(res.data.message)
-              }
+              this.editSuccess(res)
             } catch (err) {
               this.$Message.error('服务器错误！')
             }
@@ -375,18 +345,6 @@ export default {
           this.$Notice.success({
             title: '对时成功！'
           })
-        } else if (val.order === 'pingpong') {
-          // const obj = JSON.parse(this.$store.state.app.socketMsg)
-          // this.tableData.forEach((item, index) => {
-          // if (item.receiverNum === obj.receive_num) {
-          //   this.$set(this.tableData[index], 'status', obj.status === 'online' ? '在线' : '离线')
-          // }
-          //   if (item.state === 0) {
-          //     this.isDisabled[index] = true
-          //   } else {
-          //     this.isDisabled[index] = false
-          //   }
-          // })
         } else if (val.order === 'reset') {
           this.$Notice.success({
             title: '重启成功！'
@@ -408,7 +366,7 @@ export default {
             this.$set(this.tableData[index], 'status', val.status)
           }
         })
-      } else {}
+      }
     }
   },
   mounted () {

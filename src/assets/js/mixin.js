@@ -20,8 +20,6 @@ export default {
       }
     },
     editItem (row, index) {
-      console.log(row)
-      // this.$refs.formValidate.resetFields()
       this.formItem = row
       this.modalConfig = {
         show: !this.modalConfig.show,
@@ -93,6 +91,23 @@ export default {
           })
         })
         this.$Message.success('删除成功！')
+      } else {
+        this.$Message.error(res.data.message)
+      }
+    },
+    addSuccess (res) {
+      if (res.data.code === 0) {
+        this.$set(this.modalConfig, 'show', false)
+        this.getItems()
+        this.$Message.success('添加成功！')
+      } else {
+        this.$Message.error(res.data.message)
+      }
+    },
+    editSuccess (res) {
+      if (res.data.code === 0) {
+        this.$set(this.modalConfig, 'show', false)
+        this.$Message.success('修改成功！')
       } else {
         this.$Message.error(res.data.message)
       }

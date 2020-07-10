@@ -159,9 +159,7 @@ export default {
       const res = await deleteScene(row.id)
       this.deleteSuccess(res)
     },
-    // 批量删除
     async handleDeleteBatch () {
-      console.log(this.selection)
       const res = await deleteSceneList(this.selection)
       this.deleteBatchSuccess(res)
     },
@@ -178,28 +176,16 @@ export default {
       this.$refs[name].validate(async (valid) => {
         if (valid) {
           if (this.modalConfig.type === 'add') {
-            this.formItem.organizationId = this.$store.state.user.organizationId
             try {
               const res = await addScene(this.formItem)
-              if (res.data.code === 0) {
-                this.$set(this.modalConfig, 'show', false)
-                this.getItems()
-                this.$Message.success('添加成功！')
-              } else {
-                this.$Message.error(res.data.message)
-              }
+              this.addSuccess(res)
             } catch (err) {
               this.$Message.error('服务器错误！')
             }
           } else {
             try {
               const res = await editScene(this.formItem)
-              if (res.data.code === 0) {
-                this.$set(this.modalConfig, 'show', false)
-                this.$Message.success('修改成功！')
-              } else {
-                this.$Message.error(res.data.message)
-              }
+              this.editSuccess(res)
             } catch (err) {
               this.$Message.error('服务器错误！')
             }
