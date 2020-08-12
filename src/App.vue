@@ -7,6 +7,7 @@
 <script>
 import { mapActions } from 'vuex'
 import Cookies from 'js-cookie'
+
 export default {
   name: 'App',
   data () {
